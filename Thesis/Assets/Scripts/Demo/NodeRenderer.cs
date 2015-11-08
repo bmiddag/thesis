@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
+using Grammars.Graph;
 
 namespace Demo {
-	public class Node : MonoBehaviour {
-		Grammars.Graph.Node node;
+	public class NodeRenderer : MonoBehaviour {
+		Node node;
+		string shapePath;
 		SpriteRenderer spriteRender;
 
 		// Use this for initialization
@@ -24,7 +24,6 @@ namespace Demo {
 				if (node.hasAttribute("demo__shape")) {
 					string shape = node.getAttribute("demo__shape");
 					string upperShape = char.ToUpper(shape[0]) + shape.Substring(1);
-					print(upperShape);
 					spriteRender.sprite = Resources.Load<Sprite>("Sprites/" + upperShape);
 				}
 				if (node.hasAttribute("demo__color")) {
@@ -50,11 +49,11 @@ namespace Demo {
 			}
 		}
 
-		public void setNode(Grammars.Graph.Node node) {
+		public void setNode(Node node) {
 			this.node = node;
 		}
 
-		public Grammars.Graph.Node getNode() {
+		public Node getNode() {
 			return node;
 		}
 
