@@ -57,6 +57,10 @@ namespace Grammars.Graph {
 			return edges;
 		}
 
+        public string getName() {
+            return name;
+        }
+
 		public void destroy() {
 			List<KeyValuePair<Node, Edge>> edgeList = edges.ToList();
 			foreach (KeyValuePair<Node, Edge> entry in edges) {

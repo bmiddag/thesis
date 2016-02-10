@@ -4,31 +4,37 @@ using Grammars.Graph;
 namespace Demo {
 	public class NodeRenderer : MonoBehaviour {
 		Node node;
+        BoxCollider2D collider;
 		string shapePath;
 		SpriteRenderer spriteRender;
+        public GraphRenderer graphRenderer;
 
 		// Use this for initialization
 		void Start() {
 			spriteRender = gameObject.AddComponent<SpriteRenderer>();
+            collider = gameObject.AddComponent<BoxCollider2D>();
+            collider.size = new Vector2(58,58);
 			UpdateSprite();
 		}
 
 		// Update is called once per frame
 		void Update() {
-
+            if (node != null) {
+                gameObject.transform.position = new Vector3(int.Parse(node.getAttribute("_demo_x")), int.Parse(node.getAttribute("_demo_y")));
+            }
 		}
 
 		// Custom function with draw code
 		void UpdateSprite() {
 			if (node != null) {
-				if (node.hasAttribute("demo__shape")) {
-					string shape = node.getAttribute("demo__shape");
+				if (node.hasAttribute("_demo_shape")) {
+					string shape = node.getAttribute("_demo_shape");
 					string upperShape = char.ToUpper(shape[0]) + shape.Substring(1);
 					spriteRender.sprite = Resources.Load<Sprite>("Sprites/" + upperShape);
 				}
-				if (node.hasAttribute("demo__color")) {
-					string color = node.getAttribute("demo__color");
-					switch (node.getAttribute("demo__color")) {
+				if (node.hasAttribute("_demo_color")) {
+					string color = node.getAttribute("_demo_color");
+					switch (node.getAttribute("_demo_color")) {
 						case "red":
 							spriteRender.color = Color.red;
 							break;
@@ -63,7 +69,20 @@ namespace Demo {
 
 		public void setAttribute(string key, string value) {
 			node.setAttribute(key, value);
-			if (key.Contains("demo__")) UpdateSprite();
+			if (key.Contains("_demo_")) UpdateSprite();
 		}
+
+        public void OnMouseOver() {
+            if (graphRenderer.currentNode == null) {
+                //setAttribute("_demo_color", "red");
+                graphRenderer.currentNode = this;
+            }
+        }
+
+        public void OnMouseExit() {
+            if (graphRenderer.currentNode == this) {
+                graphRenderer.currentNode = null;
+            }
+        }
     }
 }

@@ -6,6 +6,7 @@ using Grammars.Graph;
 namespace Demo {
 	public class GraphRenderer : MonoBehaviour {
 		Graph graph;
+        public NodeRenderer currentNode = null;
 		IDictionary<Edge, LineRenderer> lineRenderers = new Dictionary<Edge, LineRenderer>();
 		IDictionary<Node, NodeRenderer> nodeRenderers = new Dictionary<Node, NodeRenderer>();
 
@@ -16,30 +17,32 @@ namespace Demo {
 		// Use this for initialization
 		void Start() {
 			// Define a few types of nodes
-			yellow_triangles.Add("demo__shape", "triangle");
-			yellow_triangles.Add("demo__color", "yellow");
-			blue_squares.Add("demo__shape", "square");
-			blue_squares.Add("demo__color", "blue");
-			white_circles.Add("demo__shape", "circle");
+			yellow_triangles.Add("_demo_shape", "triangle");
+			yellow_triangles.Add("_demo_color", "yellow");
+			blue_squares.Add("_demo_shape", "square");
+			blue_squares.Add("_demo_color", "blue");
+			white_circles.Add("_demo_shape", "circle");
 
 			// Create the graph
 			graph = new Graph();
 
 			Node root = new Node(graph, "root");
 			root.setAttributes(yellow_triangles);
-			root.setAttribute("demo__startX", "100");
-			root.setAttribute("demo__startY", "100");
+			root.setAttribute("_demo_x", "100");
+			root.setAttribute("_demo_y", "100");
 
 			Node node2 = new Node(graph, "node2");
 			node2.setAttributes(blue_squares);
-			node2.setAttribute("demo__startX", "-100");
-			node2.setAttribute("demo__startY", "-100");
+			node2.setAttribute("_demo_x", "-100");
+			node2.setAttribute("_demo_y", "-100");
 			root.addEdge(node2);
 
 			HashSet<Node> nodes = graph.getNodes();
 			foreach (Node node in nodes) {
 				NodeRenderer obj = new GameObject().AddComponent<NodeRenderer>();
-				obj.gameObject.transform.position = new Vector3(int.Parse(node.getAttribute("demo__startX")), int.Parse(node.getAttribute("demo__startY")));
+                obj.gameObject.name = node.getName();
+                obj.graphRenderer = this;
+				obj.gameObject.transform.position = new Vector3(int.Parse(node.getAttribute("_demo_x")), int.Parse(node.getAttribute("_demo_y")));
 				obj.setNode(node);
 				nodeRenderers[node] = obj;
 			}
