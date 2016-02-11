@@ -1,26 +1,41 @@
 ﻿using UnityEngine;
 using Grammars.Graph;
+using System.Collections.Generic;
 
 namespace Demo {
 	public class NodeRenderer : MonoBehaviour {
 		Node node;
-        BoxCollider2D collider;
+        BoxCollider2D boxCol;
 		string shapePath;
 		SpriteRenderer spriteRender;
         public GraphRenderer graphRenderer;
+        
+        Vector3 dragCenter;
+        bool dragging = false;
 
 		// Use this for initialization
 		void Start() {
 			spriteRender = gameObject.AddComponent<SpriteRenderer>();
-            collider = gameObject.AddComponent<BoxCollider2D>();
-            collider.size = new Vector2(58,58);
+            boxCol = gameObject.AddComponent<BoxCollider2D>();
+            boxCol.size = new Vector2(58,58);
 			UpdateSprite();
 		}
 
 		// Update is called once per frame
 		void Update() {
             if (node != null) {
-                gameObject.transform.position = new Vector3(int.Parse(node.getAttribute("_demo_x")), int.Parse(node.getAttribute("_demo_y")));
+                if (dragging) {
+                    Camera camera = Camera.main;
+                    Vector3 newPos = camera.ScreenToWorldPoint(Input.mousePosition) + dragCenter;
+                    if(newPos.x.ToString() != node.getAttribute("_demo_x") || newPos.y.ToString() != node.getAttribute("_demo_y")) {
+                        node.setAttribute("_demo_x", newPos.x.ToString());
+                        node.setAttribute("_demo_y", newPos.y.ToString());
+                        gameObject.transform.position = new Vector3(float.Parse(node.getAttribute("_demo_x")), float.Parse(node.getAttribute("_demo_y")));
+                        foreach (KeyValuePair<Node, Edge> entry in node.getEdges()) {
+                            graphRenderer.updateEdge(entry.Value);
+                        }
+                    }
+                }
             }
 		}
 
@@ -71,6 +86,16 @@ namespace Demo {
 			node.setAttribute(key, value);
 			if (key.Contains("_demo_")) UpdateSprite();
 		}
+
+        public void OnMouseDown() {
+            Camera camera = Camera.main;
+            dragCenter =  gameObject.transform.position - camera.ScreenToWorldPoint(Input.mousePosition);
+            dragging = true;
+        }
+
+        public void OnMouseUp() {
+            dragging = false;
+        }
 
         public void OnMouseOver() {
             if (graphRenderer.currentNode == null) {
