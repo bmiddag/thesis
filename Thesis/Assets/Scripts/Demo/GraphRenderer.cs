@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Grammars.Graph;
+using Grammars;
 
 namespace Demo {
 	public class GraphRenderer : MonoBehaviour {
@@ -13,29 +14,32 @@ namespace Demo {
 		public IDictionary<Edge, LineRenderer> lineRenderers = new Dictionary<Edge, LineRenderer>();
 		IDictionary<Node, NodeRenderer> nodeRenderers = new Dictionary<Node, NodeRenderer>();
 
-		Dictionary<string, string> yellow_triangles = new Dictionary<string, string>();
-		Dictionary<string, string> blue_squares = new Dictionary<string, string>();
-		Dictionary<string, string> white_circles = new Dictionary<string, string>();
+        AttributeClass yellow_triangles = new AttributeClass("yellow_triangles");
+        AttributeClass blue_squares = new AttributeClass("blue_squares");
+        AttributeClass white_circles = new AttributeClass("white_circles");
 
-		// Use this for initialization
-		void Start() {
+        public bool draggingNode = false;
+        public CameraControl cameraControl;
+
+        // Use this for initialization
+        void Start() {
 			// Define a few types of nodes
-			yellow_triangles.Add("_demo_shape", "triangle");
-			yellow_triangles.Add("_demo_color", "yellow");
-			blue_squares.Add("_demo_shape", "square");
-			blue_squares.Add("_demo_color", "blue");
-			white_circles.Add("_demo_shape", "circle");
+			yellow_triangles.setAttribute("_demo_shape", "triangle");
+			yellow_triangles.setAttribute("_demo_color", "yellow");
+			blue_squares.setAttribute("_demo_shape", "square");
+			blue_squares.setAttribute("_demo_color", "blue");
+			white_circles.setAttribute("_demo_shape", "circle");
 
 			// Create the graph
 			graph = new Graph();
 
-			Node root = new Node(graph, "root");
-			root.setAttributes(yellow_triangles);
+			Node root = new Node(graph, 0);
+			root.addAttributeClass(yellow_triangles);
 			root.setAttribute("_demo_x", "100");
 			root.setAttribute("_demo_y", "100");
 
-			Node node2 = new Node(graph, "node2");
-			node2.setAttributes(blue_squares);
+			Node node2 = new Node(graph, 1);
+			node2.addAttributeClass(blue_squares);
 			node2.setAttribute("_demo_x", "-100");
 			node2.setAttribute("_demo_y", "-100");
             root.addEdge(node2);
@@ -44,7 +48,7 @@ namespace Demo {
 			foreach (Node node in nodes) {
                 addNodeRenderer(node);
 			}
-		}
+        }
 
 		// Update is called once per frame
 		void Update() {
@@ -55,6 +59,11 @@ namespace Demo {
                         updateEdge(edge);
                     }
                 }
+
+                // Pan
+                cameraControl.cameraPanBlocked = draggingNode;
+
+                // Add nodes or edges
                 if (Input.GetMouseButtonDown(1)) {
                     if (currentNode == null) {
                         if (drawingEdge) {
@@ -62,8 +71,8 @@ namespace Demo {
                             drawingEdge = false;
                         } else {
                             Vector3 newPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                            Node node = new Node(graph, "newNode");
-                            node.setAttributes(white_circles);
+                            Node node = new Node(graph, graph.getNodes().Count);
+                            node.addAttributeClass(white_circles);
                             node.setAttribute("_demo_x", newPos.x.ToString());
                             node.setAttribute("_demo_y", newPos.y.ToString());
                             addNodeRenderer(node);
@@ -88,8 +97,9 @@ namespace Demo {
                         LineRenderer line = new GameObject().AddComponent<LineRenderer>();
                         line.SetPosition(0, startNode.gameObject.transform.position);
                         line.SetWidth(3.0f, 3.0f);
-                        Material whiteDiffuseMat = new Material(Shader.Find("Unlit/Texture"));
-                        line.material = whiteDiffuseMat;
+                        Material mat = new Material(Shader.Find("Unlit/Color"));
+                        mat.color = Color.black;
+                        line.material = mat;
                         drawingLineRenderer = line;
                     }
                     Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -111,18 +121,22 @@ namespace Demo {
             line.SetPosition(0, nodeRenderers[edge.getNode1()].gameObject.transform.position);
             line.SetPosition(1, nodeRenderers[edge.getNode2()].gameObject.transform.position);
             line.SetWidth(3.0f, 3.0f);
-            Material whiteDiffuseMat = new Material(Shader.Find("Unlit/Texture"));
-            line.material = whiteDiffuseMat;
+            line.gameObject.name = "Edge " + edge.getNode1().getID() + "-" + edge.getNode2().getID();
+            Material mat = new Material(Shader.Find("Unlit/Color"));
+            mat.color = Color.black;
+            line.material = mat;
             lineRenderers[edge] = line;
+            line.transform.SetParent(transform);
         }
 
         public void addNodeRenderer(Node node) {
             NodeRenderer obj = new GameObject().AddComponent<NodeRenderer>();
-            obj.gameObject.name = node.getName();
+            obj.gameObject.name = "Node " + node.getID().ToString();
             obj.graphRenderer = this;
             obj.gameObject.transform.position = new Vector3(float.Parse(node.getAttribute("_demo_x")), float.Parse(node.getAttribute("_demo_y")));
             obj.setNode(node);
             nodeRenderers[node] = obj;
+            obj.transform.SetParent(transform);
         }
 	}
 }

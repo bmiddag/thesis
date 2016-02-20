@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using Grammars.Graph;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 namespace Demo {
 	public class NodeRenderer : MonoBehaviour {
@@ -8,6 +9,7 @@ namespace Demo {
         BoxCollider2D boxCol;
 		string shapePath;
 		SpriteRenderer spriteRender;
+        Text text;
         public GraphRenderer graphRenderer;
         
         Vector3 dragCenter;
@@ -19,6 +21,7 @@ namespace Demo {
             boxCol = gameObject.AddComponent<BoxCollider2D>();
             boxCol.size = new Vector2(58,58);
 			UpdateSprite();
+            //UpdateText();
 		}
 
 		// Update is called once per frame
@@ -68,7 +71,24 @@ namespace Demo {
 					}
 				}
 			}
+            UpdateText();
 		}
+
+        void UpdateText() {
+            if (text != null) {
+                Destroy(text);
+            }
+            if (node != null) {
+                text = gameObject.AddComponent<Text>();
+                text.color = Color.black;
+                text.text = node.getID().ToString();
+                text.font = Font.CreateDynamicFontFromOSFont("Arial", 24);
+                text.fontSize = 24;
+                text.alignment = TextAnchor.MiddleCenter;
+
+
+            }
+        }
 
 		public void setNode(Node node) {
 			this.node = node;
@@ -91,10 +111,12 @@ namespace Demo {
             Camera camera = Camera.main;
             dragCenter =  gameObject.transform.position - camera.ScreenToWorldPoint(Input.mousePosition);
             dragging = true;
+            graphRenderer.draggingNode = true;
         }
 
         public void OnMouseUp() {
             dragging = false;
+            graphRenderer.draggingNode = false;
         }
 
         public void OnMouseOver() {

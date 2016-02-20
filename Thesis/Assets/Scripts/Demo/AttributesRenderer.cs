@@ -36,13 +36,17 @@ namespace Demo {
                 return;
             }
             if(el.GetType() == typeof(Node)) {
-                textString += "<b>Name:</b>\n";
+                textString += "<b>ID:</b>\n";
                 Node node = (Node)el;
-                textString += "\t" + node.getName() + "\n";
+                textString += "\t" + node.getID().ToString() + "\n";
                 textString += "\n";
             }
             textString += "<b>Classes:</b>\n";
-            textString += "\tTODO\n\n";
+            HashSet<AttributeClass> attClasses = el.getAttributeClasses();
+            foreach (AttributeClass attClass in attClasses) {
+                textString += "\t" + attClass.getName() + "\n";
+            }
+            textString += "\n";
             textString += "<b>Attributes:</b>\n";
             IDictionary<string, string> attDict = el.getAttributes();
             foreach (KeyValuePair<string, string> att in attDict) {

@@ -1,14 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Grammars {
+    /// <summary>
+    /// Abstract class for any element with attributes (metadata).
+    /// </summary>
 	public abstract class AttributedElement {
 		protected IDictionary<string, string> attributes;
+        protected HashSet<AttributeClass> classes;
 
 		public AttributedElement() {
 			attributes = new Dictionary<string, string>();
+            classes = new HashSet<AttributeClass>();
 		}
 
 		public bool hasAttribute(string key) {
@@ -33,5 +35,16 @@ namespace Grammars {
 				}
 			}
 		}
+
+        public HashSet<AttributeClass> getAttributeClasses() {
+            return classes;
+        }
+
+        public void addAttributeClass(AttributeClass attClass) {
+            if (attClass != null && !attClass.Equals(this)) {
+                classes.Add(attClass);
+                setAttributes(attClass.getAttributes());
+            }
+        }
 	}
 }

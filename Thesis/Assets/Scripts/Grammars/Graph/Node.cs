@@ -7,13 +7,13 @@ namespace Grammars.Graph {
 	public class Node : AttributedElement {
 		Graph graph;
 		IDictionary<Node, Edge> edges;
-		string name;
+		int id;
 		bool active = false;
 
-		public Node(Graph graph, string name) : base() {
+		public Node(Graph graph, int id) : base() {
 			this.graph = graph;
 			edges = new Dictionary<Node, Edge>();
-			this.name = name;
+			this.id = id;
 			graph.addNode(this);
 		}
 
@@ -57,8 +57,8 @@ namespace Grammars.Graph {
 			return edges;
 		}
 
-        public string getName() {
-            return name;
+        public int getID() {
+            return id;
         }
 
 		public void destroy() {
