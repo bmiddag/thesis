@@ -62,11 +62,15 @@ namespace Grammars.Graph {
         }
 
 		public void destroy() {
-			List<KeyValuePair<Node, Edge>> edgeList = edges.ToList();
+            /*List<KeyValuePair<Node, Edge>> edgeList = edges.ToList();
 			foreach (KeyValuePair<Node, Edge> entry in edges) {
 				entry.Value.destroy();
-			}
-			active = false;
+			}*/
+            ICollection<Node> adjacentNodeList = edges.Keys;
+            while (adjacentNodeList.Count > 0) {
+                removeEdge(adjacentNodeList.First());
+            }
+            active = false;
 			graph.removeNode(this);
 		}
 

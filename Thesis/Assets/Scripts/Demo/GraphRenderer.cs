@@ -92,41 +92,54 @@ namespace Demo {
                         }
                     }
                 }
+
+                // Remove nodes
+                if (Input.GetKey(KeyCode.X) && currentNode != null) {
+                    NodeRenderer nodeToRemove = currentNode;
+                    currentNode = null;
+                    removeNodeRenderer(nodeToRemove);
+                }
+
+                // Handle temporary line renderer (before actual edge creation)
                 if (drawingEdge) {
-                    if (drawingLineRenderer == null) {
-                        LineRenderer line = new GameObject().AddComponent<LineRenderer>();
-                        line.SetPosition(0, startNode.gameObject.transform.position);
-                        line.SetWidth(3.0f, 3.0f);
-                        Material mat = new Material(Shader.Find("Unlit/Color"));
-                        mat.color = Color.black;
-                        line.material = mat;
-                        drawingLineRenderer = line;
-                    }
                     Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                     Vector3 corrMousePos = new Vector3(mousePos.x, mousePos.y);
-                    drawingLineRenderer.SetPosition(1, corrMousePos);
-                } else {
-                    if (drawingLineRenderer != null) {
-                        Destroy(drawingLineRenderer.gameObject);
+                    if (drawingLineRenderer == null) {
+                        // Create temporary line that follows cursor
+                        drawingLineRenderer = createEdgeRenderer(startNode.gameObject.transform.position, corrMousePos);
+                    } else {
+                        // Update temporary line to follow cursor
+                        drawingLineRenderer.SetPosition(1, corrMousePos);
                     }
+                } else if (drawingLineRenderer != null) {
+                    Destroy(drawingLineRenderer.gameObject);
                 }
             }
 		}
 
         public void updateEdge(Edge edge) {
-            if(lineRenderers.ContainsKey(edge)) {
-                Destroy(lineRenderers[edge].gameObject);
+            if (lineRenderers.ContainsKey(edge)) {
+                //Destroy(lineRenderers[edge].gameObject);
+                lineRenderers[edge].SetPosition(0, nodeRenderers[edge.getNode1()].gameObject.transform.position);
+                lineRenderers[edge].SetPosition(1, nodeRenderers[edge.getNode2()].gameObject.transform.position);
+            } else {
+                LineRenderer line = createEdgeRenderer(nodeRenderers[edge.getNode1()].gameObject.transform.position,
+                    nodeRenderers[edge.getNode2()].gameObject.transform.position);
+                line.gameObject.name = "Edge " + edge.getNode1().getID() + "-" + edge.getNode2().getID();
+                lineRenderers[edge] = line;
             }
+        }
+
+        public LineRenderer createEdgeRenderer(Vector3 pos0, Vector3 pos1) {
             LineRenderer line = new GameObject().AddComponent<LineRenderer>();
-            line.SetPosition(0, nodeRenderers[edge.getNode1()].gameObject.transform.position);
-            line.SetPosition(1, nodeRenderers[edge.getNode2()].gameObject.transform.position);
+            line.SetPosition(0, pos0);
+            line.SetPosition(1, pos1);
             line.SetWidth(3.0f, 3.0f);
-            line.gameObject.name = "Edge " + edge.getNode1().getID() + "-" + edge.getNode2().getID();
             Material mat = new Material(Shader.Find("Unlit/Color"));
             mat.color = Color.black;
             line.material = mat;
-            lineRenderers[edge] = line;
             line.transform.SetParent(transform);
+            return line;
         }
 
         public void addNodeRenderer(Node node) {
@@ -137,6 +150,26 @@ namespace Demo {
             obj.setNode(node);
             nodeRenderers[node] = obj;
             obj.transform.SetParent(transform);
+        }
+
+        public void removeNodeRenderer(NodeRenderer nodeToRemove) {
+            // Remove temporary line renderer
+            if (drawingEdge && nodeToRemove.Equals(startNode)) {
+                drawingEdge = false;
+                startNode = null;
+            }
+            // Remove edge renderers
+            ICollection<Edge> edgesToRemove = nodeToRemove.getNode().getEdges().Values;
+            foreach (Edge edge in edgesToRemove) {
+                if (lineRenderers.ContainsKey(edge)) {
+                    Destroy(lineRenderers[edge].gameObject);
+                    lineRenderers.Remove(edge);
+                }
+            }
+            // Remove node renderer & node
+            nodeRenderers.Remove(nodeToRemove.getNode());
+            Destroy(nodeToRemove.gameObject);
+            nodeToRemove.getNode().destroy();
         }
 	}
 }
