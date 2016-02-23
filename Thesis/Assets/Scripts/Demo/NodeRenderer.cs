@@ -2,12 +2,11 @@
 using Grammars.Graph;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using System;
 
 namespace Demo {
 	public class NodeRenderer : MonoBehaviour {
 		Node node;
-        BoxCollider2D boxCol;
-		string shapePath;
 		SpriteRenderer spriteRender;
         Text text;
         public GraphRenderer graphRenderer;
@@ -15,103 +14,67 @@ namespace Demo {
         Vector3 dragCenter;
         bool dragging = false;
 
+        bool updateRenderer = false; // If true, sprite & text will be updated during the next call of Update(). Prevents chaining of renderer updates.
+
 		// Use this for initialization
 		void Start() {
 			spriteRender = gameObject.AddComponent<SpriteRenderer>();
-            boxCol = gameObject.AddComponent<BoxCollider2D>();
+            BoxCollider2D boxCol = gameObject.AddComponent<BoxCollider2D>();
             boxCol.size = new Vector2(58,58);
-			UpdateSprite();
-            //UpdateText();
 		}
 
 		// Update is called once per frame
 		void Update() {
+            if (updateRenderer) {
+                updateRenderer = false;
+                UpdateSprite();
+                UpdateText();
+            }
             if (node != null) {
                 if (dragging) {
                     Camera camera = Camera.main;
                     Vector3 newPos = camera.ScreenToWorldPoint(Input.mousePosition) + dragCenter;
-                    if(newPos.x.ToString() != node.getAttribute("_demo_x") || newPos.y.ToString() != node.getAttribute("_demo_y")) {
-                        node.setAttribute("_demo_x", newPos.x.ToString());
-                        node.setAttribute("_demo_y", newPos.y.ToString());
-                        gameObject.transform.position = new Vector3(float.Parse(node.getAttribute("_demo_x")), float.Parse(node.getAttribute("_demo_y")));
-                        foreach (KeyValuePair<Node, Edge> entry in node.getEdges()) {
-                            graphRenderer.updateEdge(entry.Value);
+
+                    if(newPos.x != gameObject.transform.position.x || newPos.y != gameObject.transform.position.y) {
+                        gameObject.transform.position = new Vector3(newPos.x, newPos.y);
+                        foreach (KeyValuePair<Node, Edge> entry in node.GetEdges()) {
+                            graphRenderer.UpdateEdge(entry.Value);
                         }
                     }
                 }
             }
 		}
 
-		// Custom function with draw code
-		void UpdateSprite() {
-			if (node != null) {
-				if (node.hasAttribute("_demo_shape")) {
-					string shape = node.getAttribute("_demo_shape");
-					string upperShape = char.ToUpper(shape[0]) + shape.Substring(1);
-					spriteRender.sprite = Resources.Load<Sprite>("Sprites/" + upperShape);
-				}
-				if (node.hasAttribute("_demo_color")) {
-					string color = node.getAttribute("_demo_color");
-					switch (node.getAttribute("_demo_color")) {
-						case "red":
-							spriteRender.color = Color.red;
-							break;
-						case "green":
-							spriteRender.color = Color.green;
-							break;
-						case "blue":
-							spriteRender.color = Color.blue;
-							break;
-						case "yellow":
-							spriteRender.color = Color.yellow;
-							break;
-						default:
-							spriteRender.color = Color.white;
-							break;
-					}
-				}
-			}
-            UpdateText();
-		}
-
-        void UpdateText() {
-            if (text != null) {
-                Destroy(text);
+		public void SetNode(Node node) {
+            if (this.node != null) {
+                this.node.AttributeChanged -= new EventHandler(NodeAttributeChanged);
             }
-            if (node != null) {
-                text = gameObject.AddComponent<Text>();
-                text.color = Color.black;
-                text.text = node.getID().ToString();
-                text.font = Font.CreateDynamicFontFromOSFont("Arial", 24);
-                text.fontSize = 24;
-                text.alignment = TextAnchor.MiddleCenter;
-
-
+			this.node = node;
+            if (this.node != null) {
+                this.node.AttributeChanged += new EventHandler(NodeAttributeChanged);
             }
+            updateRenderer = true;
         }
 
-		public void setNode(Node node) {
-			this.node = node;
-		}
-
-		public Node getNode() {
+		public Node GetNode() {
 			return node;
 		}
 
-		public string getAttribute(string key) {
-			return node.getAttribute(key);
+		public string GetAttribute(string key) {
+			return node.GetAttribute(key);
 		}
 
-		public void setAttribute(string key, string value) {
-			node.setAttribute(key, value);
-			if (key.Contains("_demo_")) UpdateSprite();
+		public void SetAttribute(string key, string value) {
+			node.SetAttribute(key, value);
 		}
 
         public void OnMouseDown() {
-            Camera camera = Camera.main;
-            dragCenter =  gameObject.transform.position - camera.ScreenToWorldPoint(Input.mousePosition);
-            dragging = true;
-            graphRenderer.draggingNode = true;
+            if (!graphRenderer.controller.paused) {
+                Camera camera = Camera.main;
+                dragCenter = gameObject.transform.position - camera.ScreenToWorldPoint(Input.mousePosition);
+                dragging = true;
+                graphRenderer.draggingNode = true;
+            }
         }
 
         public void OnMouseUp() {
@@ -131,5 +94,60 @@ namespace Demo {
                 graphRenderer.currentNode = null;
             }
         }
+
+        void NodeAttributeChanged(object sender, EventArgs e) {
+            updateRenderer = true;
+        }
+
+        void OnDestroy() {
+            if (node != null) {
+                this.node.AttributeChanged -= new EventHandler(NodeAttributeChanged);
+            }
+        }
+
+        // ************************** NODE RENDERING CODE ************************** \\
+        void UpdateSprite() {
+			if (node != null) {
+				if (node.HasAttribute("_demo_shape")) {
+					string shape = node.GetAttribute("_demo_shape");
+					string upperShape = char.ToUpper(shape[0]) + shape.Substring(1);
+					spriteRender.sprite = Resources.Load<Sprite>("Sprites/" + upperShape);
+				}
+				if (node.HasAttribute("_demo_color")) {
+					string color = node.GetAttribute("_demo_color");
+					switch (color) {
+						case "red":
+							spriteRender.color = Color.red;
+							break;
+						case "green":
+							spriteRender.color = Color.green;
+							break;
+						case "blue":
+							spriteRender.color = Color.blue;
+							break;
+						case "yellow":
+							spriteRender.color = Color.yellow;
+							break;
+						default:
+							spriteRender.color = Color.white;
+							break;
+					}
+				}
+			}
+		}
+
+        void UpdateText() {
+            if (text == null) {
+                text = gameObject.AddComponent<Text>();
+                text.color = Color.black;
+                text.font = Font.CreateDynamicFontFromOSFont("Arial", 24);
+                text.fontSize = 24;
+                text.alignment = TextAnchor.MiddleCenter;
+            }
+            if (node != null) {
+                text.text = node.GetID().ToString();
+            }
+        }
     }
 }
+ 

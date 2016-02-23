@@ -14,25 +14,25 @@ namespace Grammars.Graph {
 			this.graph = graph;
 			this.node1 = node1;
 			this.node2 = node2;
-			node1.addEdge(node2, this);
-			node2.addEdge(node1, this);
-			graph.addEdge(this);
+			node1.AddEdge(node2, this);
+			node2.AddEdge(node1, this);
+			graph.AddEdge(this);
 		}
 
-		public Node getNode1() {
+		public Node GetNode1() {
 			return node1;
 		}
 
-		public Node getNode2() {
+		public Node GetNode2() {
 			return node2;
 		}
 
-		public void destroy() {
+		public void Destroy() {
 			if (!destroyed) {
 				destroyed = true;
-				node1.removeEdge(node2);
-				node2.removeEdge(node1);
-				graph.removeEdge(this);
+				node1.RemoveEdge(node2);
+				node2.RemoveEdge(node1);
+				graph.RemoveEdge(this);
 			}
 		}
 
@@ -45,14 +45,14 @@ namespace Grammars.Graph {
 			if ((object)e == null) {
 				return false;
 			}
-			return ((node1 == e.getNode1()) && node2 == e.getNode2()) || ((node1 == e.getNode2()) && node2 == e.getNode1());
+			return ((node1 == e.GetNode1()) && node2 == e.GetNode2()) || ((node1 == e.GetNode2()) && node2 == e.GetNode1());
         }
 
 		public bool Equals(Edge e) {
 			if ((object)e == null) {
 				return false;
 			}
-			return ((node1 == e.getNode1()) && node2 == e.getNode2()) || ((node1 == e.getNode2()) && node2 == e.getNode1());
+			return ((node1 == e.GetNode1()) && node2 == e.GetNode2()) || ((node1 == e.GetNode2()) && node2 == e.GetNode1());
 		}
 
 		public override int GetHashCode() {

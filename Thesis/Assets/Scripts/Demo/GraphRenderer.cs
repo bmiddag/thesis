@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 using Grammars.Graph;
 using Grammars;
+using System;
 
 namespace Demo {
 	public class GraphRenderer : MonoBehaviour {
@@ -14,75 +14,73 @@ namespace Demo {
 		public IDictionary<Edge, LineRenderer> lineRenderers = new Dictionary<Edge, LineRenderer>();
 		IDictionary<Node, NodeRenderer> nodeRenderers = new Dictionary<Node, NodeRenderer>();
 
-        AttributeClass yellow_triangles = new AttributeClass("yellow_triangles");
-        AttributeClass blue_squares = new AttributeClass("blue_squares");
-        AttributeClass white_circles = new AttributeClass("white_circles");
+        IDictionary<string, AttributeClass> attributeClasses = new Dictionary<string, AttributeClass>(); // TODO: move to grammar
 
         public bool draggingNode = false;
         public CameraControl cameraControl;
 
+        bool updateRenderer = false; // If true, node/edge renderers will be updated during the next call of Update(). Prevents chaining of renderer updates.
+
+        public GraphDemoController controller;
+
         // Use this for initialization
         void Start() {
-			// Define a few types of nodes
-			yellow_triangles.setAttribute("_demo_shape", "triangle");
-			yellow_triangles.setAttribute("_demo_color", "yellow");
-			blue_squares.setAttribute("_demo_shape", "square");
-			blue_squares.setAttribute("_demo_color", "blue");
-			white_circles.setAttribute("_demo_shape", "circle");
+            // Define some attribute classes
+            attributeClasses["yellow_triangles"] = new AttributeClass("yellow_triangles");
+            attributeClasses["blue_squares"] = new AttributeClass("blue_squares");
+            attributeClasses["white_circles"] = new AttributeClass("white_circles");
+
+            attributeClasses["yellow_triangles"].SetAttribute("_demo_shape", "triangle");
+            attributeClasses["yellow_triangles"].SetAttribute("_demo_color", "yellow");
+            attributeClasses["blue_squares"].SetAttribute("_demo_shape", "square");
+            attributeClasses["blue_squares"].SetAttribute("_demo_color", "blue");
+            attributeClasses["white_circles"].SetAttribute("_demo_shape", "circle");
 
 			// Create the graph
 			graph = new Graph();
+            graph.StructureChanged += GraphStructureChanged;
 
-			Node root = new Node(graph, 0);
-			root.addAttributeClass(yellow_triangles);
-			root.setAttribute("_demo_x", "100");
-			root.setAttribute("_demo_y", "100");
+			/*Node root = new Node(graph, 0);
+			root.AddAttributeClass(yellow_triangles);
+			root.SetAttribute("_demo_x", "100");
+			root.SetAttribute("_demo_y", "100");
 
 			Node node2 = new Node(graph, 1);
-			node2.addAttributeClass(blue_squares);
-			node2.setAttribute("_demo_x", "-100");
-			node2.setAttribute("_demo_y", "-100");
-            root.addEdge(node2);
-
-			HashSet<Node> nodes = graph.getNodes();
-			foreach (Node node in nodes) {
-                addNodeRenderer(node);
-			}
+			node2.AddAttributeClass(blue_squares);
+			node2.SetAttribute("_demo_x", "-100");
+			node2.SetAttribute("_demo_y", "-100");
+            root.AddEdge(node2);*/
         }
 
-		// Update is called once per frame
-		void Update() {
+        // Update is called once per frame
+        void Update() {
             if (graph != null) {
-                HashSet<Edge> edges = graph.getEdges();
-                foreach (Edge edge in edges) {
-                    if (!lineRenderers.ContainsKey(edge)) {
-                        updateEdge(edge);
-                    }
+                if (updateRenderer) {
+                    updateRenderer = false;
+                    SyncGraphStructure();                    
                 }
 
                 // Pan
-                cameraControl.cameraPanBlocked = draggingNode;
+                cameraControl.cameraPanBlocked = draggingNode || controller.paused;
 
                 // Add nodes or edges
-                if (Input.GetMouseButtonDown(1)) {
+                if (Input.GetMouseButtonDown(1) && !controller.paused) {
                     if (currentNode == null) {
                         if (drawingEdge) {
                             startNode = null;
                             drawingEdge = false;
                         } else {
                             Vector3 newPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                            Node node = new Node(graph, graph.getNodes().Count);
-                            node.addAttributeClass(white_circles);
-                            node.setAttribute("_demo_x", newPos.x.ToString());
-                            node.setAttribute("_demo_y", newPos.y.ToString());
-                            addNodeRenderer(node);
+                            Node node = new Node(graph, graph.GetNodes().Count);
+                            node.AddAttributeClass(attributeClasses["white_circles"]);
+                            node.SetAttribute("_demo_x", newPos.x.ToString());
+                            node.SetAttribute("_demo_y", newPos.y.ToString());
                         }
                     } else {
                         if (drawingEdge) {
                             if (currentNode != startNode) {
                                 // Create new edge to currentNode from startNode
-                                Edge edge = startNode.getNode().addEdge(currentNode.getNode());
-                                updateEdge(edge);
+                                Edge edge = startNode.GetNode().AddEdge(currentNode.GetNode());
                                 startNode = null;
                                 drawingEdge = false;
                             }
@@ -94,19 +92,17 @@ namespace Demo {
                 }
 
                 // Remove nodes
-                if (Input.GetKey(KeyCode.X) && currentNode != null) {
-                    NodeRenderer nodeToRemove = currentNode;
-                    currentNode = null;
-                    removeNodeRenderer(nodeToRemove);
+                if (Input.GetKey(KeyCode.X) && currentNode != null && !controller.paused) {
+                    graph.RemoveNode(currentNode.GetNode());
                 }
 
                 // Handle temporary line renderer (before actual edge creation)
-                if (drawingEdge) {
+                if (drawingEdge && !controller.paused) {
                     Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                     Vector3 corrMousePos = new Vector3(mousePos.x, mousePos.y);
                     if (drawingLineRenderer == null) {
                         // Create temporary line that follows cursor
-                        drawingLineRenderer = createEdgeRenderer(startNode.gameObject.transform.position, corrMousePos);
+                        drawingLineRenderer = CreateLineRenderer(startNode.gameObject.transform.position, corrMousePos);
                     } else {
                         // Update temporary line to follow cursor
                         drawingLineRenderer.SetPosition(1, corrMousePos);
@@ -117,20 +113,32 @@ namespace Demo {
             }
 		}
 
-        public void updateEdge(Edge edge) {
+        public void UpdateEdge(Edge edge) {
             if (lineRenderers.ContainsKey(edge)) {
-                //Destroy(lineRenderers[edge].gameObject);
-                lineRenderers[edge].SetPosition(0, nodeRenderers[edge.getNode1()].gameObject.transform.position);
-                lineRenderers[edge].SetPosition(1, nodeRenderers[edge.getNode2()].gameObject.transform.position);
+                lineRenderers[edge].SetPosition(0, nodeRenderers[edge.GetNode1()].gameObject.transform.position);
+                lineRenderers[edge].SetPosition(1, nodeRenderers[edge.GetNode2()].gameObject.transform.position);
+            }
+        }
+
+        public void AddEdgeRenderer(Edge edge) {
+            if (lineRenderers.ContainsKey(edge)) {
+                UpdateEdge(edge);
             } else {
-                LineRenderer line = createEdgeRenderer(nodeRenderers[edge.getNode1()].gameObject.transform.position,
-                    nodeRenderers[edge.getNode2()].gameObject.transform.position);
-                line.gameObject.name = "Edge " + edge.getNode1().getID() + "-" + edge.getNode2().getID();
+                LineRenderer line = CreateLineRenderer(nodeRenderers[edge.GetNode1()].gameObject.transform.position,
+                    nodeRenderers[edge.GetNode2()].gameObject.transform.position);
+                line.gameObject.name = "Edge " + edge.GetNode1().GetID() + "-" + edge.GetNode2().GetID();
                 lineRenderers[edge] = line;
             }
         }
 
-        public LineRenderer createEdgeRenderer(Vector3 pos0, Vector3 pos1) {
+        public void RemoveEdgeRenderer(Edge edge) {
+            if (lineRenderers.ContainsKey(edge)) {
+                Destroy(lineRenderers[edge].gameObject);
+                lineRenderers.Remove(edge);
+            }
+        }
+
+        public LineRenderer CreateLineRenderer(Vector3 pos0, Vector3 pos1) {
             LineRenderer line = new GameObject().AddComponent<LineRenderer>();
             line.SetPosition(0, pos0);
             line.SetPosition(1, pos1);
@@ -142,34 +150,91 @@ namespace Demo {
             return line;
         }
 
-        public void addNodeRenderer(Node node) {
+        public void AddNodeRenderer(Node node, float x = 0f, float y = 0f) {
             NodeRenderer obj = new GameObject().AddComponent<NodeRenderer>();
-            obj.gameObject.name = "Node " + node.getID().ToString();
+            obj.gameObject.name = "Node " + node.GetID().ToString();
             obj.graphRenderer = this;
-            obj.gameObject.transform.position = new Vector3(float.Parse(node.getAttribute("_demo_x")), float.Parse(node.getAttribute("_demo_y")));
-            obj.setNode(node);
+            if (node.HasAttribute("_demo_x") && node.HasAttribute("_demo_y")) {
+                obj.gameObject.transform.position = new Vector3(float.Parse(node["_demo_x"]), float.Parse(node["_demo_y"]));
+            } else {
+                obj.gameObject.transform.position = new Vector3(x, y);
+            }
+            obj.SetNode(node);
             nodeRenderers[node] = obj;
             obj.transform.SetParent(transform);
         }
 
-        public void removeNodeRenderer(NodeRenderer nodeToRemove) {
+        public void RemoveNodeRenderer(Node node) {
+            RemoveNodeRenderer(nodeRenderers[node]);
+        }
+
+        public void RemoveNodeRenderer(NodeRenderer nodeToRemove) {
+            // Remove current node status
+            if (currentNode == nodeToRemove) {
+                currentNode = null;
+            }
             // Remove temporary line renderer
             if (drawingEdge && nodeToRemove.Equals(startNode)) {
                 drawingEdge = false;
                 startNode = null;
             }
-            // Remove edge renderers
-            ICollection<Edge> edgesToRemove = nodeToRemove.getNode().getEdges().Values;
-            foreach (Edge edge in edgesToRemove) {
-                if (lineRenderers.ContainsKey(edge)) {
-                    Destroy(lineRenderers[edge].gameObject);
-                    lineRenderers.Remove(edge);
+            if (nodeToRemove.GetNode() != null) {
+                // Remove edge renderers
+                ICollection<Edge> edgesToRemove = nodeToRemove.GetNode().GetEdges().Values;
+                foreach (Edge edge in edgesToRemove) {
+                    RemoveEdgeRenderer(edge);
+                }
+                // Remove node renderer & node
+                nodeRenderers.Remove(nodeToRemove.GetNode());
+                Destroy(nodeToRemove.gameObject);
+                nodeToRemove.GetNode().Destroy();
+            } else {
+                // Remove node renderer only
+                nodeRenderers.Remove(nodeToRemove.GetNode());
+                Destroy(nodeToRemove.gameObject);
+            }
+        }
+
+        // ************************** STRUCTURE UPDATES ************************** \\
+        private void GraphStructureChanged(object sender, EventArgs e) {
+            updateRenderer = true; // SyncGraphStructure will be called during next update.
+        }
+
+        void OnDestroy() {
+            if (graph != null) {
+                graph.StructureChanged -= new EventHandler(GraphStructureChanged);
+            }
+        }
+
+        void SyncGraphStructure() {
+            HashSet<Node> nodesInGraph = graph.GetNodes();
+            ICollection<Node> nodesInRenderer = nodeRenderers.Keys;
+            if (!nodesInGraph.SetEquals(nodesInRenderer)) {
+                HashSet<Node> nodesToAdd = new HashSet<Node>(nodesInGraph);
+                nodesToAdd.ExceptWith(nodesInRenderer);
+                foreach (Node node in nodesToAdd) {
+                    AddNodeRenderer(node);
+                }
+                HashSet<Node> nodesToRemove = new HashSet<Node>(nodesInRenderer);
+                nodesToRemove.ExceptWith(nodesInGraph);
+                foreach (Node node in nodesToRemove) {
+                    RemoveNodeRenderer(node);
                 }
             }
-            // Remove node renderer & node
-            nodeRenderers.Remove(nodeToRemove.getNode());
-            Destroy(nodeToRemove.gameObject);
-            nodeToRemove.getNode().destroy();
+            HashSet<Edge> edgesInGraph = graph.GetEdges();
+            ICollection<Edge> edgesInRenderer = lineRenderers.Keys;
+            if (!edgesInGraph.SetEquals(edgesInRenderer)) {
+                HashSet<Edge> edgesToAdd = new HashSet<Edge>(edgesInGraph);
+                edgesToAdd.ExceptWith(edgesInRenderer);
+                foreach (Edge edge in edgesToAdd) {
+                    AddEdgeRenderer(edge);
+                }
+                HashSet<Edge> edgesToRemove = new HashSet<Edge>(edgesInRenderer);
+                edgesToRemove.ExceptWith(edgesInGraph);
+                foreach (Edge edge in edgesToRemove) {
+                    RemoveEdgeRenderer(edge);
+                }
+            }
         }
-	}
+    }
 }

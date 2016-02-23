@@ -10,7 +10,7 @@
             this.name = name;
 		}
 
-        public string getName() {
+        public string GetName() {
             return name;
         }
 

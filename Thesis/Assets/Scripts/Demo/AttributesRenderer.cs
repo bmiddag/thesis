@@ -20,16 +20,26 @@ namespace Demo {
 
 		// Update is called once per frame
 		void Update() {
-            if (graphRenderer.currentNode == null) {
-                currentlyDisplaying = null;
-                setText(null);
-            } else if(currentlyDisplaying != graphRenderer.currentNode.getNode()) {
-                currentlyDisplaying = graphRenderer.currentNode.getNode();
-                setText(currentlyDisplaying);
+            if (graphRenderer.controller.paused) {
+                if (graphRenderer.controller.currentNode == null) {
+                    currentlyDisplaying = null;
+                    SetText(null);
+                } else if (currentlyDisplaying != graphRenderer.controller.currentNode) {
+                    currentlyDisplaying = graphRenderer.controller.currentNode;
+                    SetText(currentlyDisplaying);
+                }
+            } else {
+                if (graphRenderer.currentNode == null) {
+                    currentlyDisplaying = null;
+                    SetText(null);
+                } else if (currentlyDisplaying != graphRenderer.currentNode.GetNode()) {
+                    currentlyDisplaying = graphRenderer.currentNode.GetNode();
+                    SetText(currentlyDisplaying);
+                }
             }
 		}
 
-        void setText(AttributedElement el) {
+        void SetText(AttributedElement el) {
             string textString = "";
             if (el == null) {
                 text.text = textString;
@@ -38,17 +48,17 @@ namespace Demo {
             if(el.GetType() == typeof(Node)) {
                 textString += "<b>ID:</b>\n";
                 Node node = (Node)el;
-                textString += "\t" + node.getID().ToString() + "\n";
+                textString += "\t" + node.GetID().ToString() + "\n";
                 textString += "\n";
             }
             textString += "<b>Classes:</b>\n";
-            HashSet<AttributeClass> attClasses = el.getAttributeClasses();
+            HashSet<AttributeClass> attClasses = el.GetAttributeClasses();
             foreach (AttributeClass attClass in attClasses) {
-                textString += "\t" + attClass.getName() + "\n";
+                textString += "\t" + attClass.GetName() + "\n";
             }
             textString += "\n";
             textString += "<b>Attributes:</b>\n";
-            IDictionary<string, string> attDict = el.getAttributes();
+            IDictionary<string, string> attDict = el.GetAttributes();
             foreach (KeyValuePair<string, string> att in attDict) {
                 textString += "\t" + att.Key + ": <i>" + att.Value + "</i>\n";
             }

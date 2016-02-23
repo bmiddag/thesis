@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 namespace Grammars.Graph {
-	public class Graph : AttributedElement {
+	public class Graph : StructureModel {
 		HashSet<Node> nodes;
 		HashSet<Edge> edges;
 
@@ -13,46 +13,50 @@ namespace Grammars.Graph {
 			edges = new HashSet<Edge>();
 		}
 
-		public HashSet<Node> getNodes() {
+		public HashSet<Node> GetNodes() {
 			return nodes;
 		}
 
-		public HashSet<Edge> getEdges() {
+		public HashSet<Edge> GetEdges() {
 			return edges;
 		}
 
 		// ************************** SET MANAGEMENT ************************** \\
 		// The following code only adds and removes elements to/from sets.
 		// Element creation should be handled outside of this class.
-		public void addNode(Node node) {
-			if (nodes.Count == 0) node.setActive(true); // TODO: Move this
+		public void AddNode(Node node) {
+			if (nodes.Count == 0) node.Active = true; // TODO: Move this
 			nodes.Add(node);
-			ICollection<Edge> edgeList = node.getEdges().Values;
+			ICollection<Edge> edgeList = node.GetEdges().Values;
 			foreach (Edge edge in edgeList) {
-				if (!edges.Contains(edge)) addEdge(edge);
+				if (!edges.Contains(edge)) AddEdge(edge);
 			}
+            OnStructureChanged(EventArgs.Empty);
 		}
 
-		public void addEdge(Edge edge) {
+		public void AddEdge(Edge edge) {
 			edges.Add(edge);
-			if (!nodes.Contains(edge.getNode1())) addNode(edge.getNode1());
-			if (!nodes.Contains(edge.getNode2())) addNode(edge.getNode2());
-		}
+			if (!nodes.Contains(edge.GetNode1())) AddNode(edge.GetNode1());
+			if (!nodes.Contains(edge.GetNode2())) AddNode(edge.GetNode2());
+            OnStructureChanged(EventArgs.Empty);
+        }
 
-		public void removeEdge(Edge edge) {
+		public void RemoveEdge(Edge edge) {
 			if (edge != null & edges.Contains(edge)) {
 				edges.Remove(edge);
-			}
+                OnStructureChanged(EventArgs.Empty);
+            }
 		}
 
-		public void removeNode(Node node) {
+		public void RemoveNode(Node node) {
 			if (node != null) {
 				nodes.Remove(node);
-				ICollection<Edge> nodeEdges = node.getEdges().Values;
+				ICollection<Edge> nodeEdges = node.GetEdges().Values;
 				foreach (Edge edge in nodeEdges) {
-					removeEdge(edge);
+					RemoveEdge(edge);
 				}
-			}
+                OnStructureChanged(EventArgs.Empty);
+            }
 		}
 	}
 }
