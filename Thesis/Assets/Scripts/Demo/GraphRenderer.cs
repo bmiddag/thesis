@@ -10,8 +10,8 @@ namespace Demo {
         public NodeRenderer currentNode = null;
         NodeRenderer startNode = null;
         bool drawingEdge = false;
-        LineRenderer drawingLineRenderer;
-		public IDictionary<Edge, LineRenderer> lineRenderers = new Dictionary<Edge, LineRenderer>();
+        EdgeRenderer drawingEdgeRenderer;
+		public IDictionary<Edge, EdgeRenderer> edgeRenderers = new Dictionary<Edge, EdgeRenderer>();
 		IDictionary<Node, NodeRenderer> nodeRenderers = new Dictionary<Node, NodeRenderer>();
 
         IDictionary<string, AttributeClass> attributeClasses = new Dictionary<string, AttributeClass>(); // TODO: move to grammar
@@ -80,7 +80,7 @@ namespace Demo {
                         if (drawingEdge) {
                             if (currentNode != startNode) {
                                 // Create new edge to currentNode from startNode
-                                Edge edge = startNode.GetNode().AddEdge(currentNode.GetNode());
+                                Edge edge = startNode.GetNode().AddEdge(currentNode.GetNode(), true);
                                 startNode = null;
                                 drawingEdge = false;
                             }
@@ -100,54 +100,50 @@ namespace Demo {
                 if (drawingEdge && !controller.paused) {
                     Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                     Vector3 corrMousePos = new Vector3(mousePos.x, mousePos.y);
-                    if (drawingLineRenderer == null) {
+                    if (drawingEdgeRenderer == null) {
                         // Create temporary line that follows cursor
-                        drawingLineRenderer = CreateLineRenderer(startNode.gameObject.transform.position, corrMousePos);
+                        drawingEdgeRenderer = CreateEdgeRenderer(startNode.gameObject.transform.position, corrMousePos);
                     } else {
                         // Update temporary line to follow cursor
-                        drawingLineRenderer.SetPosition(1, corrMousePos);
+                        drawingEdgeRenderer.SetPosition(1, corrMousePos);
                     }
-                } else if (drawingLineRenderer != null) {
-                    Destroy(drawingLineRenderer.gameObject);
+                } else if (drawingEdgeRenderer != null) {
+                    Destroy(drawingEdgeRenderer.gameObject);
                 }
             }
 		}
 
         public void UpdateEdge(Edge edge) {
-            if (lineRenderers.ContainsKey(edge)) {
-                lineRenderers[edge].SetPosition(0, nodeRenderers[edge.GetNode1()].gameObject.transform.position);
-                lineRenderers[edge].SetPosition(1, nodeRenderers[edge.GetNode2()].gameObject.transform.position);
+            if (edgeRenderers.ContainsKey(edge)) {
+                edgeRenderers[edge].SetPosition(0, nodeRenderers[edge.GetNode1()].gameObject.transform.position);
+                edgeRenderers[edge].SetPosition(1, nodeRenderers[edge.GetNode2()].gameObject.transform.position);
             }
         }
 
         public void AddEdgeRenderer(Edge edge) {
-            if (lineRenderers.ContainsKey(edge)) {
+            if (edgeRenderers.ContainsKey(edge)) {
                 UpdateEdge(edge);
             } else {
-                LineRenderer line = CreateLineRenderer(nodeRenderers[edge.GetNode1()].gameObject.transform.position,
+                EdgeRenderer edgeRen = CreateEdgeRenderer(nodeRenderers[edge.GetNode1()].gameObject.transform.position,
                     nodeRenderers[edge.GetNode2()].gameObject.transform.position);
-                line.gameObject.name = "Edge " + edge.GetNode1().GetID() + "-" + edge.GetNode2().GetID();
-                lineRenderers[edge] = line;
+                edgeRen.gameObject.name = "Edge " + edge.GetNode1().GetID() + "-" + edge.GetNode2().GetID();
+                edgeRen.SetEdge(edge);
+                edgeRenderers[edge] = edgeRen;
             }
         }
 
         public void RemoveEdgeRenderer(Edge edge) {
-            if (lineRenderers.ContainsKey(edge)) {
-                Destroy(lineRenderers[edge].gameObject);
-                lineRenderers.Remove(edge);
+            if (edgeRenderers.ContainsKey(edge)) {
+                Destroy(edgeRenderers[edge].gameObject);
+                edgeRenderers.Remove(edge);
             }
         }
 
-        public LineRenderer CreateLineRenderer(Vector3 pos0, Vector3 pos1) {
-            LineRenderer line = new GameObject().AddComponent<LineRenderer>();
-            line.SetPosition(0, pos0);
-            line.SetPosition(1, pos1);
-            line.SetWidth(3.0f, 3.0f);
-            Material mat = new Material(Shader.Find("Unlit/Color"));
-            mat.color = Color.black;
-            line.material = mat;
-            line.transform.SetParent(transform);
-            return line;
+        public EdgeRenderer CreateEdgeRenderer(Vector3 pos0, Vector3 pos1) {
+            EdgeRenderer edge = new GameObject().AddComponent<EdgeRenderer>();
+            edge.SetPositions(pos0, pos1);
+            edge.transform.SetParent(transform);
+            return edge;
         }
 
         public void AddNodeRenderer(Node node, float x = 0f, float y = 0f) {
@@ -222,7 +218,7 @@ namespace Demo {
                 }
             }
             HashSet<Edge> edgesInGraph = graph.GetEdges();
-            ICollection<Edge> edgesInRenderer = lineRenderers.Keys;
+            ICollection<Edge> edgesInRenderer = edgeRenderers.Keys;
             if (!edgesInGraph.SetEquals(edgesInRenderer)) {
                 HashSet<Edge> edgesToAdd = new HashSet<Edge>(edgesInGraph);
                 edgesToAdd.ExceptWith(edgesInRenderer);

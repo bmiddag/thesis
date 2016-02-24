@@ -31,13 +31,16 @@ namespace Grammars.Graph {
 			graph.AddNode(this);
 		}
 
-		public Edge AddEdge(Node node, IDictionary<string, string> attributes = null) {
+		public Edge AddEdge(Node node, bool directed = false, IDictionary<string, string> attributes = null) {
 			if (node == null) return null;
 			Edge edge;
 			if (edges.ContainsKey(node)) {
-				edge = edges[node];
+                edge = edges[node];
+                if (edge.IsDirected() && (edge.GetNode2() == this || !directed)) {
+                    edge.MakeUndirected();
+                }
 			} else {
-				edge = new Edge(graph, this, node); // Edge is added to both nodes' edge dictionary, as well as to the graph
+				edge = new Edge(graph, this, node, directed); // Edge is added to both nodes' edge dictionary, as well as to the graph
 			}
 			edge.SetAttributes(attributes);
 			if (Active && !node.Active) {
