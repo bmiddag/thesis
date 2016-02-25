@@ -19,8 +19,9 @@ namespace Demo {
 		// Use this for initialization
 		void Start() {
 			spriteRender = gameObject.AddComponent<SpriteRenderer>();
-            BoxCollider2D boxCol = gameObject.AddComponent<BoxCollider2D>();
-            boxCol.size = new Vector2(58,58);
+            CircleCollider2D circleCol = gameObject.AddComponent<CircleCollider2D>();
+            circleCol.radius = 29;
+            circleCol.offset = Vector2.zero;
 		}
 
 		// Update is called once per frame

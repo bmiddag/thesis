@@ -8,6 +8,7 @@ namespace Demo {
 	public class GraphRenderer : MonoBehaviour {
 		Graph graph;
         public NodeRenderer currentNode = null;
+        public EdgeRenderer currentEdge = null;
         NodeRenderer startNode = null;
         bool drawingEdge = false;
         EdgeRenderer drawingEdgeRenderer;
@@ -92,8 +93,13 @@ namespace Demo {
                 }
 
                 // Remove nodes
-                if (Input.GetKey(KeyCode.X) && currentNode != null && !controller.paused) {
-                    graph.RemoveNode(currentNode.GetNode());
+                if (Input.GetKey(KeyCode.X) && !controller.paused) {
+                    if (currentNode != null) {
+                        currentNode.GetNode().Destroy();
+                        //graph.RemoveNode(currentNode.GetNode());
+                    } else if (currentEdge != null) {
+                        currentEdge.GetEdge().Destroy();
+                    }
                 }
 
                 // Handle temporary line renderer (before actual edge creation)
@@ -115,8 +121,8 @@ namespace Demo {
 
         public void UpdateEdge(Edge edge) {
             if (edgeRenderers.ContainsKey(edge)) {
-                edgeRenderers[edge].SetPosition(0, nodeRenderers[edge.GetNode1()].gameObject.transform.position);
-                edgeRenderers[edge].SetPosition(1, nodeRenderers[edge.GetNode2()].gameObject.transform.position);
+                edgeRenderers[edge].SetPositions(nodeRenderers[edge.GetNode1()].gameObject.transform.position,
+                    nodeRenderers[edge.GetNode2()].gameObject.transform.position);
             }
         }
 
@@ -141,6 +147,7 @@ namespace Demo {
 
         public EdgeRenderer CreateEdgeRenderer(Vector3 pos0, Vector3 pos1) {
             EdgeRenderer edge = new GameObject().AddComponent<EdgeRenderer>();
+            edge.graphRenderer = this;
             edge.SetPositions(pos0, pos1);
             edge.transform.SetParent(transform);
             return edge;

@@ -14,8 +14,10 @@ namespace Demo {
         Vector3 mainPos0 = new Vector3(0f, 0f);
         Vector3 mainPos1 = new Vector3(0f, 0f);
 
-        bool updateRenderer = false; // If true, sprite & text will be updated during the next call of Update(). Prevents chaining of renderer updates.
+        CircleCollider2D circleCol;
+        public GraphRenderer graphRenderer;
 
+        bool updateRenderer = false; // If true, sprite & text will be updated during the next call of Update(). Prevents chaining of renderer updates.
         bool directed = false;
 
         // Use this for initialization
@@ -35,7 +37,7 @@ namespace Demo {
                     }
                 }
                 InitLineRenderers();
-                // Update code here
+                UpdateLineRenderers();
             }
 		}
 
@@ -48,6 +50,7 @@ namespace Demo {
                 this.edge.AttributeChanged += new EventHandler(EdgeAttributeChanged);
             }
             updateRenderer = true;
+            InitCollider();
         }
 
 		public Edge GetEdge() {
@@ -68,9 +71,30 @@ namespace Demo {
 
         void OnDestroy() {
             if (edge != null) {
-                this.edge.AttributeChanged -= new EventHandler(EdgeAttributeChanged);
+                edge.AttributeChanged -= new EventHandler(EdgeAttributeChanged);
             }
         }
+
+        void InitCollider() {
+            if (circleCol == null) {
+                circleCol = gameObject.AddComponent<CircleCollider2D>();
+                circleCol.radius = 20;
+                circleCol.offset = Vector3.Lerp(mainPos0, mainPos1, 0.5f) - transform.position;
+            }
+        }
+
+        public void OnMouseOver() {
+            if (graphRenderer.currentEdge == null) {
+                graphRenderer.currentEdge = this;
+            }
+        }
+
+        public void OnMouseExit() {
+            if (graphRenderer.currentEdge == this) {
+                graphRenderer.currentEdge = null;
+            }
+        }
+
 
         // ************************** EDGE RENDERING CODE ************************** \\
         public void InitLineRenderers() {
@@ -102,6 +126,37 @@ namespace Demo {
             return line;
         }
 
+        void UpdateLineRenderers() {
+            if (edge != null && mainLine != null) {
+                Color color = Color.black;
+                if (edge.HasAttribute("_demo_color")) {
+                    string col = edge.GetAttribute("_demo_color");
+                    switch (col) {
+                        case "red":
+                            color = Color.red;
+                            break;
+                        case "green":
+                            color = Color.green;
+                            break;
+                        case "blue":
+                            color = Color.blue;
+                            break;
+                        case "yellow":
+                            color = Color.yellow;
+                            break;
+                        default:
+                            color = Color.black;
+                            break;
+                    }
+                }
+                mainLine.material.color = color;
+                if (arrowLine1 != null && arrowLine2 != null) {
+                    arrowLine1.material.color = color;
+                    arrowLine2.material.color = color;
+                }
+            }
+        }
+
         public void SetPositions(Vector3 pos0, Vector3 pos1) {
             if (mainLine == null) {
                 InitLineRenderers();
@@ -119,6 +174,9 @@ namespace Demo {
                 arrowLine2.SetPosition(0, middlePlus);
                 arrowLine1.SetPosition(1, arrowHead1);
                 arrowLine2.SetPosition(1, arrowHead2);
+            }
+            if (circleCol != null) {
+                circleCol.offset = Vector3.Lerp(mainPos0, mainPos1, 0.5f) - transform.position;
             }
         }
 

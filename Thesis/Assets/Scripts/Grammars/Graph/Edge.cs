@@ -58,7 +58,7 @@ namespace Grammars.Graph {
 			if ((object)e == null) {
 				return false;
 			}
-            if (directed != e.IsDirected()) return false;
+            //if (directed != e.IsDirected()) return false;
 			return ((node1 == e.GetNode1()) && node2 == e.GetNode2()) || ((node1 == e.GetNode2()) && node2 == e.GetNode1());
         }
 
@@ -66,7 +66,7 @@ namespace Grammars.Graph {
 			if ((object)e == null) {
 				return false;
 			}
-            if (directed != e.IsDirected()) return false;
+            //if (directed != e.IsDirected()) return false;
             return ((node1 == e.GetNode1()) && node2 == e.GetNode2()) || ((node1 == e.GetNode2()) && node2 == e.GetNode1());
 		}
 
@@ -74,7 +74,7 @@ namespace Grammars.Graph {
 			int hash = 12345678;
 			if (node1 != null) hash = node1.GetHashCode();
 			if (node2 != null) hash ^= node2.GetHashCode();
-            if (directed) hash++;
+            //if (directed) hash++;
 			return hash;
 		}
 	}

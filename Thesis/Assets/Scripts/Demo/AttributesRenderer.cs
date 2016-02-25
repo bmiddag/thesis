@@ -21,19 +21,22 @@ namespace Demo {
 		// Update is called once per frame
 		void Update() {
             if (graphRenderer.controller.paused) {
-                if (graphRenderer.controller.currentNode == null) {
+                if (graphRenderer.controller.currentElement == null) {
                     currentlyDisplaying = null;
                     SetText(null);
-                } else if (currentlyDisplaying != graphRenderer.controller.currentNode) {
-                    currentlyDisplaying = graphRenderer.controller.currentNode;
+                } else if (graphRenderer.controller.currentElement != null && currentlyDisplaying != graphRenderer.controller.currentElement) {
+                    currentlyDisplaying = graphRenderer.controller.currentElement;
                     SetText(currentlyDisplaying);
                 }
             } else {
-                if (graphRenderer.currentNode == null) {
+                if (graphRenderer.currentNode == null && graphRenderer.currentEdge == null) {
                     currentlyDisplaying = null;
                     SetText(null);
-                } else if (currentlyDisplaying != graphRenderer.currentNode.GetNode()) {
+                } else if (graphRenderer.currentNode != null && currentlyDisplaying != graphRenderer.currentNode.GetNode()) {
                     currentlyDisplaying = graphRenderer.currentNode.GetNode();
+                    SetText(currentlyDisplaying);
+                } else if (graphRenderer.currentEdge != null && currentlyDisplaying != graphRenderer.currentEdge.GetEdge()) {
+                    currentlyDisplaying = graphRenderer.currentEdge.GetEdge();
                     SetText(currentlyDisplaying);
                 }
             }
@@ -49,6 +52,12 @@ namespace Demo {
                 textString += "<b>ID:</b>\n";
                 Node node = (Node)el;
                 textString += "\t" + node.GetID().ToString() + "\n";
+                textString += "\n";
+            } else if (el.GetType() == typeof(Edge)) {
+                textString += "<b>Node IDs:</b>\n";
+                Edge edge = (Edge)el;
+                
+                textString += "\t" + edge.GetNode1().GetID().ToString() + " - " + edge.GetNode2().GetID().ToString() + "\n";
                 textString += "\n";
             }
             textString += "<b>Classes:</b>\n";
