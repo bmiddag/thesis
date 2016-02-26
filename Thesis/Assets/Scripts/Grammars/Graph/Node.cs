@@ -78,6 +78,11 @@ namespace Grammars.Graph {
             return id;
         }
 
+        public void SetID(int id) {
+            this.id = id;
+            OnAttributeChanged(EventArgs.Empty);
+        }
+
 		public void Destroy() {
             /*List<KeyValuePair<Node, Edge>> edgeList = edges.ToList();
 			foreach (KeyValuePair<Node, Edge> entry in edges) {

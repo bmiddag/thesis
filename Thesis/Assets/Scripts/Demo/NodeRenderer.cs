@@ -147,6 +147,7 @@ namespace Demo {
             }
             if (node != null) {
                 text.text = node.GetID().ToString();
+                gameObject.name = "Node " + node.GetID().ToString();
             }
         }
     }

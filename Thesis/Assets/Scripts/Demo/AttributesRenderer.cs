@@ -2,7 +2,6 @@
 using UnityEngine.UI;
 using Grammars;
 using Grammars.Graph;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace Demo {

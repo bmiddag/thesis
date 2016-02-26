@@ -53,6 +53,13 @@ namespace Demo {
             root.AddEdge(node2);*/
         }
 
+        // TODO: Move to grammar
+        public void AddAttributeClass(AttributedElement el, string className) {
+            if (el != null && className != null && className != "" && attributeClasses.ContainsKey(className)) {
+                el.AddAttributeClass(attributeClasses[className]);
+            }
+        }
+
         // Update is called once per frame
         void Update() {
             if (graph != null) {

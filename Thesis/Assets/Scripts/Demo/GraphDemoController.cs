@@ -17,6 +17,14 @@ namespace Demo {
         public InputField attributeNameField;
         public InputField attributeValueField;
 
+        public GameObject classPopUp;
+        public InputField classNameField;
+
+        public GameObject nodeIdPopUp;
+        public InputField nodeIdField;
+
+        GameObject currentPopUp = null;
+
         public AttributedElement currentElement;
         
         // Use this for initialization
@@ -26,10 +34,19 @@ namespace Demo {
 
         // Update is called once per frame
         void Update() {
-            if (Input.GetKeyDown(KeyCode.A) && (currentGraphRenderer.currentNode != null || currentGraphRenderer.currentEdge != null) && !paused) {
-                OpenAttributePopUp();
+            if ((currentGraphRenderer.currentNode != null || currentGraphRenderer.currentEdge != null) && !paused && currentPopUp == null) {
+                if (Input.GetKeyDown(KeyCode.A)) {
+                    currentPopUp = attributePopUp;
+                    OpenPopUp();
+                } else if (Input.GetKeyDown(KeyCode.I) && currentGraphRenderer.currentNode != null) {
+                    currentPopUp = nodeIdPopUp;
+                    OpenPopUp();
+                } else if (Input.GetKeyDown(KeyCode.C)) {
+                    currentPopUp = classPopUp;
+                    OpenPopUp();
+                }
             }
-            if (paused && attributePopUp.activeSelf) {
+            if (paused && currentPopUp != null && currentPopUp.activeSelf) {
                 if (Input.GetKeyDown(KeyCode.Tab)) {
                     Selectable next = system.currentSelectedGameObject.GetComponent<Selectable>().FindSelectableOnDown();
 
@@ -41,44 +58,70 @@ namespace Demo {
                     }
                 }
                 if (Input.GetKeyDown(KeyCode.Return)) {
-                    CloseAttributePopUp();
-                }
-                if (Input.GetKeyDown(KeyCode.Escape)) {
-                    CancelAttributePopUp();
+                    SavePopUp();
+                } else if (Input.GetKeyDown(KeyCode.Escape)) {
+                    ClosePopUp();
                 }
             }
         }
 
-        public void OpenAttributePopUp() {
+        public void OpenPopUp() {
             attributeNameField.text = "";
             attributeValueField.text = "";
+            classNameField.text = "";
+            nodeIdField.text = "";
+
             if (currentGraphRenderer.currentNode != null) {
                 currentElement = currentGraphRenderer.currentNode.GetNode();
             } else if (currentGraphRenderer.currentEdge != null) {
                 currentElement = currentGraphRenderer.currentEdge.GetEdge();
             } else currentElement = null;
+
             if (currentElement != null) {
                 paused = true;
-                attributePopUp.SetActive(true);
-                attributeNameField.OnPointerClick(new PointerEventData(system));
+                currentPopUp.SetActive(true);
+                if (currentPopUp == attributePopUp) {
+                    attributeNameField.OnPointerClick(new PointerEventData(system));
+                } else if (currentPopUp == classPopUp) {
+                    classNameField.OnPointerClick(new PointerEventData(system));
+                } else if (currentPopUp == nodeIdPopUp) {
+                    nodeIdField.OnPointerClick(new PointerEventData(system));
+                }
             }
         }
 
-        public void CloseAttributePopUp() {
-            string name = attributeNameField.text.Trim();
-            string value = attributeValueField.text.Trim();
-            if (name != "" && value != "") {
-                currentElement.SetAttribute(name, value);
+        public void SavePopUp() {
+            if (currentPopUp == attributePopUp) {
+                string name = attributeNameField.text.Trim();
+                string value = attributeValueField.text.Trim();
+                if (name != "" && value != "") {
+                    currentElement.SetAttribute(name, value);
+                }
+            } else if (currentPopUp == classPopUp) {
+                string name = classNameField.text.Trim();
+                if (name != "") {
+                    currentGraphRenderer.AddAttributeClass(currentElement, name);
+                }
+            } else if (currentPopUp == nodeIdPopUp) {
+                if(currentElement.GetType() == typeof(Node)) {
+                    string id = nodeIdField.text.Trim();
+                    int parsedId;
+                    if (int.TryParse(id, out parsedId)) {
+                        ((Node)currentElement).SetID(parsedId);
+                    }
+                }
             }
-            paused = false;
-            attributePopUp.SetActive(false);
+            ClosePopUp();
         }
 
-        public void CancelAttributePopUp() {
+        public void ClosePopUp() {
             attributeNameField.text = "";
             attributeValueField.text = "";
+            classNameField.text = "";
+            nodeIdField.text = "";
             paused = false;
-            attributePopUp.SetActive(false);
+            currentPopUp.SetActive(false);
+            currentPopUp = null;
         }
     }
 }
