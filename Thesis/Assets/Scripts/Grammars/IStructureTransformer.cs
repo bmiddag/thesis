@@ -17,7 +17,7 @@ namespace Grammars {
         /// <summary>
         /// Matches parts of the source structure against the query.
         /// </summary>
-        /// <param name="query"></param>
+        /// <param name="query">A structure to find within the larger source structure</param>
         /// <returns>True if a substructure matching the query was found, false otherwise.</returns>
         bool Find(T query);
 
