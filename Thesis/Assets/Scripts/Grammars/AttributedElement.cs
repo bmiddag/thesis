@@ -19,7 +19,40 @@ namespace Grammars {
 			return attributes.ContainsKey(key);
 		}
 
-		public string GetAttribute(string key) {
+        public bool MatchAttributes(AttributedElement el) {
+            IDictionary<string, string> dict = el.GetAttributes();
+            if (dict == null || dict.Keys.Count == 0) return true;
+            bool exactMatch = false;
+            bool matchClasses = false;
+            int count = 0;
+            foreach (KeyValuePair<string, string> entry in dict) {
+                if (entry.Key.StartsWith("_grammar_")) {
+                    // Ignore _grammar_ attributes, but use them for selection properties
+                    switch (entry.Key) {
+                        case "_grammar_exactmatch":
+                            exactMatch = true; break;
+                        case "_grammar_matchclasses":
+                            matchClasses = true; break;
+                    }
+                } else {
+                    if (!(HasAttribute(entry.Key) && attributes[entry.Key] == entry.Value)) return false;
+                    count++;
+                }
+            }
+            if (exactMatch) {
+                HashSet<string> keys = new HashSet<string>(attributes.Keys);
+                keys.RemoveWhere(key => key.StartsWith("_grammar_"));
+                if (keys.Count != count) return false;
+            }
+            if (matchClasses) {
+                foreach (AttributeClass cl in classes) {
+                    if (!el.GetAttributeClasses().Contains(cl)) return false;
+                }
+            }
+            return true;
+        }
+
+        public string GetAttribute(string key) {
 			return attributes[key];
 		}
 
@@ -29,6 +62,11 @@ namespace Grammars {
 
 		public void SetAttribute(string key, string value) {
 			attributes[key] = value;
+            OnAttributeChanged(EventArgs.Empty);
+        }
+
+        public void RemoveAttribute(string key) {
+            attributes.Remove(key);
             OnAttributeChanged(EventArgs.Empty);
         }
 
