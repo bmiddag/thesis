@@ -42,6 +42,10 @@ namespace Grammars.Graph {
             List<Node> queryNodes = query.GetNodes().OrderByDescending(n => n.GetAttributes().Count).ToList(); // start with most specific node
             Dictionary<Node, Node> selection = new Dictionary<Node, Node>(); // source, query
             if (source != null) {
+                // Temporarily turn off events
+                foreach (Node node in source.GetNodes()) {
+                    node.PostponeAttributeChanged(true);
+                }
                 foreach (Node startNode in source.GetNodes()) {
                     if (!startNode.MatchAttributes(queryNodes[0])) continue;
                     if (startNode.GetEdges().Count < queryNodes[0].GetEdges().Count) continue;
@@ -52,6 +56,10 @@ namespace Grammars.Graph {
                     bool found = _Find(startNode, queryNodes[0], selection);
                     if (found) {
                         nodeTransformations = selection;
+                        // Reactivate events
+                        foreach (Node node in source.GetNodes()) {
+                            node.PostponeAttributeChanged(false);
+                        }
                         return true;
                     }
                     // remove number attribute
@@ -137,42 +145,76 @@ namespace Grammars.Graph {
         }
 
         public void Transform(Graph target) {
-            throw new NotImplementedException();
             // Preliminary checks
             if (query == null || target == null) return;
+            
+            // Temporarily turn off events
+            foreach (Node node in source.GetNodes()) {
+                node.PostponeAttributeChanged(true);
+            }
+            foreach (Edge edge in source.GetEdges()) {
+                edge.PostponeAttributeChanged(true);
+            }
+
             /* Step 3: remove nodes & edges
                Step 4: replace numbered nodes by their equivalents (just change their attributes), and edges as well */
             Dictionary<Node, Node> nodeTransCopy = new Dictionary<Node, Node>(nodeTransformations);
             foreach (KeyValuePair<Node, Node> marking in nodeTransCopy) {
-                Node matchingNode = target.GetNodeByID(marking.Value.GetID());
-                if (matchingNode == null) { // If a node in the query doesn't exist in the target graph
-                    marking.Key.Destroy();
-                    nodeTransformations.Remove(marking.Key);
+                Node sourceNode = marking.Key;
+                Node queryNode = marking.Value;
+                Node targetNode = target.GetNodeByID(queryNode.GetID());
+                if (targetNode == null) { // If a node in the query doesn't exist in the target graph
+                    sourceNode.Destroy();
+                    nodeTransformations.Remove(sourceNode);
                 } else {
                     // For all edges outgoing from this node in query graph, check if there is a corresponding edge in target graph
-                    foreach (Edge edge in marking.Value.GetEdges().Values) {
-                        Edge matchingEdge = null;
-                        foreach (Edge targetEdge in matchingNode.GetEdges().Values) {
-                            if (edge.EqualsOtherGraphEdge(targetEdge)) {
-                                matchingEdge = targetEdge;
+                    foreach (Edge queryEdge in queryNode.GetEdges().Values) {
+                        // Find that edge in the target graph
+                        Edge targetEdge = null;
+                        foreach (Edge targetEdgeIter in targetNode.GetEdges().Values) {
+                            if (queryEdge.EqualsOtherGraphEdge(targetEdgeIter)) {
+                                targetEdge = targetEdgeIter;
                                 break;
                             }
                         }
-                        if (matchingEdge == null) {
-                            // Delete that edge in the source graph.
-                            foreach (Edge sourceEdge in marking.Key.GetEdges().Values) {
-                                if (edge.EqualsOtherGraphEdge(sourceEdge,false,true)) {
-                                    sourceEdge.Destroy();
-                                    break;
-                                }
+                        // Find that edge in the source graph
+                        Edge sourceEdge = null;
+                        foreach (Edge sourceEdgeIter in marking.Key.GetEdges().Values) {
+                            if (queryEdge.EqualsOtherGraphEdge(sourceEdgeIter, false, true)) {
+                                sourceEdge = sourceEdgeIter;
+                                break;
                             }
+                        }
+                        if (targetEdge == null) {
+                            // Delete that edge in the source graph.
+                            sourceEdge.Destroy();
                         } else {
                             // Copy difference in attributes between query & target to source edge.
+                            sourceEdge.ChangeAttributesUsingDifference(queryEdge, targetEdge);
                         }
                     }
-                    // Now for node business
                     // Copy difference in attributes between query & target to source node.
+                    sourceNode.ChangeAttributesUsingDifference(queryNode, targetNode);
                 }
+            }
+            /* Step 5: add new nodes to graph: Temporarily save which nodes are new */
+            // TODO
+
+            /* Step 6: add edges for new nodes: Cycle through new nodes another time to add missing edges */
+            // TODO
+
+            /* Step 7: Remove "_grammar_query_id" attribute */
+            foreach (Node sourceNode in nodeTransformations.Keys) {
+                sourceNode.RemoveAttribute("_grammar_query_id");
+            }
+            nodeTransformations.Clear();
+
+            // Reactivate events
+            foreach (Node node in source.GetNodes()) {
+                node.PostponeAttributeChanged(false);
+            }
+            foreach (Edge edge in source.GetEdges()) {
+                edge.PostponeAttributeChanged(false);
             }
 
             /*
@@ -195,12 +237,6 @@ namespace Grammars.Graph {
             Step 6: add edges for new nodes
             Step 7: remove "_grammar_" attributes
             */
-
-            /* for every element:
-            1. apply removed classes
-            2. apply new classes
-            3. apply removed attributes
-            4. apply new attributes */
         }
     }
 }

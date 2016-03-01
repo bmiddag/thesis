@@ -9,10 +9,12 @@ namespace Grammars {
 		protected IDictionary<string, string> attributes;
         protected HashSet<AttributeClass> classes;
         public event EventHandler AttributeChanged;
+        protected bool postponeEvents;
 
         public AttributedElement() {
 			attributes = new Dictionary<string, string>();
             classes = new HashSet<AttributeClass>();
+            postponeEvents = false;
 		}
 
 		public bool HasAttribute(string key) {
@@ -135,6 +137,29 @@ namespace Grammars {
             return remAtts;
         }
 
+        /// <summary>
+        /// Change attributes based on the difference between two other attributed elements (used for e.g. grammar rules)
+        /// </summary>
+        /// <param name="source">The left-hand side element</param>
+        /// <param name="target">The right-hand side element</param>
+        public void ChangeAttributesUsingDifference(AttributedElement source, AttributedElement target) {
+            HashSet<AttributeClass> newCls = target.GetNewAttributeClasses(source);
+            HashSet<AttributeClass> remCls = target.GetRemovedAttributeClasses(source);
+            IDictionary<string, string> newAtts = target.GetNewAttributes(source);
+            HashSet<string> remAtts = target.GetRemovedAttributes(source);
+
+            // Remove, then add classes
+            classes.ExceptWith(remCls);
+            classes.UnionWith(newCls);
+
+            // Remove, then add attributes
+            foreach (string key in remAtts) {
+                attributes.Remove(key);
+            }
+            SetAttributes(newAtts);
+            OnAttributeChanged(EventArgs.Empty);
+        }
+
         public void AddAttributeClass(AttributeClass attClass) {
             if (attClass != null && !attClass.Equals(this)) {
                 classes.Add(attClass);
@@ -148,8 +173,17 @@ namespace Grammars {
             }
         }
 
+        public void PostponeAttributeChanged(bool postpone) {
+            if (postpone) {
+                postponeEvents = true;
+            } else if (!postponeEvents) {
+                postponeEvents = false;
+                OnAttributeChanged(EventArgs.Empty);
+            }
+        }
+
         protected void OnAttributeChanged(EventArgs e) {
-            if (AttributeChanged != null) {
+            if (AttributeChanged != null && !postponeEvents) {
                 AttributeChanged(this, EventArgs.Empty);
             }
         }
