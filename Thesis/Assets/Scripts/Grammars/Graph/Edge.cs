@@ -77,5 +77,17 @@ namespace Grammars.Graph {
             //if (directed) hash++;
 			return hash;
 		}
+
+        public bool EqualsOtherGraphEdge(Edge e, bool thisAttribute = false, bool otherAttribute = false) {
+            if ((object)e == null) {
+                return false;
+            }
+            if (directed != e.IsDirected()) return false;
+            int thisID1 = thisAttribute ? int.Parse(node1.GetAttribute("_grammar_query_id")) : node1.GetID();
+            int thisID2 = thisAttribute ? int.Parse(node2.GetAttribute("_grammar_query_id")) : node2.GetID();
+            int otherID1 = otherAttribute ? int.Parse(e.GetNode1().GetAttribute("_grammar_query_id")) : e.GetNode1().GetID();
+            int otherID2 = otherAttribute ? int.Parse(e.GetNode2().GetAttribute("_grammar_query_id")) : e.GetNode2().GetID();
+            return (thisID1 == otherID1 && thisID2 == otherID2) || (thisID1 == otherID2 && thisID2 == otherID1);
+        }
 	}
 }

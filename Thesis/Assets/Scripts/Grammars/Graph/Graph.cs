@@ -21,6 +21,11 @@ namespace Grammars.Graph {
 			return edges;
 		}
 
+        public Node GetNodeByID(int id) {
+            // Assumes correct use. There should not be more than one node with the same ID.
+            return nodes.Where(n => n.GetID() == id).First();
+        }
+
 		// ************************** SET MANAGEMENT ************************** \\
 		// The following code only adds and removes elements to/from sets.
 		// Element creation should be handled outside of this class.
