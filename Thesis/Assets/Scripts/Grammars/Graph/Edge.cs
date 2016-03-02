@@ -83,11 +83,13 @@ namespace Grammars.Graph {
                 return false;
             }
             if (directed != e.IsDirected()) return false;
+            if (thisAttribute && (!node1.HasAttribute("_grammar_query_id") || !node2.HasAttribute("_grammar_query_id"))) return false;
+            if (otherAttribute && (!e.GetNode1().HasAttribute("_grammar_query_id") || !e.GetNode2().HasAttribute("_grammar_query_id"))) return false;
             int thisID1 = thisAttribute ? int.Parse(node1.GetAttribute("_grammar_query_id")) : node1.GetID();
             int thisID2 = thisAttribute ? int.Parse(node2.GetAttribute("_grammar_query_id")) : node2.GetID();
             int otherID1 = otherAttribute ? int.Parse(e.GetNode1().GetAttribute("_grammar_query_id")) : e.GetNode1().GetID();
             int otherID2 = otherAttribute ? int.Parse(e.GetNode2().GetAttribute("_grammar_query_id")) : e.GetNode2().GetID();
-            return (thisID1 == otherID1 && thisID2 == otherID2) || (thisID1 == otherID2 && thisID2 == otherID1);
+            return (thisID1 == otherID1 && thisID2 == otherID2) || (thisID1 == otherID2 && thisID2 == otherID1 && !directed);
         }
 	}
 }

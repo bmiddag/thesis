@@ -23,7 +23,10 @@ namespace Grammars.Graph {
 
         public Node GetNodeByID(int id) {
             // Assumes correct use. There should not be more than one node with the same ID.
-            return nodes.Where(n => n.GetID() == id).First();
+            IEnumerable<Node> nodeswithID = nodes.Where(n => n.GetID() == id);
+            if (nodeswithID.Count() == 0) {
+                return null;
+            } else return nodeswithID.First();
         }
 
 		// ************************** SET MANAGEMENT ************************** \\

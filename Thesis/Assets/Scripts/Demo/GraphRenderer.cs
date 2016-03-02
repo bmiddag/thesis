@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Grammars.Graph;
 using Grammars;
 using System;
+using System.Collections;
 
 namespace Demo {
 	public class GraphRenderer : MonoBehaviour {
@@ -24,6 +25,53 @@ namespace Demo {
 
         public GraphDemoController controller;
 
+        IEnumerator FindTransform() {
+            Graph query = new Graph();
+            Graph target = new Graph();
+
+            // Test graph
+            Node queryNode1 = new Node(query, 1);
+            queryNode1.AddAttributeClass(attributeClasses["white_circles"]);
+
+            Node targetNode1 = new Node(target, 1);
+            targetNode1.AddAttributeClass(attributeClasses["blue_squares"]);
+            targetNode1.SetAttribute("transformed", "true");
+
+            Node queryNode2 = new Node(query, 2);
+            queryNode2.AddAttributeClass(attributeClasses["blue_squares"]);
+
+            Node targetNode2 = new Node(target, 2);
+            targetNode2.AddAttributeClass(attributeClasses["white_circles"]);
+            targetNode2.SetAttribute("transformed", "true");
+
+            Node targetNode3 = new Node(target, 3);
+            targetNode3.AddAttributeClass(attributeClasses["yellow_triangles"]);
+            //targetNode3.SetAttribute("transformed", "true");
+
+            Node queryNode4 = new Node(query, 4);
+            queryNode4.AddAttributeClass(attributeClasses["yellow_triangles"]);
+
+            Edge queryEdge = new Edge(query, queryNode2, queryNode1, true);
+            Edge queryEdge2 = new Edge(query, queryNode4, queryNode2, false);
+            Edge targetEdge = new Edge(target, targetNode2, targetNode1, true);
+            Edge targetEdge2 = new Edge(target, targetNode1, targetNode3, false);
+            targetEdge["transformed"] = "true";
+            targetEdge["_demo_color"] = "blue";
+
+            GraphTransformer t = new GraphTransformer();
+            t.Source = graph;
+            bool found = t.Find(query);
+            if (found) {
+                print("Found it!");
+                print(t.nodeTransformations.Count);
+            } else {
+                print("Not found");
+            }
+            //yield return new WaitForSeconds(2);
+            if(found) t.Transform(target);
+            yield return null;
+        }
+
         // Use this for initialization
         void Start() {
             // Define some attribute classes
@@ -36,9 +84,10 @@ namespace Demo {
             attributeClasses["blue_squares"].SetAttribute("_demo_shape", "square");
             attributeClasses["blue_squares"].SetAttribute("_demo_color", "blue");
             attributeClasses["white_circles"].SetAttribute("_demo_shape", "circle");
+            attributeClasses["white_circles"].SetAttribute("_demo_color", "white");
 
-			// Create the graph
-			graph = new Graph();
+            // Create the graph
+            graph = new Graph();
             graph.StructureChanged += GraphStructureChanged;
 
 			/*Node root = new Node(graph, 0);
@@ -122,6 +171,10 @@ namespace Demo {
                     }
                 } else if (drawingEdgeRenderer != null) {
                     Destroy(drawingEdgeRenderer.gameObject);
+                }
+
+                if (Input.GetKeyDown(KeyCode.F)) {
+                    StartCoroutine("FindTransform");
                 }
             }
 		}

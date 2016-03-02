@@ -55,7 +55,9 @@ namespace Grammars {
         }
 
         public string GetAttribute(string key) {
-			return attributes[key];
+            if (attributes.ContainsKey(key)) {
+                return attributes[key];
+            } else return null;
 		}
 
 		public IDictionary<string, string> GetAttributes() {
@@ -178,7 +180,7 @@ namespace Grammars {
         public void PostponeAttributeChanged(bool postpone) {
             if (postpone) {
                 postponeEvents = true;
-            } else if (!postponeEvents) {
+            } else if (postponeEvents) {
                 postponeEvents = false;
                 OnAttributeChanged(EventArgs.Empty);
             }
