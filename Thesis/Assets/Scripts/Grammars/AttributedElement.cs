@@ -117,6 +117,8 @@ namespace Grammars {
                         newAtts[entry.Key] = entry.Value;
                     }
                 }
+            } else {
+                newAtts = attributes;
             }
             return newAtts;
         }
@@ -142,7 +144,7 @@ namespace Grammars {
         /// </summary>
         /// <param name="source">The left-hand side element</param>
         /// <param name="target">The right-hand side element</param>
-        public void ChangeAttributesUsingDifference(AttributedElement source, AttributedElement target) {
+        public void SetAttributesUsingDifference(AttributedElement source, AttributedElement target) {
             HashSet<AttributeClass> newCls = target.GetNewAttributeClasses(source);
             HashSet<AttributeClass> remCls = target.GetRemovedAttributeClasses(source);
             IDictionary<string, string> newAtts = target.GetNewAttributes(source);

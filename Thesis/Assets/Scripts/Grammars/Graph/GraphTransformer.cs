@@ -41,33 +41,32 @@ namespace Grammars.Graph {
             this.query = query;
             List<Node> queryNodes = query.GetNodes().OrderByDescending(n => n.GetAttributes().Count).ToList(); // start with most specific node
             Dictionary<Node, Node> selection = new Dictionary<Node, Node>(); // source, query
-            if (source != null) {
-                // Temporarily turn off events
-                foreach (Node node in source.GetNodes()) {
-                    node.PostponeAttributeChanged(true);
-                }
-                foreach (Node startNode in source.GetNodes()) {
-                    if (!startNode.MatchAttributes(queryNodes[0])) continue;
-                    if (startNode.GetEdges().Count < queryNodes[0].GetEdges().Count) continue;
-                    // add number attribute
-                    startNode.SetAttribute("_grammar_query_id", queryNodes[0].GetID().ToString());
-                    selection.Add(startNode, queryNodes[0]);
-                    if (query.GetNodes().Count == 1) return true;
-                    bool found = _Find(startNode, queryNodes[0], selection);
-                    if (found) {
-                        nodeTransformations = selection;
-                        // Reactivate events
-                        foreach (Node node in source.GetNodes()) {
-                            node.PostponeAttributeChanged(false);
-                        }
-                        return true;
+
+            // Temporarily turn off events
+            foreach (Node node in source.GetNodes()) {
+                node.PostponeAttributeChanged(true);
+            }
+            foreach (Node startNode in source.GetNodes()) {
+                if (!startNode.MatchAttributes(queryNodes[0])) continue;
+                if (startNode.GetEdges().Count < queryNodes[0].GetEdges().Count) continue;
+                // add number attribute
+                startNode.SetAttribute("_grammar_query_id", queryNodes[0].GetID().ToString());
+                selection.Add(startNode, queryNodes[0]);
+                if (query.GetNodes().Count == 1) return true;
+                bool found = _Find(startNode, queryNodes[0], selection);
+                if (found) {
+                    nodeTransformations = selection;
+                    // Reactivate events
+                    foreach (Node node in source.GetNodes()) {
+                        node.PostponeAttributeChanged(false);
                     }
-                    // remove number attribute
-                    startNode.RemoveAttribute("_grammar_query_id");
-                    selection.Remove(startNode);
+                    return true;
                 }
-                return true;
-            } else return false;
+                // remove number attribute
+                startNode.RemoveAttribute("_grammar_query_id");
+                selection.Remove(startNode);
+            }
+            return false;
         }
 
         /// <summary>
@@ -158,8 +157,10 @@ namespace Grammars.Graph {
 
             /* Step 3: remove nodes & edges
                Step 4: replace numbered nodes by their equivalents (just change their attributes), and edges as well */
+            List<int> oldNodeIDs = new List<int>(); // List of node IDs present in query graph, for easier searching later
             Dictionary<Node, Node> nodeTransCopy = new Dictionary<Node, Node>(nodeTransformations);
             foreach (KeyValuePair<Node, Node> marking in nodeTransCopy) {
+                oldNodeIDs.Add(marking.Value.GetID());
                 Node sourceNode = marking.Key;
                 Node queryNode = marking.Value;
                 Node targetNode = target.GetNodeByID(queryNode.GetID());
@@ -190,18 +191,54 @@ namespace Grammars.Graph {
                             sourceEdge.Destroy();
                         } else {
                             // Copy difference in attributes between query & target to source edge.
-                            sourceEdge.ChangeAttributesUsingDifference(queryEdge, targetEdge);
+                            sourceEdge.SetAttributesUsingDifference(queryEdge, targetEdge);
                         }
                     }
                     // Copy difference in attributes between query & target to source node.
-                    sourceNode.ChangeAttributesUsingDifference(queryNode, targetNode);
+                    sourceNode.SetAttributesUsingDifference(queryNode, targetNode);
                 }
             }
-            /* Step 5: add new nodes to graph: Temporarily save which nodes are new */
-            // TODO
+            /* Step 5: add new nodes to graph */
+            Dictionary<int, Node> newNodes = new Dictionary<int, Node>();
+            foreach (Node targetNode in target.GetNodes()) {
+                if (!oldNodeIDs.Contains(targetNode.GetID())) {
+                    Node sourceNode = new Node(source, source.GetNodes().Count);
+                    sourceNode.SetAttributesUsingDifference(null, targetNode); // Copies attributes & attribute classes
+                    newNodes.Add(targetNode.GetID(), sourceNode);
+                }
+            }
 
-            /* Step 6: add edges for new nodes: Cycle through new nodes another time to add missing edges */
-            // TODO
+            /* Step 6: add new edges: Cycle through new nodes another time to add missing edges */
+            foreach (Edge targetEdge in target.GetEdges()) {
+                bool existingEdge = false;
+                // Is this edge connected to a new node?
+                if (!newNodes.ContainsKey(targetEdge.GetNode1().GetID()) && !newNodes.ContainsKey(targetEdge.GetNode2().GetID())) {
+                    // If not, we should still check if it's nonexistent in the query graph.
+                    foreach (Edge queryEdge in query.GetEdges()) {
+                        if (targetEdge.EqualsOtherGraphEdge(queryEdge)) {
+                            existingEdge = true;
+                            break;
+                        }
+                    }
+                }
+                if (!existingEdge) {
+                    int id1 = targetEdge.GetNode1().GetID();
+                    int id2 = targetEdge.GetNode2().GetID();
+                    bool directed = targetEdge.IsDirected();
+                    Node sourceNode1 = null;
+                    Node sourceNode2 = null;
+                    foreach (Node sourceNode in nodeTransformations.Keys) {
+                        if (sourceNode["_grammar_query_id"] == id1.ToString()) {
+                            sourceNode1 = sourceNode;
+                        } else if (sourceNode["_grammar_query_id"] == id2.ToString()) {
+                            sourceNode2 = sourceNode;
+                        }
+                        if (sourceNode1 != null && sourceNode2 != null) break;
+                    }
+                    Edge edge = new Edge(source, sourceNode1, sourceNode2, directed);
+                    edge.SetAttributesUsingDifference(null, targetEdge);
+                }
+            }
 
             /* Step 7: Remove "_grammar_query_id" attribute */
             foreach (Node sourceNode in nodeTransformations.Keys) {
