@@ -24,32 +24,40 @@ namespace Grammars {
         public bool MatchAttributes(AttributedElement el) {
             IDictionary<string, string> dict = el.GetAttributes();
             if (dict == null || dict.Keys.Count == 0) return true;
-            bool exactMatch = false;
-            bool matchClasses = false;
+            bool exactMatch = el.HasAttribute("_grammar_exactmatch");
+            bool matchClasses = el.HasAttribute("_grammar_matchclasses");
+            bool noMatch = el.HasAttribute("_grammar_nomatch");
             int count = 0;
+            bool attsMatched = true;
             foreach (KeyValuePair<string, string> entry in dict) {
                 if (entry.Key.StartsWith("_grammar_")) {
                     // Ignore _grammar_ attributes, but use them for selection properties
-                    switch (entry.Key) {
-                        case "_grammar_exactmatch":
-                            exactMatch = true; break;
-                        case "_grammar_matchclasses":
-                            matchClasses = true; break;
-                    }
                 } else {
-                    if (!(HasAttribute(entry.Key) && attributes[entry.Key] == entry.Value)) return false;
+                    if (!HasAttribute(entry.Key) || attributes[entry.Key] != entry.Value) {
+                        attsMatched = false;
+                        if(!noMatch) return false;
+                    } else if (exactMatch && noMatch) {
+                        return false;
+                    }
                     count++;
                 }
             }
+            if (noMatch && attsMatched) return false;
             if (exactMatch) {
                 HashSet<string> keys = new HashSet<string>(attributes.Keys);
                 keys.RemoveWhere(key => key.StartsWith("_grammar_"));
-                if (keys.Count != count) return false;
+                if (!noMatch && keys.Count != count) return false;
+                if (noMatch && keys.Count == count) return false;
             }
             if (matchClasses) {
+                bool matched = true;
                 foreach (AttributeClass cl in classes) {
-                    if (!el.GetAttributeClasses().Contains(cl)) return false;
+                    if (!el.GetAttributeClasses().Contains(cl)) {
+                        matched = false;
+                        if(!noMatch) return false;
+                    }
                 }
+                if (noMatch && matched) return false;
             }
             return true;
         }
