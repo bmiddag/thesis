@@ -51,8 +51,8 @@ namespace Grammars {
             }
             if (matchClasses) {
                 bool matched = true;
-                foreach (AttributeClass cl in classes) {
-                    if (!el.GetAttributeClasses().Contains(cl)) {
+                foreach (AttributeClass cl in el.GetAttributeClasses()) {
+                    if (!classes.Contains(cl)) {
                         matched = false;
                         if(!noMatch) return false;
                     }

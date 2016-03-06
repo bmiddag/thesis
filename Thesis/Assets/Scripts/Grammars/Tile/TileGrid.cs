@@ -1,4 +1,5 @@
 ﻿using System;
+using Util;
 
 namespace Grammars.Tile {
 	public class TileGrid : StructureModel {
@@ -8,8 +9,8 @@ namespace Grammars.Tile {
             grid = new Tile[width, height];
 		}
 
-        public int GetGridSize(int dimension) {
-            return grid.GetLength(dimension);
+        public Pair GetGridSize() {
+            return new Pair(grid.GetLength(0), grid.GetLength(1));
         }
 
         public bool SetGridSize(int width, int height, int xOffset, int yOffset) {
@@ -35,8 +36,8 @@ namespace Grammars.Tile {
 
         public void CopyGrid(TileGrid source, int xOffset, int yOffset) {
             if (grid != null) {
-                int w = Math.Min(grid.GetLength(0), source.GetGridSize(0)-xOffset);
-                int h = Math.Min(grid.GetLength(1), source.GetGridSize(1)-yOffset);
+                int w = Math.Min(grid.GetLength(0), source.GetGridSize().x-xOffset);
+                int h = Math.Min(grid.GetLength(1), source.GetGridSize().y-yOffset);
                 for (int x = 0; x < w; x++) {
                     for (int y = 0; y < h; y++) {
                         Tile tile = new Tile(this, x, y);
@@ -58,7 +59,7 @@ namespace Grammars.Tile {
         public bool SetTile(int x, int y, Tile tile) {
             if (x < 0 || x >= grid.GetLength(0)) return false;
             if (y < 0 || y >= grid.GetLength(1)) return false;
-            if (grid[x, y] != null) {
+            if (grid[x, y] != null && !grid[x, y].Equals(tile)) {
                 grid[x, y].Destroy(true);
             }
             grid[x, y] = tile;
