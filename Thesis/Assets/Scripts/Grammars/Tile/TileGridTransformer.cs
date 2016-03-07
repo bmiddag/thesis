@@ -44,7 +44,7 @@ namespace Grammars.Tile {
                     queryTiles.Add(new Pair(x, y));
                 }
             }
-            queryTiles = queryTiles.OrderByDescending(t => query.GetTile(t.x, t.y).GetAttributes().Count).ToList();
+            queryTiles = queryTiles.OrderByDescending(t => (query.GetTile(t.x, t.y) == null ? 0 : query.GetTile(t.x, t.y).GetAttributes().Count)).ToList();
 
             List<Pair> matches = new List<Pair>();
 
@@ -54,11 +54,14 @@ namespace Grammars.Tile {
                     foreach (Pair queryPos in queryTiles) {
                         Tile queryTile = query.GetTile(queryPos.x, queryPos.y);
                         Tile sourceTile = source.GetTile(sX + queryPos.x, sY + queryPos.y);
-                        if ((queryTile != null && sourceTile == null)
-                            || (sourceTile.HasAttribute("_grammar_transformer_id"))
-                            || (queryTile != null && !sourceTile.MatchAttributes(queryTile))) {
+                        if (queryTile != null && sourceTile == null) {
                             matched = false;
                             break;
+                        } else if (sourceTile != null) {
+                            if (sourceTile.HasAttribute("_grammar_transformer_id") || (queryTile != null && !sourceTile.MatchAttributes(queryTile))) {
+                                matched = false;
+                                break;
+                            }
                         }
                     }
                     if (matched) {
@@ -97,18 +100,21 @@ namespace Grammars.Tile {
             int sX = selectedOffset.x;
             int sY = selectedOffset.y;
 
-             for (int x = 0; x < w; x++) {
+            for (int x = 0; x < w; x++) {
                 for (int y = 0; y < h; y++) {
-                    Tile sourceTile = source.GetTile(sX, sY);
+                    Tile sourceTile = source.GetTile(sX + x, sY + y);
                     Tile queryTile = query.GetTile(x, y);
                     Tile targetTile = target.GetTile(x, y);
+
+                    if(sourceTile != null) sourceTile.PostponeAttributeChanged(true);
                     if (targetTile != null) {
-                        if (sourceTile == null) sourceTile = new Tile(source, sX, sY);
+                        if (sourceTile == null) sourceTile = new Tile(source, sX + x, sY + y);
                         sourceTile.SetAttributesUsingDifference(queryTile, targetTile);
                         sourceTile.RemoveAttribute("_grammar_transformer_id");
                     } else if(queryTile != null) { // i.e. if tile was explicitly deleted during transition from query --> target
-                        source.SetTile(sX, sY, null);
+                        source.SetTile(sX + x, sY + y, null);
                     }
+                    if (sourceTile != null) sourceTile.PostponeAttributeChanged(false);
                 }
             }
 

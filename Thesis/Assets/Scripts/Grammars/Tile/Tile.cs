@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Util;
 
 namespace Grammars.Tile {
 	public class Tile : AttributedElement {
@@ -18,6 +19,10 @@ namespace Grammars.Tile {
             this.y = y;
         }
 
+        public Pair GetIndices() {
+            return new Pair(x, y);
+        }
+
 		public IDictionary<string, Tile> GetNeighbors() {
 			Dictionary<string, Tile> neighbors = new Dictionary<string, Tile>();
             Tile l = grid.GetTile(x - 1, y);
@@ -35,7 +40,7 @@ namespace Grammars.Tile {
             if (!destroyed) {
                 destroyed = true;
                 // This method should contain any additional deconstruction stuff if necessary
-                if(gridReplaced) grid.SetTile(x, y, null);
+                if(!gridReplaced) grid.SetTile(x, y, null);
             }
 		}
 	}

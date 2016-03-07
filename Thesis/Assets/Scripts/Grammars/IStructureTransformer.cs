@@ -5,7 +5,7 @@ namespace Grammars {
     /// <summary>
     /// Abstract class for transforming a substructure (e.g. subgraph, a group of tiles, etc.) into another structure.
     /// </summary>
-	interface IStructureTransformer<T> {
+	public interface IStructureTransformer<T> {
         /// <summary>
         /// The source structure.
         /// </summary>

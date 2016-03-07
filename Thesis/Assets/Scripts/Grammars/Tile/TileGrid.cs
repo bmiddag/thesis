@@ -30,6 +30,7 @@ namespace Grammars.Tile {
                         }
                     }
                 }
+                OnStructureChanged(EventArgs.Empty);
                 return true;
             } else return false;
         }
@@ -44,6 +45,7 @@ namespace Grammars.Tile {
                         tile.SetAttributesUsingDifference(null, source.GetTile(xOffset + x, yOffset + y)); // copy attributes
                     }
                 }
+                OnStructureChanged(EventArgs.Empty);
             }
         }
 
@@ -63,6 +65,7 @@ namespace Grammars.Tile {
                 grid[x, y].Destroy(true);
             }
             grid[x, y] = tile;
+            OnStructureChanged(EventArgs.Empty);
             return true;
         }
 

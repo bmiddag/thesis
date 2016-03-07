@@ -3,9 +3,10 @@ using Grammars.Graph;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using System;
+using Grammars;
 
 namespace Demo {
-	public class NodeRenderer : MonoBehaviour {
+	public class NodeRenderer : MonoBehaviour, IElementRenderer {
 		Node node;
 		SpriteRenderer spriteRender;
         Text text;
@@ -16,8 +17,14 @@ namespace Demo {
 
         bool updateRenderer = false; // If true, sprite & text will be updated during the next call of Update(). Prevents chaining of renderer updates.
 
-		// Use this for initialization
-		void Start() {
+        public AttributedElement Element {
+            get {
+                return node;
+            }
+        }
+
+        // Use this for initialization
+        void Start() {
 			spriteRender = gameObject.AddComponent<SpriteRenderer>();
             CircleCollider2D circleCol = gameObject.AddComponent<CircleCollider2D>();
             circleCol.radius = 29;
@@ -109,31 +116,35 @@ namespace Demo {
         // ************************** NODE RENDERING CODE ************************** \\
         void UpdateSprite() {
 			if (node != null) {
-				if (node.HasAttribute("_demo_shape")) {
-					string shape = node.GetAttribute("_demo_shape");
-					string upperShape = char.ToUpper(shape[0]) + shape.Substring(1);
-					spriteRender.sprite = Resources.Load<Sprite>("Sprites/" + upperShape);
-				}
-				if (node.HasAttribute("_demo_color")) {
-					string color = node.GetAttribute("_demo_color");
-					switch (color) {
-						case "red":
-							spriteRender.color = Color.red;
-							break;
-						case "green":
-							spriteRender.color = Color.green;
-							break;
-						case "blue":
-							spriteRender.color = Color.blue;
-							break;
-						case "yellow":
-							spriteRender.color = Color.yellow;
-							break;
-						default:
-							spriteRender.color = Color.white;
-							break;
-					}
-				}
+                if (node.HasAttribute("_demo_shape")) {
+                    string shape = node.GetAttribute("_demo_shape");
+                    string upperShape = char.ToUpper(shape[0]) + shape.Substring(1);
+                    spriteRender.sprite = Resources.Load<Sprite>("Sprites/" + upperShape);
+                } else {
+                    spriteRender.sprite = Resources.Load<Sprite>("Sprites/Circle");
+                }
+                if (node.HasAttribute("_demo_color")) {
+                    string color = node.GetAttribute("_demo_color");
+                    switch (color) {
+                        case "red":
+                            spriteRender.color = Color.red;
+                            break;
+                        case "green":
+                            spriteRender.color = Color.green;
+                            break;
+                        case "blue":
+                            spriteRender.color = Color.blue;
+                            break;
+                        case "yellow":
+                            spriteRender.color = Color.yellow;
+                            break;
+                        default:
+                            spriteRender.color = Color.white;
+                            break;
+                    }
+                } else {
+                    spriteRender.color = Color.white;
+                }
 			}
 		}
 

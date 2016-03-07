@@ -7,10 +7,10 @@ using System;
 using UnityEngine.EventSystems;
 
 namespace Demo {
-    public class GraphDemoController : MonoBehaviour {
+    public class DemoController : MonoBehaviour {
         EventSystem system;
 
-        public GraphRenderer currentGraphRenderer;
+        public IStructureRenderer currentStructureRenderer;
         public bool paused = false;
 
         public GameObject attributePopUp;
@@ -26,23 +26,51 @@ namespace Demo {
         GameObject currentPopUp = null;
 
         public AttributedElement currentElement;
-        
+
+        IDictionary<string, AttributeClass> attributeClasses = new Dictionary<string, AttributeClass>(); // TODO: move to grammar
+
         // Use this for initialization
         void Start() {
             system = EventSystem.current;
+            //if (currentStructureRenderer == null) currentStructureRenderer = FindObjectOfType<GraphRenderer>();
+            //if (currentStructureRenderer == null) currentStructureRenderer = FindObjectOfType<TileGridRenderer>();
+
+            // Define some attribute classes
+            attributeClasses["yellow_triangles"] = new AttributeClass("yellow_triangles");
+            attributeClasses["blue_squares"] = new AttributeClass("blue_squares");
+            attributeClasses["white_circles"] = new AttributeClass("white_circles");
+
+            attributeClasses["yellow_triangles"].SetAttribute("_demo_shape", "triangle");
+            attributeClasses["yellow_triangles"].SetAttribute("_demo_color", "yellow");
+            attributeClasses["blue_squares"].SetAttribute("_demo_shape", "square");
+            attributeClasses["blue_squares"].SetAttribute("_demo_color", "blue");
+            attributeClasses["white_circles"].SetAttribute("_demo_shape", "circle");
+            attributeClasses["white_circles"].SetAttribute("_demo_color", "white");
+        }
+
+        // TODO: Move to grammar
+        public void AddAttributeClass(AttributedElement el, string className) {
+            if (el != null && className != null && className != "" && attributeClasses.ContainsKey(className)) {
+                el.AddAttributeClass(attributeClasses[className]);
+            }
+        }
+
+        public void RegisterStructureRenderer(IStructureRenderer structRen) {
+            currentStructureRenderer = structRen;
         }
 
         // Update is called once per frame
         void Update() {
-            if ((currentGraphRenderer.currentNode != null || currentGraphRenderer.currentEdge != null) && !paused && currentPopUp == null) {
+            if (currentStructureRenderer == null) return;
+            if (currentStructureRenderer.CurrentElement != null && !paused && currentPopUp == null) {
                 if (Input.GetKeyDown(KeyCode.A)) {
                     currentPopUp = attributePopUp;
                     OpenPopUp();
-                } else if (Input.GetKeyDown(KeyCode.I) && currentGraphRenderer.currentNode != null) {
-                    currentPopUp = nodeIdPopUp;
-                    OpenPopUp();
                 } else if (Input.GetKeyDown(KeyCode.C)) {
                     currentPopUp = classPopUp;
+                    OpenPopUp();
+                } else if (Input.GetKeyDown(KeyCode.I) && currentStructureRenderer.CurrentElement.GetType() == typeof(NodeRenderer)) {
+                    currentPopUp = nodeIdPopUp;
                     OpenPopUp();
                 }
             }
@@ -71,11 +99,7 @@ namespace Demo {
             classNameField.text = "";
             nodeIdField.text = "";
 
-            if (currentGraphRenderer.currentNode != null) {
-                currentElement = currentGraphRenderer.currentNode.GetNode();
-            } else if (currentGraphRenderer.currentEdge != null) {
-                currentElement = currentGraphRenderer.currentEdge.GetEdge();
-            } else currentElement = null;
+            currentElement = currentStructureRenderer.CurrentElement.Element;
 
             if (currentElement != null) {
                 paused = true;
@@ -100,7 +124,7 @@ namespace Demo {
             } else if (currentPopUp == classPopUp) {
                 string name = classNameField.text.Trim();
                 if (name != "") {
-                    currentGraphRenderer.AddAttributeClass(currentElement, name);
+                    AddAttributeClass(currentElement, name);
                 }
             } else if (currentPopUp == nodeIdPopUp) {
                 if(currentElement.GetType() == typeof(Node)) {

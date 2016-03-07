@@ -6,7 +6,7 @@ using System;
 using System.Collections;
 
 namespace Demo {
-	public class GraphRenderer : MonoBehaviour {
+	public class GraphRenderer : MonoBehaviour, IStructureRenderer {
 		Graph graph;
         public NodeRenderer currentNode = null;
         public EdgeRenderer currentEdge = null;
@@ -23,7 +23,15 @@ namespace Demo {
 
         bool updateRenderer = false; // If true, node/edge renderers will be updated during the next call of Update(). Prevents chaining of renderer updates.
 
-        public GraphDemoController controller;
+        public DemoController controller;
+
+        public IElementRenderer CurrentElement {
+            get {
+                if (currentNode != null) return currentNode;
+                if (currentEdge != null) return currentEdge;
+                return null;
+            }
+        }
 
         IEnumerator FindTransform() {
             Graph query = new Graph();
@@ -31,25 +39,25 @@ namespace Demo {
 
             // Test graph
             Node queryNode1 = new Node(query, 1);
-            queryNode1.AddAttributeClass(attributeClasses["white_circles"]);
+            controller.AddAttributeClass(queryNode1, "white_circles");
 
             Node targetNode1 = new Node(target, 1);
-            targetNode1.AddAttributeClass(attributeClasses["blue_squares"]);
+            controller.AddAttributeClass(targetNode1, "blue_squares");
             targetNode1.SetAttribute("transformed", "true");
 
             Node queryNode2 = new Node(query, 2);
-            queryNode2.AddAttributeClass(attributeClasses["blue_squares"]);
+            controller.AddAttributeClass(queryNode2, "blue_squares");
 
             Node targetNode2 = new Node(target, 2);
-            targetNode2.AddAttributeClass(attributeClasses["white_circles"]);
+            controller.AddAttributeClass(targetNode2, "white_circles");
             targetNode2.SetAttribute("transformed", "true");
 
             Node targetNode3 = new Node(target, 3);
-            targetNode3.AddAttributeClass(attributeClasses["yellow_triangles"]);
+            controller.AddAttributeClass(targetNode3, "yellow_triangles");
             //targetNode3.SetAttribute("transformed", "true");
 
             Node queryNode4 = new Node(query, 4);
-            queryNode4.AddAttributeClass(attributeClasses["yellow_triangles"]);
+            controller.AddAttributeClass(queryNode4, "yellow_triangles");
 
             Edge queryEdge = new Edge(query, queryNode2, queryNode1, true);
             Edge queryEdge2 = new Edge(query, queryNode4, queryNode2, false);
@@ -74,17 +82,7 @@ namespace Demo {
 
         // Use this for initialization
         void Start() {
-            // Define some attribute classes
-            attributeClasses["yellow_triangles"] = new AttributeClass("yellow_triangles");
-            attributeClasses["blue_squares"] = new AttributeClass("blue_squares");
-            attributeClasses["white_circles"] = new AttributeClass("white_circles");
-
-            attributeClasses["yellow_triangles"].SetAttribute("_demo_shape", "triangle");
-            attributeClasses["yellow_triangles"].SetAttribute("_demo_color", "yellow");
-            attributeClasses["blue_squares"].SetAttribute("_demo_shape", "square");
-            attributeClasses["blue_squares"].SetAttribute("_demo_color", "blue");
-            attributeClasses["white_circles"].SetAttribute("_demo_shape", "circle");
-            attributeClasses["white_circles"].SetAttribute("_demo_color", "white");
+            controller.RegisterStructureRenderer(this);
 
             // Create the graph
             graph = new Graph();
@@ -100,13 +98,6 @@ namespace Demo {
 			node2.SetAttribute("_demo_x", "-100");
 			node2.SetAttribute("_demo_y", "-100");
             root.AddEdge(node2);*/
-        }
-
-        // TODO: Move to grammar
-        public void AddAttributeClass(AttributedElement el, string className) {
-            if (el != null && className != null && className != "" && attributeClasses.ContainsKey(className)) {
-                el.AddAttributeClass(attributeClasses[className]);
-            }
         }
 
         // Update is called once per frame
@@ -129,7 +120,7 @@ namespace Demo {
                         } else {
                             Vector3 newPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                             Node node = new Node(graph, graph.GetNodes().Count);
-                            node.AddAttributeClass(attributeClasses["white_circles"]);
+                            controller.AddAttributeClass(node, "white_circles");
                             node.SetAttribute("_demo_x", newPos.x.ToString());
                             node.SetAttribute("_demo_y", newPos.y.ToString());
                         }

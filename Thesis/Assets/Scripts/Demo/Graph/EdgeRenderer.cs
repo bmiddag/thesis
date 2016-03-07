@@ -3,9 +3,10 @@ using Grammars.Graph;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using System;
+using Grammars;
 
 namespace Demo {
-	public class EdgeRenderer : MonoBehaviour {
+	public class EdgeRenderer : MonoBehaviour, IElementRenderer {
         Edge edge;
         LineRenderer mainLine;
         LineRenderer arrowLine1;
@@ -19,6 +20,12 @@ namespace Demo {
 
         bool updateRenderer = false; // If true, sprite & text will be updated during the next call of Update(). Prevents chaining of renderer updates.
         bool directed = false;
+
+        public AttributedElement Element {
+            get {
+                return edge;
+            }
+        }
 
         // Use this for initialization
         void Start() {

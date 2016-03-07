@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace Demo {
     [RequireComponent(typeof(Text))]
     public class AttributesRenderer : MonoBehaviour {
-        public GraphRenderer graphRenderer;
+        public DemoController controller;
         AttributedElement currentlyDisplaying = null;
         Text text;
 
@@ -19,23 +19,22 @@ namespace Demo {
 
 		// Update is called once per frame
 		void Update() {
-            if (graphRenderer.controller.paused) {
-                if (graphRenderer.controller.currentElement == null) {
+            if (controller.paused) {
+                AttributedElement controllerElement = controller.currentElement;
+                if (controllerElement == null) {
                     currentlyDisplaying = null;
                     SetText(null);
-                } else if (graphRenderer.controller.currentElement != null && currentlyDisplaying != graphRenderer.controller.currentElement) {
-                    currentlyDisplaying = graphRenderer.controller.currentElement;
+                } else if (controllerElement != null && currentlyDisplaying != controllerElement) {
+                    currentlyDisplaying = controllerElement;
                     SetText(currentlyDisplaying);
                 }
-            } else {
-                if (graphRenderer.currentNode == null && graphRenderer.currentEdge == null) {
+            } else if(controller.currentStructureRenderer != null) {
+                IElementRenderer hoveringElement = controller.currentStructureRenderer.CurrentElement;
+                if (hoveringElement == null) {
                     currentlyDisplaying = null;
                     SetText(null);
-                } else if (graphRenderer.currentNode != null && currentlyDisplaying != graphRenderer.currentNode.GetNode()) {
-                    currentlyDisplaying = graphRenderer.currentNode.GetNode();
-                    SetText(currentlyDisplaying);
-                } else if (graphRenderer.currentEdge != null && currentlyDisplaying != graphRenderer.currentEdge.GetEdge()) {
-                    currentlyDisplaying = graphRenderer.currentEdge.GetEdge();
+                } else if (hoveringElement != null && currentlyDisplaying != hoveringElement.Element) {
+                    currentlyDisplaying = hoveringElement.Element;
                     SetText(currentlyDisplaying);
                 }
             }
