@@ -6,6 +6,7 @@ using Grammars;
 using System;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 namespace Demo {
     public class DemoController : MonoBehaviour {
@@ -37,7 +38,7 @@ namespace Demo {
             //if (currentStructureRenderer == null) currentStructureRenderer = FindObjectOfType<TileGridRenderer>();
 
             // Define some attribute classes
-            attributeClasses["yellow_triangles"] = new AttributeClass("yellow_triangles");
+            /*attributeClasses["yellow_triangles"] = new AttributeClass("yellow_triangles");
             attributeClasses["blue_squares"] = new AttributeClass("blue_squares");
             attributeClasses["white_circles"] = new AttributeClass("white_circles");
 
@@ -46,7 +47,8 @@ namespace Demo {
             attributeClasses["blue_squares"].SetAttribute("_demo_shape", "square");
             attributeClasses["blue_squares"].SetAttribute("_demo_color", "blue");
             attributeClasses["white_circles"].SetAttribute("_demo_shape", "circle");
-            attributeClasses["white_circles"].SetAttribute("_demo_color", "white");
+            attributeClasses["white_circles"].SetAttribute("_demo_color", "white");*/
+            StartCoroutine("LoadAttributeClasses");
         }
 
         // TODO: Move to grammar
@@ -62,12 +64,26 @@ namespace Demo {
 
         // Update is called once per frame
         void Update() {
-            if (!paused && Input.GetKeyDown(KeyCode.D)) {
-                Scene activeScene = SceneManager.GetActiveScene();
-                if (activeScene.name == "GraphDemo") {
-                    SceneManager.LoadScene("TileDemo");
-                } else if (activeScene.name == "TileDemo") {
-                    SceneManager.LoadScene("GraphDemo");
+            if (!paused) {
+                if (Input.GetKeyDown(KeyCode.D)) {
+                    Scene activeScene = SceneManager.GetActiveScene();
+                    if (activeScene.name == "GraphDemo") {
+                        SceneManager.LoadScene("TileDemo");
+                    } else if (activeScene.name == "TileDemo") {
+                        SceneManager.LoadScene("GraphDemo");
+                    }
+                }
+                if (Input.GetKeyDown(KeyCode.S)) {
+                    StartCoroutine("SaveStructure");
+                }
+                if (Input.GetKeyDown(KeyCode.L)) {
+                    StartCoroutine("LoadStructure");
+                }
+                if (Input.GetKeyDown(KeyCode.O)) {
+                    StartCoroutine("SaveAttributeClasses");
+                }
+                if (Input.GetKeyDown(KeyCode.P)) {
+                    StartCoroutine("LoadAttributeClasses");
                 }
             }
             if (currentStructureRenderer == null) return;
@@ -136,7 +152,7 @@ namespace Demo {
                     AddAttributeClass(currentElement, name);
                 }
             } else if (currentPopUp == nodeIdPopUp) {
-                if(currentElement.GetType() == typeof(Node)) {
+                if (currentElement.GetType() == typeof(Node)) {
                     string id = nodeIdField.text.Trim();
                     int parsedId;
                     if (int.TryParse(id, out parsedId)) {
@@ -155,6 +171,30 @@ namespace Demo {
             paused = false;
             currentPopUp.SetActive(false);
             currentPopUp = null;
+        }
+
+        public IEnumerator SaveStructure() {
+            return currentStructureRenderer.SaveStructure();
+        }
+
+        public IEnumerator LoadStructure() {
+            return currentStructureRenderer.LoadStructure();
+        }
+
+        public IEnumerator SaveAttributeClasses() {
+            string filename = "AttributeClasses.xml";
+            DemoIO serializer = new DemoIO(filename, this);
+            serializer.SerializeAttributeClasses(attributeClasses);
+            print("Attribute classes saved!");
+            yield return null;
+        }
+
+        public IEnumerator LoadAttributeClasses() {
+            string filename = "AttributeClasses.xml";
+            DemoIO serializer = new DemoIO(filename, this);
+            attributeClasses = serializer.DeserializeAttributeClasses();
+            print("Attribute classes loaded!");
+            yield return null;
         }
     }
 }

@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AttributeClasses>
+  <AttClass name="yellow_triangles">
+    <Attributes>
+      <Attribute key="_demo_shape" value="triangle" />
+      <Attribute key="_demo_color" value="yellow" />
+    </Attributes>
+  </AttClass>
+  <AttClass name="blue_squares">
+    <Attributes>
+      <Attribute key="_demo_shape" value="square" />
+      <Attribute key="_demo_color" value="blue" />
+    </Attributes>
+  </AttClass>
+  <AttClass name="white_circles">
+    <Attributes>
+      <Attribute key="_demo_shape" value="circle" />
+      <Attribute key="_demo_color" value="white" />
+    </Attributes>
+  </AttClass>
+</AttributeClasses>

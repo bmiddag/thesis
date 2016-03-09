@@ -119,14 +119,6 @@ namespace Demo {
                     if (Input.GetKeyDown(KeyCode.F)) {
                         StartCoroutine("FindTransform");
                     }
-
-                    if (Input.GetKeyDown(KeyCode.S)) {
-                        StartCoroutine("SaveStructure");
-                    }
-
-                    if (Input.GetKeyDown(KeyCode.L)) {
-                        StartCoroutine("LoadStructure");
-                    }
                 }
             }
 		}

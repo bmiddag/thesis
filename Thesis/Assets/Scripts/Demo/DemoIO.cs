@@ -47,9 +47,6 @@ namespace Demo {
             }
         }
 
-        void DeserializeAttributedElement(XmlReader reader, AttributedElement el) {
-        }
-
         public void SerializeGrid(TileGrid grid) {
             using (XmlWriter writer = XmlWriter.Create(filename, settings)) {
                 writer.WriteStartDocument();
@@ -82,7 +79,6 @@ namespace Demo {
             TileGrid grid = null;
             using (XmlReader reader = XmlReader.Create(filename)) {
                 while (reader.Read()) {
-                    // Only detect start elements.
                     switch(reader.NodeType) {
                         case XmlNodeType.Element:
                             // Get element name and switch on it.
@@ -167,7 +163,6 @@ namespace Demo {
             Dictionary<int, Node> hashDict = new Dictionary<int, Node>();
             using (XmlReader reader = XmlReader.Create(filename)) {
                 while (reader.Read()) {
-                    // Only detect start elements.
                     switch (reader.NodeType) {
                         case XmlNodeType.Element:
                             // Get element name and switch on it.
@@ -214,6 +209,70 @@ namespace Demo {
                 }
             }
             return graph;
+        }
+
+        public void SerializeAttributeClasses(IDictionary<string, AttributeClass> classesDict) {
+            using (XmlWriter writer = XmlWriter.Create(filename, settings)) {
+                writer.WriteStartDocument();
+                writer.WriteStartElement("AttributeClasses");
+                foreach (AttributeClass cl in classesDict.Values) {
+                    writer.WriteStartElement("AttClass");
+                    writer.WriteAttributeString("name", cl.GetName());
+                    SerializeAttributedElement(writer, cl);
+                    writer.WriteEndElement();
+                }
+                writer.WriteEndElement(); // AttributeClasses
+                writer.WriteEndDocument();
+            }
+        }
+
+        public Dictionary<string, AttributeClass> DeserializeAttributeClasses() {
+            // Create an XML reader for this file.
+            AttributeClass currentClass = null;
+            Dictionary<string, AttributeClass> classesDict = new Dictionary<string, AttributeClass>();
+            Dictionary<string, Dictionary<string, string>> classAttributes = new Dictionary<string, Dictionary<string, string>>();
+            Dictionary<string, List<string>> classClasses = new Dictionary<string, List<string>>();
+            using (XmlReader reader = XmlReader.Create(filename)) {
+                while (reader.Read()) {
+                    // Only detect start elements.
+                    if (reader.NodeType == XmlNodeType.Element) {
+                        // Get element name and switch on it.
+                        switch (reader.Name) {
+                            case "AttClass":
+                                string name = reader["name"];
+                                if (name == null) return null; // Deserialization failed
+                                AttributeClass cl = new AttributeClass(name);
+                                classesDict.Add(name, cl);
+                                classAttributes.Add(name, new Dictionary<string, string>());
+                                classClasses.Add(name, new List<string>());
+                                if (!reader.IsEmptyElement) currentClass = cl;
+                                break;
+                            case "AttributeClass":
+                                string clName = reader["name"];
+                                if (clName == null || currentClass == null) return null; // Deserialization failed
+                                classClasses[currentClass.GetName()].Add(clName);
+                                break;
+                            case "Attribute":
+                                string key = reader["key"];
+                                string val = reader["value"];
+                                if (key == null || val == null || currentClass == null) return null; // Deserialization failed
+                                classAttributes[currentClass.GetName()].Add(key, val);
+                                break;
+                        }
+                    }
+                }
+            }
+
+            foreach (string name in classesDict.Keys) {
+                foreach (string clName in classClasses[name]) {
+                    classesDict[name].AddAttributeClass(classesDict[clName]);
+                }
+                foreach (KeyValuePair<string, string> att in classAttributes[name]) {
+                    classesDict[name].SetAttribute(att.Key, att.Value);
+                }
+            }
+
+            return classesDict;
         }
     }
 }
