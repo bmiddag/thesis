@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 namespace Grammars.Graph {
-	public class Graph : StructureModel {
+    public class Graph : StructureModel {
 		HashSet<Node> nodes;
 		HashSet<Edge> edges;
 

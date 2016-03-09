@@ -4,6 +4,12 @@ using Grammars.Tile;
 using Grammars;
 using System;
 using System.Collections;
+using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.InteropServices;
+using System.Xml.Serialization;
+using System.Xml;
 
 namespace Demo {
 	public class TileGridRenderer : MonoBehaviour, IStructureRenderer {
@@ -11,13 +17,9 @@ namespace Demo {
         public TileRenderer currentTile = null;
         TileRenderer[,] tileRenderers = null;
         public GameObject gridLineObject;
-
         List<LineRenderer> gridLines;
-        
         public CameraControl cameraControl;
-
         bool updateRenderer = false; // If true, tilerenderers will be updated during the next call of Update(). Prevents chaining of renderer updates.
-
         public DemoController controller;
 
         public IElementRenderer CurrentElement {
@@ -101,8 +103,30 @@ namespace Demo {
                     }
                 }
 
-                if (Input.GetKeyDown(KeyCode.F)) {
-                    StartCoroutine("FindTransform");
+                int w = grid.GetGridSize().x;
+                int h = grid.GetGridSize().y;
+                if (Input.GetKeyDown(KeyCode.Keypad6)) {
+                    grid.SetGridSize(w + 1, h, 0, 0);
+                } else if (Input.GetKeyDown(KeyCode.Keypad4)) {
+                    grid.SetGridSize(w - 1, h, 0, 0);
+                } else if (Input.GetKeyDown(KeyCode.Keypad8)) {
+                    grid.SetGridSize(w, h+1, 0, 0);
+                } else if (Input.GetKeyDown(KeyCode.Keypad2)) {
+                    grid.SetGridSize(w, h-1, 0, 0);
+                }
+
+                if (!controller.paused) {
+                    if (Input.GetKeyDown(KeyCode.F)) {
+                        StartCoroutine("FindTransform");
+                    }
+
+                    if (Input.GetKeyDown(KeyCode.S)) {
+                        StartCoroutine("SaveStructure");
+                    }
+
+                    if (Input.GetKeyDown(KeyCode.L)) {
+                        StartCoroutine("LoadStructure");
+                    }
                 }
             }
 		}
@@ -167,6 +191,16 @@ namespace Demo {
             }
         }
 
+        public void SetGrid(TileGrid grid) {
+            if (grid == null) return;
+            if (this.grid != null) {
+                this.grid.StructureChanged -= new EventHandler(TileGridStructureChanged);
+            }
+            this.grid = grid;
+            grid.StructureChanged += new EventHandler(TileGridStructureChanged);
+            updateRenderer = true;
+        }
+
         void InitGridLines() {
             if (grid == null) return;
             if (gridLines != null) {
@@ -203,7 +237,7 @@ namespace Demo {
                 InitGridLines();
                 if (tileRenderers != null) {
                     foreach (TileRenderer tileRen in tileRenderers) {
-                        Destroy(tileRen.gameObject);
+                        if(tileRen != null) Destroy(tileRen.gameObject);
                     }
                 }
                 tileRenderers = new TileRenderer[w, h];
@@ -237,6 +271,26 @@ namespace Demo {
                     }
                 }
             }
+        }
+
+        public IEnumerator SaveStructure() {
+            string dateTime = DateTime.Now.Day.ToString() + "-" + DateTime.Now.Month.ToString() + "-" + DateTime.Now.Year.ToString()
+                + "_" + DateTime.Now.Hour.ToString() + "-" + DateTime.Now.Minute.ToString() + "-" + DateTime.Now.Second.ToString()
+                + "_" + DateTime.Now.Millisecond.ToString();
+            string filename = "Grid_" + dateTime + ".xml";
+            DemoIO serializer = new DemoIO(filename, controller);
+            serializer.SerializeGrid(grid);
+            print("Saved!");
+            yield return null;
+        }
+
+        public IEnumerator LoadStructure() {
+            string filename = "Grid_test.xml";
+            DemoIO serializer = new DemoIO(filename, controller);
+            TileGrid newGrid = serializer.DeserializeGrid();
+            SetGrid(newGrid);
+            print("Loaded!");
+            yield return null;
         }
     }
 }

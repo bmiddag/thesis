@@ -2,7 +2,7 @@
 using Util;
 
 namespace Grammars.Tile {
-	public class TileGrid : StructureModel {
+    public class TileGrid : StructureModel {
         Tile[,] grid;
 
 		public TileGrid(int width, int height) : base() {
@@ -14,7 +14,7 @@ namespace Grammars.Tile {
         }
 
         public bool SetGridSize(int width, int height, int xOffset, int yOffset) {
-            if (grid != null && width != grid.GetLength(0) && height != grid.GetLength(1)) {
+            if (grid != null && (width != grid.GetLength(0) || height != grid.GetLength(1))) {
                 Tile[,] gridCopy = grid;
                 grid = new Tile[width, height];
                 // Just set new indices for tiles that are still accessible, destroy the rest.
@@ -23,9 +23,9 @@ namespace Grammars.Tile {
                     for (int y = 0; y < gridCopy.GetLength(1); y++) {
                         int newY = y + yOffset;
                         if (newX < 0 || newX >= width || newY < 0 || newY >= height) {
-                            gridCopy[x, y].Destroy(true);
+                            if (gridCopy[x, y] != null) gridCopy[x, y].Destroy(true);
                         } else {
-                            gridCopy[x, y].SetIndices(newX, newY);
+                            if(gridCopy[x, y] != null) gridCopy[x, y].SetIndices(newX, newY);
                             grid[newX, newY] = gridCopy[x, y];
                         }
                     }

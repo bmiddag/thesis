@@ -1,4 +1,6 @@
-﻿namespace Grammars {
+﻿using System;
+
+namespace Grammars {
     /// <summary>
     /// A class of attributes that are inherited by every element of said class. They are copied into the element at load time.
     /// Note that an attribute class can also inherit attributes from multiple classes.
@@ -6,7 +8,7 @@
     public class AttributeClass : AttributedElement {
         string name;
 
-		public AttributeClass(string name) : base() {
+        public AttributeClass(string name) : base() {
             this.name = name;
             if (name == null) this.name = "";
         }

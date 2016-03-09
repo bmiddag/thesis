@@ -1,17 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Grammars.Graph {
-	public class Edge : AttributedElement {
+    public class Edge : AttributedElement {
 		Graph graph;
 		Node node1;
 		Node node2;
 		bool destroyed = false;
         bool directed = false;
 
-		public Edge(Graph graph, Node node1, Node node2, bool directed = false) : base() {
+        public Edge(Graph graph, Node node1, Node node2, bool directed = false) : base() {
 			this.graph = graph;
 			this.node1 = node1;
 			this.node2 = node2;

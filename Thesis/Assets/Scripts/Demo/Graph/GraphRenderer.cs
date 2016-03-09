@@ -4,6 +4,9 @@ using Grammars.Graph;
 using Grammars;
 using System;
 using System.Collections;
+using System.Runtime.Serialization;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Demo {
 	public class GraphRenderer : MonoBehaviour, IStructureRenderer {
@@ -15,8 +18,6 @@ namespace Demo {
         EdgeRenderer drawingEdgeRenderer;
 		public IDictionary<Edge, EdgeRenderer> edgeRenderers = new Dictionary<Edge, EdgeRenderer>();
 		IDictionary<Node, NodeRenderer> nodeRenderers = new Dictionary<Node, NodeRenderer>();
-
-        IDictionary<string, AttributeClass> attributeClasses = new Dictionary<string, AttributeClass>(); // TODO: move to grammar
 
         public bool draggingNode = false;
         public CameraControl cameraControl;
@@ -164,8 +165,18 @@ namespace Demo {
                     Destroy(drawingEdgeRenderer.gameObject);
                 }
 
-                if (Input.GetKeyDown(KeyCode.F)) {
-                    StartCoroutine("FindTransform");
+                if (!controller.paused) {
+                    if (Input.GetKeyDown(KeyCode.F)) {
+                        StartCoroutine("FindTransform");
+                    }
+
+                    if (Input.GetKeyDown(KeyCode.S)) {
+                        StartCoroutine("SaveStructure");
+                    }
+
+                    if (Input.GetKeyDown(KeyCode.L)) {
+                        StartCoroutine("LoadStructure");
+                    }
                 }
             }
 		}
@@ -260,6 +271,16 @@ namespace Demo {
             }
         }
 
+        public void SetGraph(Graph graph) {
+            if (graph == null) return;
+            if (this.graph != null) {
+                this.graph.StructureChanged -= new EventHandler(GraphStructureChanged);
+            }
+            this.graph = graph;
+            graph.StructureChanged += new EventHandler(GraphStructureChanged);
+            updateRenderer = true;
+        }
+
         void SyncGraphStructure() {
             HashSet<Node> nodesInGraph = graph.GetNodes();
             ICollection<Node> nodesInRenderer = nodeRenderers.Keys;
@@ -289,6 +310,27 @@ namespace Demo {
                     RemoveEdgeRenderer(edge);
                 }
             }
+        }
+
+        public IEnumerator SaveStructure() {
+            string dateTime = DateTime.Now.Day.ToString() + "-" + DateTime.Now.Month.ToString() + "-" + DateTime.Now.Year.ToString()
+                + "_" + DateTime.Now.Hour.ToString() + "-" + DateTime.Now.Minute.ToString() + "-" + DateTime.Now.Second.ToString()
+                + "_" + DateTime.Now.Millisecond.ToString();
+            string filename = "Graph_" + dateTime + ".xml";
+            DemoIO serializer = new DemoIO(filename, controller);
+            serializer.SerializeGraph(graph);
+            print("Saved!");
+            yield return null;
+        }
+
+        public IEnumerator LoadStructure() {
+            string filename = "Graph_test.xml";
+            DemoIO serializer = new DemoIO(filename, controller);
+            Graph newGraph = serializer.DeserializeGraph();
+            print(newGraph.GetNodes().Count);
+            SetGraph(newGraph);
+            print("Loaded!");
+            yield return null;
         }
     }
 }

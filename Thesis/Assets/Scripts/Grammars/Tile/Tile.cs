@@ -1,13 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Util;
 
 namespace Grammars.Tile {
-	public class Tile : AttributedElement {
+    public class Tile : AttributedElement {
         TileGrid grid;
 		int x, y;
         bool destroyed = false;
 
-		public Tile(TileGrid grid, int x, int y) : base() {
+        public Tile(TileGrid grid, int x, int y) : base() {
 			this.grid = grid;
             this.x = x;
             this.y = y;

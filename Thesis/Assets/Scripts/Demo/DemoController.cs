@@ -5,6 +5,7 @@ using Grammars.Graph;
 using Grammars;
 using System;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 namespace Demo {
     public class DemoController : MonoBehaviour {
@@ -61,6 +62,14 @@ namespace Demo {
 
         // Update is called once per frame
         void Update() {
+            if (!paused && Input.GetKeyDown(KeyCode.D)) {
+                Scene activeScene = SceneManager.GetActiveScene();
+                if (activeScene.name == "GraphDemo") {
+                    SceneManager.LoadScene("TileDemo");
+                } else if (activeScene.name == "TileDemo") {
+                    SceneManager.LoadScene("GraphDemo");
+                }
+            }
             if (currentStructureRenderer == null) return;
             if (currentStructureRenderer.CurrentElement != null && !paused && currentPopUp == null) {
                 if (Input.GetKeyDown(KeyCode.A)) {

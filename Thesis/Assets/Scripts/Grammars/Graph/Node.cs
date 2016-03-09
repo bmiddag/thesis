@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 namespace Grammars.Graph {
-	public class Node : AttributedElement {
+    public class Node : AttributedElement {
 		Graph graph;
 		IDictionary<Node, Edge> edges;
 		int id;
@@ -24,7 +24,7 @@ namespace Grammars.Graph {
             }
         }
 
-		public Node(Graph graph, int id) : base() {
+        public Node(Graph graph, int id) : base() {
 			this.graph = graph;
 			edges = new Dictionary<Node, Edge>();
 			this.id = id;
