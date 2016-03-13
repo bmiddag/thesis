@@ -66,5 +66,5 @@ namespace Grammars.Graph {
                 OnStructureChanged(EventArgs.Empty);
             }
 		}
-	}
+    }
 }

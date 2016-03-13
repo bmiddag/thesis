@@ -121,5 +121,9 @@ namespace Grammars.Tile {
             //selectedOffset = null;
             //query = null;
         }
+
+        public void Destroy() {
+            Source = null;
+        }
     }
 }

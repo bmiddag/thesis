@@ -26,5 +26,10 @@ namespace Grammars {
         /// </summary>
         /// <param name="target">The structure that will replace the substructure found with Find</param>
         void Transform(T target);
+
+        /// <summary>
+        /// Removes any changes made by the structure transformer (e.g. adding transformer-specific attributes).
+        /// </summary>
+        void Destroy();
 	}
 }

@@ -316,5 +316,14 @@ namespace Grammars.Graph {
             Step 7: remove "_grammar_" attributes
             */
         }
+
+        public void Destroy() {
+            if (nodeTransformations == null) return;
+            foreach (Node sourceNode in nodeTransformations.Keys) {
+                sourceNode.RemoveAttribute("_grammar_query_id");
+            }
+            nodeTransformations.Clear();
+            Source = null;
+        }
     }
 }
