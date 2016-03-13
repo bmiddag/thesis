@@ -18,13 +18,16 @@ namespace Grammars {
 
         MethodInfo condition = null;
         MethodInfo dynamicProbability = null;
+        MethodInfo controlledSelection = null;
 
-        public Rule(T query, T target, double probability, MethodInfo condition = null, MethodInfo dynamicProbability = null) {
+        public Rule(T query, T target, double probability, MethodInfo condition = null,
+            MethodInfo dynamicProbability = null, MethodInfo controlledSelection = null) {
             this.query = query;
             this.target = target;
             this.probability = probability;
             this.condition = condition;
             this.dynamicProbability = dynamicProbability;
+            this.controlledSelection = controlledSelection;
         }
 
         public bool CheckCondition() {
@@ -52,7 +55,16 @@ namespace Grammars {
         public bool Find(T source) {
             InitStructureTransformer(source);
             bool found = transformer.Find(query);
-            return found;
+            if (found) {
+                if (controlledSelection != null) {
+                    object[] parameters = new object[1];
+                    parameters[0] = this;
+                    transformer.Select(controlledSelection, parameters);
+                } else {
+                    transformer.Select();
+                }
+                return true;
+            } else return false;
 
         }
         public bool Apply(T source, bool useExisting = true) {

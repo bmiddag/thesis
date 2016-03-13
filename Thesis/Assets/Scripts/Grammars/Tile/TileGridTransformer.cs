@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Util;
 
 namespace Grammars.Tile {
@@ -9,6 +10,7 @@ namespace Grammars.Tile {
         Pair selectedOffset;
         TileGrid query = null;
         bool findFirst = false;
+        List<Pair> matches;
 
         public TileGrid Source {
             get {
@@ -16,6 +18,10 @@ namespace Grammars.Tile {
             }
             set {
                 if (source != value) {
+                    if (matches != null) {
+                        matches.Clear();
+                        matches = null;
+                    }
                     selectedOffset = null;
                     query = null;
                     source = value;
@@ -46,7 +52,7 @@ namespace Grammars.Tile {
             }
             queryTiles = queryTiles.OrderByDescending(t => (query.GetTile(t.x, t.y) == null ? 0 : query.GetTile(t.x, t.y).GetAttributes().Count)).ToList();
 
-            List<Pair> matches = new List<Pair>();
+            matches = new List<Pair>();
 
             for (int sX = 0; sX < source.GetGridSize().x-query.GetGridSize().x+1; sX++) {
                 for (int sY = 0; sY < source.GetGridSize().y-query.GetGridSize().y+1; sY++) {
@@ -66,19 +72,39 @@ namespace Grammars.Tile {
                     }
                     if (matched) {
                         Pair match = new Pair(sX, sY);
+                        matches.Add(match);
                         if (findFirst) {
-                            selectedOffset = match;
                             return true;
-                        } else matches.Add(match);
+                        }
                     }
                 }
             }
 
             if (matches.Count > 0) {
-                // Select one from the list randomly
-                Random rnd = new Random();
-                int r = rnd.Next(matches.Count);
-                selectedOffset = matches.ElementAt(r);
+                return true;
+            } else return false;
+        }
+
+        public void Select(MethodInfo controlledSelection = null, object[] parameters = null) {
+            if (matches == null) return;
+            if (matches.Count > 0) {
+                int index;
+                if (controlledSelection != null) {
+                    int amountParams = 1;
+                    if (parameters != null) {
+                        amountParams += parameters.Length;
+                    }
+                    object[] controlledParams = new object[amountParams];
+                    controlledParams[0] = matches;
+                    for (int i = 1; i < amountParams; i++) {
+                        controlledParams[i] = parameters[i - 1];
+                    }
+                    index = (int)controlledSelection.Invoke(null, parameters);
+                } else {
+                    Random rnd = new Random();
+                    index = rnd.Next(matches.Count);
+                }
+                selectedOffset = matches.ElementAt(index);
                 // Mark it so that it can't be accessed by other transformers
                 /*for (int x = 0; x < query.GetGridSize().x; x++) {
                     for (int y = 0; y < query.GetGridSize().y; y++) {
@@ -86,8 +112,9 @@ namespace Grammars.Tile {
                         if(sourceTile != null) sourceTile.SetAttribute("_grammar_transformer_id", GetHashCode().ToString());
                     }
                 }*/
-                return true;
-            } else return false;
+            } else {
+                selectedOffset = null;
+            }
         }
 
         public void Transform(TileGrid target) {

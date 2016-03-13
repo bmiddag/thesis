@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace Grammars.Graph {
 	public class GraphTransformer : IStructureTransformer<Graph> {
         Graph source = null;
-        public Dictionary<Node, Node> nodeTransformations; // Associates <node in source graph, node in query graph> with each other
+        List<Dictionary<Node, Node>> matches;
+        Dictionary<Node, Node> selectedMatch; // Associates <node in source graph, node in query graph> with each other
         Graph query = null;
         bool findFirst = false;
 
@@ -16,7 +18,11 @@ namespace Grammars.Graph {
             }
             set {
                 if (source != value) {
-                    nodeTransformations = null;
+                    if (matches != null) {
+                        matches.Clear();
+                    }
+                    matches = null;
+                    selectedMatch = null;
                     query = null;
                     source = value;
                 }
@@ -24,13 +30,13 @@ namespace Grammars.Graph {
         }
 
         public GraphTransformer(bool findFirst = false) {
-            nodeTransformations = null;
+            selectedMatch = null;
             this.findFirst = findFirst;
 		}
 
 		public HashSet<Node> GetSelectedNodes() {
-            if (nodeTransformations != null) {
-                return new HashSet<Node>(nodeTransformations.Keys);
+            if (selectedMatch != null) {
+                return new HashSet<Node>(selectedMatch.Keys);
             } else return null;
 		}
 
@@ -41,8 +47,8 @@ namespace Grammars.Graph {
             if (source == null || source.GetNodes().Count == 0) return false;
             if (query == null || query.GetNodes().Count == 0) return false;
 
-            nodeTransformations = null;
-            List<Dictionary<Node, Node>> transformationsList = new List<Dictionary<Node, Node>>();
+            selectedMatch = null;
+            matches = new List<Dictionary<Node, Node>>();
             this.query = query;
             List<Node> queryNodes = query.GetNodes().OrderByDescending(n => n.GetAttributes().Count).ToList(); // start with most specific node
             Dictionary<Node, Node> selection = new Dictionary<Node, Node>(); // source, query
@@ -52,7 +58,7 @@ namespace Grammars.Graph {
                 node.PostponeAttributeChanged(true);
             }
             foreach (Node startNode in source.GetNodes()) {
-                if (findFirst && transformationsList.Count > 0) continue;
+                if (findFirst && matches.Count > 0) continue;
                 if (!startNode.MatchAttributes(queryNodes[0])) continue;
                 if (startNode.GetEdges().Count < queryNodes[0].GetEdges().Count) continue;
                 // Is node already marked? (useful when using multiple graph transformers)
@@ -60,7 +66,7 @@ namespace Grammars.Graph {
                 // add number attribute
                 startNode.SetAttribute("_grammar_query_id", queryNodes[0].GetID().ToString());
                 selection.Add(startNode, queryNodes[0]);
-                _Find(startNode, queryNodes[0], selection, transformationsList);
+                _Find(startNode, queryNodes[0], selection);
                 if (selection.Count > 1) {
                     // Only partly matched - clean up selection
                     foreach (KeyValuePair<Node, Node> wrongMark in selection) {
@@ -73,7 +79,7 @@ namespace Grammars.Graph {
                     selection.Remove(startNode);
                 }
             }
-            return _Find_End(transformationsList);
+            return _Find_End();
         }
 
         /// <summary>
@@ -82,12 +88,11 @@ namespace Grammars.Graph {
         /// <param name="currentSourceNode">the node in the source graph that is currently observed</param>
         /// <param name="currentQueryNode">the node in the query graph that is currently observed</param>
         /// <param name="selection">a dictionary of nodes that have already been selected (Source node, Query node)</param>
-        /// <param name="transformationsList">list of all complete matches found so far</param>
         /// <returns>True if the path being followed in the query graph is a dead end (except for already marked nodes)</returns>
-        private bool _Find(Node currentSourceNode, Node currentQueryNode, Dictionary<Node, Node> selection, List<Dictionary<Node, Node>> transformationsList) {
+        private bool _Find(Node currentSourceNode, Node currentQueryNode, Dictionary<Node, Node> selection) {
             if (query.GetNodes().Count == selection.Keys.Count) {
                 // Algorithm ends here
-                transformationsList.Add(new Dictionary<Node, Node>(selection));
+                matches.Add(new Dictionary<Node, Node>(selection));
                 return false;
             }
 
@@ -101,7 +106,7 @@ namespace Grammars.Graph {
             Node queryNode = queryNodes.First();
             
             foreach (Node node in sourceNodes) {
-                if (findFirst && transformationsList.Count > 0) continue;
+                if (findFirst && matches.Count > 0) continue;
                 // Is node already marked? (useful when using multiple graph transformers)
                 if (node.HasAttribute("_grammar_query_id")) continue;
                 // Compare node at the other end
@@ -134,12 +139,12 @@ namespace Grammars.Graph {
                 // add number attribute && add to selection
                 node.SetAttribute("_grammar_query_id", queryNode.GetID().ToString());
                 selection.Add(node, queryNode);
-                bool partlyMatched = _Find(node, queryNode, selection, transformationsList);
+                bool partlyMatched = _Find(node, queryNode, selection);
                 if (partlyMatched) {
                     // Copy selection and create remaining query/source nodes lists
                     Dictionary<Node, Node> selectionCopy = new Dictionary<Node, Node>(selection); // source, query
 
-                    partlyMatched = _Find(currentSourceNode, currentQueryNode, selectionCopy, transformationsList);
+                    partlyMatched = _Find(currentSourceNode, currentQueryNode, selectionCopy);
                     if (partlyMatched) {
                         // If this node is also a dead end when the extra part of the selection is added, go back to previous node WITH current selection
                         IEnumerable<KeyValuePair<Node, Node>> newMarks = selectionCopy.Except(selection);
@@ -162,29 +167,50 @@ namespace Grammars.Graph {
             return false;
         }
 
-        private bool _Find_End(List<Dictionary<Node, Node>> transformationsList) {
+        private bool _Find_End() {
             // Reactivate events
             foreach (Node node in source.GetNodes()) {
                 node.PostponeAttributeChanged(false);
             }
-            if (transformationsList.Count > 0) {
-                Random rnd = new Random();
-                int r = rnd.Next(transformationsList.Count);
-                nodeTransformations = transformationsList.ElementAt(r);
-                foreach (KeyValuePair<Node, Node> nodePair in nodeTransformations) {
-                    nodePair.Key["_grammar_query_id"] = nodePair.Value.GetID().ToString();
-                }
+            if (matches.Count > 0) {
                 return true;
             } else {
-                nodeTransformations = null;
                 return false;
+            }
+        }
+
+        public void Select(MethodInfo controlledSelection = null, object[] parameters = null) {
+            if (matches == null) return;
+            if (matches.Count > 0) {
+                int index;
+                if (controlledSelection != null) {
+                    int amountParams = 1;
+                    if (parameters != null) {
+                        amountParams += parameters.Length;
+                    }
+                    object[] controlledParams = new object[amountParams];
+                    controlledParams[0] = matches;
+                    for (int i = 1; i < amountParams; i++) {
+                        controlledParams[i] = parameters[i - 1];
+                    }
+                    index = (int)controlledSelection.Invoke(null, parameters);
+                } else {
+                    Random rnd = new Random();
+                    index = rnd.Next(matches.Count);
+                }
+                selectedMatch = matches.ElementAt(index);
+                foreach (KeyValuePair<Node, Node> nodePair in selectedMatch) {
+                    nodePair.Key["_grammar_query_id"] = nodePair.Value.GetID().ToString();
+                }
+            } else {
+                selectedMatch = null;
             }
         }
 
         public void Transform(Graph target) {
             // Preliminary checks
             if (query == null || target == null) return;
-            if (nodeTransformations == null) return;
+            if (selectedMatch == null) return;
             
             // Temporarily turn off events
             foreach (Node node in source.GetNodes()) {
@@ -197,7 +223,7 @@ namespace Grammars.Graph {
             /* Step 3: remove nodes & edges
                Step 4: replace numbered nodes by their equivalents (just change their attributes), and edges as well */
             List<int> oldNodeIDs = new List<int>(); // List of node IDs present in query graph, for easier searching later
-            Dictionary<Node, Node> nodeTransCopy = new Dictionary<Node, Node>(nodeTransformations);
+            Dictionary<Node, Node> nodeTransCopy = new Dictionary<Node, Node>(selectedMatch);
             foreach (KeyValuePair<Node, Node> marking in nodeTransCopy) {
                 oldNodeIDs.Add(marking.Value.GetID());
                 Node sourceNode = marking.Key;
@@ -205,7 +231,7 @@ namespace Grammars.Graph {
                 Node targetNode = target.GetNodeByID(queryNode.GetID());
                 if (targetNode == null) { // If a node in the query doesn't exist in the target graph
                     sourceNode.Destroy();
-                    nodeTransformations.Remove(sourceNode);
+                    selectedMatch.Remove(sourceNode);
                 } else {
                     // For all edges outgoing from this node in query graph, check if there is a corresponding edge in target graph
                     foreach (Edge queryEdge in queryNode.GetEdges().Values) {
@@ -268,7 +294,7 @@ namespace Grammars.Graph {
                     Node sourceNode2 = null;
                     if (newNodes.ContainsKey(id1)) sourceNode1 = newNodes[id1];
                     if (newNodes.ContainsKey(id2)) sourceNode2 = newNodes[id2];
-                    foreach (Node sourceNode in nodeTransformations.Keys) {
+                    foreach (Node sourceNode in selectedMatch.Keys) {
                         if (sourceNode["_grammar_query_id"] == id1.ToString()) {
                             sourceNode1 = sourceNode;
                         } else if (sourceNode["_grammar_query_id"] == id2.ToString()) {
@@ -282,10 +308,13 @@ namespace Grammars.Graph {
             }
 
             /* Step 7: Remove "_grammar_query_id" attribute */
-            foreach (Node sourceNode in nodeTransformations.Keys) {
+            foreach (Node sourceNode in selectedMatch.Keys) {
                 sourceNode.RemoveAttribute("_grammar_query_id");
             }
-            nodeTransformations.Clear();
+            selectedMatch.Clear();
+            matches.Clear();
+            selectedMatch = null;
+            matches = null;
 
             // Reactivate events
             foreach (Node node in source.GetNodes()) {
@@ -318,11 +347,13 @@ namespace Grammars.Graph {
         }
 
         public void Destroy() {
-            if (nodeTransformations == null) return;
-            foreach (Node sourceNode in nodeTransformations.Keys) {
-                sourceNode.RemoveAttribute("_grammar_query_id");
+            if (selectedMatch != null) {
+                foreach (Node sourceNode in selectedMatch.Keys) {
+                    sourceNode.RemoveAttribute("_grammar_query_id");
+                }
+                selectedMatch.Clear();
+                selectedMatch = null;
             }
-            nodeTransformations.Clear();
             Source = null;
         }
     }
