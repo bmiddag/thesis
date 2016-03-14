@@ -40,10 +40,18 @@ namespace Grammars.Graph {
             } else return null;
 		}
 
+        public Node GetSelectedNode(int id) {
+            if (selectedMatch != null) {
+                foreach (KeyValuePair<Node, Node> nodePair in selectedMatch) {
+                    if (nodePair.Value.GetID() == id) return nodePair.Key;
+                }
+                return null;
+            } else return null;
+        }
+
         public bool Find(Graph query) {
             /* Step 1: select ( ignore attributes starting with "_grammar_" but use those for additional conditions
-                       e.g. Negative conditions like Adams p13).
-               Step 2: Number nodes according to query (using the attribute "_grammar_query_id") */
+                       e.g. Negative conditions like Adams p13). */
             if (source == null || source.GetNodes().Count == 0) return false;
             if (query == null || query.GetNodes().Count == 0) return false;
 
@@ -199,9 +207,6 @@ namespace Grammars.Graph {
                     index = rnd.Next(matches.Count);
                 }
                 selectedMatch = matches.ElementAt(index);
-                foreach (KeyValuePair<Node, Node> nodePair in selectedMatch) {
-                    nodePair.Key["_grammar_query_id"] = nodePair.Value.GetID().ToString();
-                }
             } else {
                 selectedMatch = null;
             }
@@ -218,6 +223,11 @@ namespace Grammars.Graph {
             }
             foreach (Edge edge in source.GetEdges()) {
                 edge.PostponeAttributeChanged(true);
+            }
+
+            /* Step 2: Number nodes according to query(using the attribute "_grammar_query_id") */
+            foreach (KeyValuePair<Node, Node> nodePair in selectedMatch) {
+                nodePair.Key["_grammar_query_id"] = nodePair.Value.GetID().ToString();
             }
 
             /* Step 3: remove nodes & edges

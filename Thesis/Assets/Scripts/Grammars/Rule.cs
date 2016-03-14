@@ -5,20 +5,31 @@ using System.Reflection;
 using System.Text;
 
 namespace Grammars {
-    public class Rule<T, U>
-        where T : StructureModel
-        where U : IStructureTransformer<T>, new() {
-        //Grammar<T> grammar;
+    public class Rule<T> where T : StructureModel {
+        protected Grammar<T> grammar;
+        protected T query;
+        protected T target;
+        protected IStructureTransformer<T> transformer = null;
+        public IStructureTransformer<T> Transformer {
+            get {
+                return transformer;
+            }
+            set {
+                if (transformer != value) {
+                    if (transformer != null) {
+                        transformer.Destroy();
+                    }
+                    transformer = value;
+                }
+            }
+        }
 
-        T query;
-        T target;
-        U transformer = default(U);
+        protected double probability;
+        protected MethodInfo condition = null;
+        protected MethodInfo dynamicProbability = null;
+        protected MethodInfo controlledSelection = null;
 
-        public double probability;
-
-        MethodInfo condition = null;
-        MethodInfo dynamicProbability = null;
-        MethodInfo controlledSelection = null;
+        bool hasSelected;
 
         public Rule(T query, T target, double probability, MethodInfo condition = null,
             MethodInfo dynamicProbability = null, MethodInfo controlledSelection = null) {
@@ -28,6 +39,7 @@ namespace Grammars {
             this.condition = condition;
             this.dynamicProbability = dynamicProbability;
             this.controlledSelection = controlledSelection;
+            hasSelected = false;
         }
 
         public bool CheckCondition() {
@@ -53,6 +65,7 @@ namespace Grammars {
         }
 
         public bool Find(T source) {
+            hasSelected = false;
             InitStructureTransformer(source);
             bool found = transformer.Find(query);
             if (found) {
@@ -63,10 +76,11 @@ namespace Grammars {
                 } else {
                     transformer.Select();
                 }
+                hasSelected = true;
                 return true;
             } else return false;
-
         }
+
         public bool Apply(T source, bool useExisting = true) {
             if (useExisting && transformer != null) {
                 transformer.Transform(target);
@@ -81,11 +95,12 @@ namespace Grammars {
             }
         }
 
+        public bool HasSelected() {
+            return hasSelected;
+        }
+
         protected void InitStructureTransformer(T source) {
-            if (transformer != null) {
-                transformer.Destroy();
-            }
-            transformer = new U();
+            Transformer = grammar.Transformer;
             transformer.Source = source;
         }
 
