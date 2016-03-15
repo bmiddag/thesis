@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Util;
 
 namespace Grammars.Tile {
@@ -85,22 +84,14 @@ namespace Grammars.Tile {
             } else return false;
         }
 
-        public void Select(MethodInfo controlledSelection = null, object[] parameters = null) {
+        public void Select(RuleMatchSelector controlledSelection = null) {
             if (matches == null) return;
             if (matches.Count > 0) {
-                int index;
+                int index = -1;
                 if (controlledSelection != null) {
-                    int amountParams = 1;
-                    if (parameters != null) {
-                        amountParams += parameters.Length;
-                    }
-                    object[] controlledParams = new object[amountParams];
-                    controlledParams[0] = matches;
-                    for (int i = 1; i < amountParams; i++) {
-                        controlledParams[i] = parameters[i - 1];
-                    }
-                    index = (int)controlledSelection.Invoke(null, parameters);
-                } else {
+                    index = controlledSelection.Select(matches);
+                }
+                if (index == -1) {
                     Random rnd = new Random();
                     index = rnd.Next(matches.Count);
                 }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-
-namespace Grammars {
+﻿namespace Grammars {
     public class Rule<T> where T : StructureModel {
         protected Grammar<T> grammar;
         protected T query;
@@ -25,14 +19,14 @@ namespace Grammars {
         }
 
         protected double probability;
-        protected MethodInfo condition = null;
-        protected MethodInfo dynamicProbability = null;
-        protected MethodInfo controlledSelection = null;
+        protected RuleCondition condition = null;
+        protected RuleProbability dynamicProbability = null;
+        protected RuleMatchSelector controlledSelection = null;
 
         bool hasSelected;
 
-        public Rule(T query, T target, double probability, MethodInfo condition = null,
-            MethodInfo dynamicProbability = null, MethodInfo controlledSelection = null) {
+        public Rule(T query, T target, double probability, RuleCondition condition = null,
+            RuleProbability dynamicProbability = null, RuleMatchSelector controlledSelection = null) {
             this.query = query;
             this.target = target;
             this.probability = probability;
@@ -44,10 +38,7 @@ namespace Grammars {
 
         public bool CheckCondition() {
             if (condition != null) {
-                object[] parameters = new object[1];
-                parameters[0] = this;
-                bool result = (bool)condition.Invoke(null, parameters);
-                return result;
+                return condition.Check();
             } else {
                 return true;
             }
@@ -55,11 +46,8 @@ namespace Grammars {
 
         public double GetProbability(bool useDynamic = true) {
             if (dynamicProbability != null && useDynamic) {
-                object[] parameters = new object[1];
-                parameters[0] = this;
-                double result = (double)dynamicProbability.Invoke(null, parameters);
-                // Change probability or not?
-                return result;
+                double calculated = dynamicProbability.Calculate();
+                if (calculated >= 0) return calculated;
             }
             return probability;
         }
@@ -72,7 +60,7 @@ namespace Grammars {
                 if (controlledSelection != null) {
                     object[] parameters = new object[1];
                     parameters[0] = this;
-                    transformer.Select(controlledSelection, parameters);
+                    transformer.Select(controlledSelection);
                 } else {
                     transformer.Select();
                 }
@@ -103,6 +91,5 @@ namespace Grammars {
             Transformer = grammar.Transformer;
             transformer.Source = source;
         }
-
     }
 }

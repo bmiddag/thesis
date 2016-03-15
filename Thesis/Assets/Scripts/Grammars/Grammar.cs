@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 
 namespace Grammars {
     public class Grammar<T>
@@ -38,31 +35,45 @@ namespace Grammars {
                 }
             }
         }
+        
+        /// <summary>
+        /// If all rules sould execute Find (e.g. before checking probabilities), this should be true.
+        /// Otherwise, Find should be executed when selecting the rule. If it fails, the rule should not be selected.
+        /// </summary>
+        protected bool findAllRules;
+        public bool FindAllRules {
+            get {
+                return findAllRules;
+            }
+        }
 
-        bool findAllRules;
-        MethodInfo stopCondition = null;
-        MethodInfo controlledRuleSelection = null;
+        GrammarStopCondition stopCondition = null;
+        GrammarRuleSelector controlledRuleSelection = null;
         int iteration;
-        bool noRuleFound;
 
-        protected Random random;
+        /// <summary>
+        /// If no rule was found during this iteration, this should be marked true.
+        /// </summary>
+        protected bool noRuleFound;
+        public bool NoRuleFound {
+            get {
+                return noRuleFound;
+            }
+        }
 
-        public Grammar(MethodInfo stopCondition = null, MethodInfo controlledRuleSelection = null, bool findAllRules = false) {
+        public Grammar(GrammarStopCondition stopCondition = null, GrammarRuleSelector controlledRuleSelection = null, bool findAllRules = false) {
             this.stopCondition = stopCondition;
             this.controlledRuleSelection = controlledRuleSelection;
             this.findAllRules = findAllRules;
             iteration = 0;
             noRuleFound = false;
-            random = new Random();
         }
 
         protected bool CheckStopCondition() { // TODO: Change to int?
             if (source == null) return true;
             if (stopCondition != null) {
-                object[] parameters = new object[1];
-                parameters[0] = this;
-                bool result = (bool)stopCondition.Invoke(null, parameters);
-                return result;
+                int result = stopCondition.Check();
+                return result != 0;
             } else {
                 return noRuleFound;
             }
@@ -72,60 +83,42 @@ namespace Grammars {
             if (source == null) return;
             selectedRule = null;
             int ruleIndex = -1;
+            int tempRuleIndex = -1;
             if (findAllRules) {
                 foreach (Rule<T> rule in rules) {
                     rule.Find(source);
                 }
             }
+            // Make a copy of the rule list without the ones that are certain to fail. 
+            List<Rule<T>> tempRules = new List<Rule<T>>();
+            foreach (Rule<T> rule in rules) {
+                if (!findAllRules || rule.HasSelected()) {
+                    tempRules.Add(rule);
+                }
+            }
+            // Controlled rule selection
             if (controlledRuleSelection != null && useControlled) {
-                object[] parameters = new object[1];
-                parameters[0] = this;
-                ruleIndex = (int)controlledRuleSelection.Invoke(null, parameters);
-            } else {
-                double currentProbability = 0.0;
-                double maxProbability = 0.0;
-                List<Rule<T>> tempRules = new List<Rule<T>>();
-                List<double> probabilities = new List<double>();
-                foreach (Rule<T> rule in rules) {
-                    if (!findAllRules || rule.HasSelected()) {
-                        tempRules.Add(rule);
-                        double probability = rule.GetProbability();
-                        maxProbability += probability;
-                        probabilities.Add(probability);
-                    }
-                }
-                while (tempRules.Count > 0 && ruleIndex == -1) {
-                    currentProbability = random.NextDouble() * maxProbability;
-                    int ruleToRemove = -1;
-                    for (int i = 0; i < tempRules.Count; i++) {
-                        if (currentProbability < probabilities[i]) {
-                            if (!findAllRules) {
-                                // Rule query may fail, so try this first.
-                                if (tempRules[i].Find(source)) {
-                                    ruleIndex = i;
-                                } else ruleToRemove = i;
-                            } else ruleIndex = i;
-                            break;
-                        } else {
-                            currentProbability -= probabilities[i];
-                        }
-                    }
-                    if (ruleIndex != -1) { // Get index of rule in complete rule list
-                        Rule<T> rule = tempRules[ruleIndex];
-                        ruleIndex = rules.IndexOf(rule);
-                    }
-                    if (ruleToRemove != -1) {
-                        maxProbability -= probabilities[ruleToRemove];
-                        probabilities.RemoveAt(ruleToRemove);
-                        tempRules.RemoveAt(ruleToRemove);
-                    }
+                tempRuleIndex = controlledRuleSelection.Select(new List<Rule<T>>(tempRules));
+                if (tempRuleIndex != -1) { // Get index of rule in complete rule list
+                    Rule<T> rule = tempRules[tempRuleIndex];
+                    ruleIndex = rules.IndexOf(rule);
+                    if (ruleIndex < 0 || ruleIndex >= rules.Count) ruleIndex = -1;
                 }
             }
-            if (ruleIndex != -1 && ruleIndex < rules.Count) {
+            if (ruleIndex == -1) {
+                // Default rule selection using probabilities. Is also used as fallback in case controlled rule selection doesn't work.
+                GrammarRuleSelector defaultRuleSelection = GrammarRuleSelector.FromName("ProbabilityRuleSelection", this);
+                tempRuleIndex = defaultRuleSelection.Select(new List<Rule<T>>(tempRules));
+                if (tempRuleIndex != -1) { // Get index of rule in complete rule list
+                    Rule<T> rule = tempRules[tempRuleIndex];
+                    ruleIndex = rules.IndexOf(rule);
+                    if (ruleIndex < 0 || ruleIndex >= rules.Count) ruleIndex = -1;
+                }
+            }
+            
+            if (ruleIndex != -1) {
                 selectedRule = rules[ruleIndex];
-            } else {
-                noRuleFound = true;
-            }
+            } else noRuleFound = true;
         }
 
         public void Update() {

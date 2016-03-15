@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
-
-namespace Grammars {
+﻿namespace Grammars {
     /// <summary>
     /// Abstract class for transforming a substructure (e.g. subgraph, a group of tiles, etc.) into another structure.
     /// </summary>
@@ -27,8 +23,7 @@ namespace Grammars {
         /// Selection is random by default but can be overwritten with controlledSelection.
         /// </summary>
         /// <param name="controlledSelection">A custom selection handler, returning the index of the selected match</param>
-        /// <param name="parameters">Further parameters to pass to the custom selection handler</param>
-        void Select(MethodInfo controlledSelection = null, object[] parameters = null);
+        void Select(RuleMatchSelector controlledSelection = null);
 
         /// <summary>
         /// Transforms a substructure into another 
