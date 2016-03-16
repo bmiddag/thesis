@@ -72,12 +72,15 @@ namespace Demo {
             bool found = t.Find(query);
             if (found) {
                 print("Found it!");
-                print(t.nodeTransformations.Count);
+                //print(t.nodeTransformations.Count);
             } else {
                 print("Not found");
             }
             //yield return new WaitForSeconds(2);
-            if(found) t.Transform(target);
+            if (found) {
+                t.Select();
+                t.Transform(target);
+            }
             yield return null;
         }
 
@@ -308,7 +311,7 @@ namespace Demo {
             string dateTime = DateTime.Now.Day.ToString() + "-" + DateTime.Now.Month.ToString() + "-" + DateTime.Now.Year.ToString()
                 + "_" + DateTime.Now.Hour.ToString() + "-" + DateTime.Now.Minute.ToString() + "-" + DateTime.Now.Second.ToString()
                 + "_" + DateTime.Now.Millisecond.ToString();
-            string filename = "Graph_" + dateTime + ".xml";
+            string filename = "Grammars/Graph_" + dateTime + ".xml";
             DemoIO serializer = new DemoIO(filename, controller);
             serializer.SerializeGraph(graph);
             print("Saved!");
@@ -316,7 +319,7 @@ namespace Demo {
         }
 
         public IEnumerator LoadStructure() {
-            string filename = "Graph_test.xml";
+            string filename = "Grammars/Graph_test.xml";
             DemoIO serializer = new DemoIO(filename, controller);
             Graph newGraph = serializer.DeserializeGraph();
             print(newGraph.GetNodes().Count);

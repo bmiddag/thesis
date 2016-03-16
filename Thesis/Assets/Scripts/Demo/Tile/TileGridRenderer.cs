@@ -269,7 +269,7 @@ namespace Demo {
             string dateTime = DateTime.Now.Day.ToString() + "-" + DateTime.Now.Month.ToString() + "-" + DateTime.Now.Year.ToString()
                 + "_" + DateTime.Now.Hour.ToString() + "-" + DateTime.Now.Minute.ToString() + "-" + DateTime.Now.Second.ToString()
                 + "_" + DateTime.Now.Millisecond.ToString();
-            string filename = "Grid_" + dateTime + ".xml";
+            string filename = "Grammars/Grid_" + dateTime + ".xml";
             DemoIO serializer = new DemoIO(filename, controller);
             serializer.SerializeGrid(grid);
             print("Saved!");
@@ -277,7 +277,7 @@ namespace Demo {
         }
 
         public IEnumerator LoadStructure() {
-            string filename = "Grid_test.xml";
+            string filename = "Grammars/Grid_test.xml";
             DemoIO serializer = new DemoIO(filename, controller);
             TileGrid newGrid = serializer.DeserializeGrid();
             SetGrid(newGrid);

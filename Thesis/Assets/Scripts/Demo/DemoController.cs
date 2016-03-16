@@ -79,6 +79,9 @@ namespace Demo {
                 if (Input.GetKeyDown(KeyCode.L)) {
                     StartCoroutine("LoadStructure");
                 }
+                if (Input.GetKeyDown(KeyCode.R)) {
+                    StartCoroutine("LoadGrammar");
+                }
                 if (Input.GetKeyDown(KeyCode.O)) {
                     StartCoroutine("SaveAttributeClasses");
                 }
@@ -181,8 +184,16 @@ namespace Demo {
             return currentStructureRenderer.LoadStructure();
         }
 
+        public IEnumerator LoadGrammar() {
+            string filename = "Grammars/test.grammar";
+            DemoIO serializer = new DemoIO(filename, this);
+            string[] lines = serializer.ReadLines();
+            print(lines[0]);
+            yield return null;
+        }
+
         public IEnumerator SaveAttributeClasses() {
-            string filename = "AttributeClasses.xml";
+            string filename = "Grammars/AttributeClasses.xml";
             DemoIO serializer = new DemoIO(filename, this);
             serializer.SerializeAttributeClasses(attributeClasses);
             print("Attribute classes saved!");
@@ -190,7 +201,7 @@ namespace Demo {
         }
 
         public IEnumerator LoadAttributeClasses() {
-            string filename = "AttributeClasses.xml";
+            string filename = "Grammars/AttributeClasses.xml";
             DemoIO serializer = new DemoIO(filename, this);
             attributeClasses = serializer.DeserializeAttributeClasses();
             print("Attribute classes loaded!");

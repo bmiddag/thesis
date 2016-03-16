@@ -20,6 +20,8 @@ namespace Grammars {
         protected List<Rule<T>> rules;
         Rule<T> selectedRule = null;
 
+        protected List<Constraint<T>> constraints;
+
         protected Type transformerType;
         public IStructureTransformer<T> Transformer {
             get {
@@ -47,8 +49,8 @@ namespace Grammars {
             }
         }
 
-        GrammarStopCondition stopCondition = null;
-        GrammarRuleSelector controlledRuleSelection = null;
+        List<GrammarCondition> stopConditions;
+        GrammarRuleSelector ruleSelectionController = null;
         int iteration;
 
         /// <summary>
@@ -61,48 +63,56 @@ namespace Grammars {
             }
         }
 
-        public Grammar(GrammarStopCondition stopCondition = null, GrammarRuleSelector controlledRuleSelection = null, bool findAllRules = false) {
-            this.stopCondition = stopCondition;
-            this.controlledRuleSelection = controlledRuleSelection;
+        public Grammar(GrammarRuleSelector ruleSelectionController = null, bool findAllRules = false) {
+            this.ruleSelectionController = ruleSelectionController;
             this.findAllRules = findAllRules;
+            stopConditions = new List<GrammarCondition>();
+            constraints = new List<Constraint<T>>();
             iteration = 0;
             noRuleFound = false;
         }
 
         protected bool CheckStopCondition() { // TODO: Change to int?
             if (source == null) return true;
-            if (stopCondition != null) {
-                int result = stopCondition.Check();
-                return result != 0;
+            if (stopConditions != null && stopConditions.Count > 0) {
+                int stop = -1; // index of failed stop condition
+                for (int i = 0; i < stopConditions.Count; i++) {
+                    if (stopConditions[i].Check()) {
+                        stop = i;
+                        break;
+                    }
+                }
+                if (stop != -1) {
+                    return true;
+                } else return false;
             } else {
                 return noRuleFound;
             }
         }
 
-        protected void SelectRule(bool useControlled = true) {
+        protected void SelectRule(List<Rule<T>> ruleSet, GrammarRuleSelector selectionHandler = null, bool findFirst = false) {
             if (source == null) return;
             selectedRule = null;
             int ruleIndex = -1;
             int tempRuleIndex = -1;
-            if (findAllRules) {
-                foreach (Rule<T> rule in rules) {
-                    rule.Find(source);
-                }
+            foreach (Rule<T> rule in ruleSet) {
+                rule.NextIteration();
+                if(findFirst) rule.Find(source);
             }
             // Make a copy of the rule list without the ones that are certain to fail. 
             List<Rule<T>> tempRules = new List<Rule<T>>();
-            foreach (Rule<T> rule in rules) {
-                if (!findAllRules || rule.HasSelected()) {
+            foreach (Rule<T> rule in ruleSet) {
+                if (!findFirst || rule.HasSelected()) {
                     tempRules.Add(rule);
                 }
             }
             // Controlled rule selection
-            if (controlledRuleSelection != null && useControlled) {
-                tempRuleIndex = controlledRuleSelection.Select(new List<Rule<T>>(tempRules));
+            if (selectionHandler != null) {
+                tempRuleIndex = ruleSelectionController.Select(new List<Rule<T>>(tempRules));
                 if (tempRuleIndex != -1) { // Get index of rule in complete rule list
                     Rule<T> rule = tempRules[tempRuleIndex];
-                    ruleIndex = rules.IndexOf(rule);
-                    if (ruleIndex < 0 || ruleIndex >= rules.Count) ruleIndex = -1;
+                    ruleIndex = ruleSet.IndexOf(rule);
+                    if (ruleIndex < 0 || ruleIndex >= ruleSet.Count) ruleIndex = -1;
                 }
             }
             if (ruleIndex == -1) {
@@ -111,24 +121,47 @@ namespace Grammars {
                 tempRuleIndex = defaultRuleSelection.Select(new List<Rule<T>>(tempRules));
                 if (tempRuleIndex != -1) { // Get index of rule in complete rule list
                     Rule<T> rule = tempRules[tempRuleIndex];
-                    ruleIndex = rules.IndexOf(rule);
-                    if (ruleIndex < 0 || ruleIndex >= rules.Count) ruleIndex = -1;
+                    ruleIndex = ruleSet.IndexOf(rule);
+                    if (ruleIndex < 0 || ruleIndex >= ruleSet.Count) ruleIndex = -1;
                 }
             }
             
             if (ruleIndex != -1) {
-                selectedRule = rules[ruleIndex];
+                selectedRule = ruleSet[ruleIndex];
             } else noRuleFound = true;
         }
 
+        protected Constraint<T> CheckConstraints() {
+            List<Constraint<T>> failedConstraints = new List<Constraint<T>>();
+            foreach (Constraint<T> constraint in constraints) {
+                if (!constraint.Check()) { // Constraint failed
+                    failedConstraints.Add(constraint);
+                }
+            }
+            if (failedConstraints.Count > 0) {
+                Random random = new Random();
+                int index = random.Next(failedConstraints.Count);
+                return failedConstraints[index];
+            } else {
+                return null;
+            }
+        }
+
         public void Update() {
-            SelectRule();
+            // Check constraints. If any has failed, a rule for that constraint is selected. Otherwise rule selection continues as normal.
+            Constraint<T> selectedConstraint = CheckConstraints();
+            if (selectedConstraint != null) {
+                SelectRule(selectedConstraint.GetRules(), selectedConstraint.Selector, selectedConstraint.FindFirst);
+                if(noRuleFound) SelectRule(rules, ruleSelectionController, findAllRules);
+            } else {
+                SelectRule(rules, ruleSelectionController, findAllRules);
+            }
             if (!noRuleFound && selectedRule != null) {
                 selectedRule.Apply(source);
             }
             bool stop = CheckStopCondition();
             if (stop) {
-                // Transfer control to inter-grammar system
+                // TODO: Transfer control to inter-grammar system
             }
             iteration++;
         }
@@ -143,8 +176,32 @@ namespace Grammars {
             }
         }
 
+        public void AddStopCondition(GrammarCondition cond) {
+            stopConditions.Add(cond);
+        }
+
+        public void RemoveStopCondition(GrammarCondition cond) {
+            if (stopConditions.Contains(cond)) {
+                stopConditions.Remove(cond);
+            }
+        }
+
         public List<Rule<T>> GetRules() {
             return new List<Rule<T>>(rules); // Return a copy of the rule list
+        }
+
+        public void AddConstraint(Constraint<T> constraint) {
+            constraints.Add(constraint);
+        }
+
+        public void RemoveConstraint(Constraint<T> constraint) {
+            if (constraints.Contains(constraint)) {
+                constraints.Remove(constraint);
+            }
+        }
+
+        public List<Constraint<T>> GetConstraints() {
+            return new List<Constraint<T>>(constraints);
         }
     }
 }

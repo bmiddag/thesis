@@ -3,6 +3,8 @@ using Grammars.Graph;
 using Grammars.Tile;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using System.Xml;
 
 namespace Demo {
@@ -273,6 +275,11 @@ namespace Demo {
             }
 
             return classesDict;
+        }
+
+        public string[] ReadLines() {
+            string[] lines = File.ReadAllLines(filename, Encoding.UTF8);
+            return lines;
         }
     }
 }

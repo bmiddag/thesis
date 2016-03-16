@@ -87,6 +87,10 @@
             return hasSelected;
         }
 
+        public void NextIteration() {
+            hasSelected = false;
+        }
+
         protected void InitStructureTransformer(T source) {
             Transformer = grammar.Transformer;
             transformer.Source = source;

@@ -1,0 +1,27 @@
+Grammar<Graph> {
+	ruleSelector = null
+	findFirst = null
+
+	constraints {
+		constraint1 {
+			conditions {
+				cond1
+				cond2
+				cond3
+			}			
+			rules {
+				0.01: condition ? graph1 --> graph2
+				0.99: graph2 (dynamicMatchSelector) --> graph3
+			}
+		}
+	}
+	
+	rules {
+		0.5 (dynamicProbability): condition ? graph1 --> graph2
+	}
+	
+	stopConditions {
+		cond1
+		cond2
+	}
+}

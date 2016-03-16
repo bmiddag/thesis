@@ -5,32 +5,32 @@ using System.Reflection;
 using System.Text;
 
 namespace Grammars {
-    public class GrammarStopCondition {
+    public class GrammarCondition {
         private MethodInfo method;
         private object grammar;
 
-        public GrammarStopCondition(MethodInfo method, object grammar) {
+        public GrammarCondition(MethodInfo method, object grammar) {
             this.method = method;
             this.grammar = grammar;
         }
 
-        public int Check() {
+        public bool Check() {
             // Check method signature
             if (method != null && method.ReturnType == typeof(int) && method.GetParameters().Count() == 1) {
                 object[] parameters = new object[1];
                 parameters[0] = grammar;
-                int result = (int)method.Invoke(null, parameters);
+                bool result = (bool)method.Invoke(null, parameters);
                 return result;
             } else {
-                return 0; // Continue
+                return false;
             }
         }
 
-        public static GrammarStopCondition FromName<T>(string name, Grammar<T> grammar) where T : StructureModel {
-            MethodInfo condition = typeof(GrammarStopCondition).GetMethod(name);
+        public static GrammarCondition FromName<T>(string name, Grammar<T> grammar) where T : StructureModel {
+            MethodInfo condition = typeof(GrammarCondition).GetMethod(name);
             // Check method signature. Has to be static if created from here.
-            if (condition != null && condition.IsStatic && condition.ReturnType == typeof(int) && condition.GetParameters().Count() == 1) {
-                return new GrammarStopCondition(condition, grammar);
+            if (condition != null && condition.IsStatic && condition.ReturnType == typeof(bool) && condition.GetParameters().Count() == 1) {
+                return new GrammarCondition(condition, grammar);
             } else return null;
         }
 
@@ -39,11 +39,11 @@ namespace Grammars {
         // ********************************************************************************************************************
 
         // Default stop condition (this is an example - not referred to in the actual grammar code)
-        public static int NoRuleFound<T>(Grammar<T> grammar) where T : StructureModel {
+        public static bool NoRuleFound<T>(Grammar<T> grammar) where T : StructureModel {
             if (grammar.NoRuleFound) {
-                return -1; // Stop (still undefined)
+                return true; // Stop (still undefined)
             } else {
-                return 0; // Continue
+                return false; // Continue
             }
         }
     }

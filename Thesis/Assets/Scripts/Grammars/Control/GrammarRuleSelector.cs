@@ -58,7 +58,7 @@ namespace Grammars {
                 int ruleToRemove = -1;
                 for (int i = 0; i < tempRules.Count; i++) {
                     if (currentProbability < probabilities[i]) {
-                        if (!grammar.FindAllRules) {
+                        if (!tempRules[i].HasSelected()) {
                             // Rule query may fail, so try this first.
                             if (tempRules[i].Find(grammar.Source)) {
                                 ruleIndex = i;
