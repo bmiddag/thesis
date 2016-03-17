@@ -7,18 +7,36 @@ using System.Text;
 namespace Grammars {
     public class RuleProbability {
         private MethodInfo method;
+        public MethodInfo Method {
+            get { return method; }
+            set { method = value; }
+        }
         private object rule;
+        public object Rule {
+            get { return rule; }
+            set { rule = value; }
+        }
 
-        public RuleProbability(MethodInfo method, object rule) {
+        private List<object> arguments;
+        public void AddArgument(object arg) {
+            arguments.Add(arg);
+        }
+
+        public RuleProbability(MethodInfo method, object rule = null) {
             this.method = method;
             this.rule = rule;
+            arguments = new List<object>();
         }
 
         public double Calculate() {
             // Check method signature
-            if (method != null && method.ReturnType == typeof(bool) && method.GetParameters().Count() == 1) {
-                object[] parameters = new object[1];
+            int argCount = arguments.Count;
+            if (rule != null && method != null && method.ReturnType == typeof(bool) && method.GetParameters().Count() == 1+argCount) {
+                object[] parameters = new object[1 + argCount];
                 parameters[0] = rule;
+                for (int i = 0; i < argCount; i++) {
+                    parameters[i + 1] = arguments[i];
+                }
                 double result = (double)method.Invoke(null, parameters);
                 return result;
             } else {
@@ -29,7 +47,7 @@ namespace Grammars {
         public static RuleProbability FromName<T>(string name, Rule<T> rule) where T : StructureModel {
             MethodInfo condition = typeof(RuleProbability).GetMethod(name);
             // Check method signature. Has to be static if created from here.
-            if (condition != null && condition.IsStatic && condition.ReturnType == typeof(double) && condition.GetParameters().Count() == 1) {
+            if (condition != null && condition.IsStatic && condition.ReturnType == typeof(double) && condition.GetParameters().Count() >= 1) {
                 return new RuleProbability(condition, rule);
             } else return null;
         }

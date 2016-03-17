@@ -7,6 +7,7 @@ using System;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using Grammars.Tile;
 
 namespace Demo {
     public class DemoController : MonoBehaviour {
@@ -81,6 +82,9 @@ namespace Demo {
                 }
                 if (Input.GetKeyDown(KeyCode.R)) {
                     StartCoroutine("LoadGrammar");
+                }
+                if (Input.GetKeyDown(KeyCode.U)) {
+                    StartCoroutine("GrammarStep");
                 }
                 if (Input.GetKeyDown(KeyCode.O)) {
                     StartCoroutine("SaveAttributeClasses");
@@ -176,6 +180,18 @@ namespace Demo {
             currentPopUp = null;
         }
 
+        public void SetGrammar<T>(Grammar<T> grammar) where T : StructureModel {
+            Type renType = currentStructureRenderer.GetType();
+            if (typeof(T) != currentStructureRenderer.Source.GetType()) return;
+            grammar.Source = (T)currentStructureRenderer.Source;
+            currentStructureRenderer.Grammar = grammar;
+            print("Grammar successfully set.");
+        }
+
+        public IEnumerator GrammarStep() {
+            return currentStructureRenderer.GrammarStep();
+        }
+
         public IEnumerator SaveStructure() {
             return currentStructureRenderer.SaveStructure();
         }
@@ -185,10 +201,16 @@ namespace Demo {
         }
 
         public IEnumerator LoadGrammar() {
-            string filename = "Grammars/test.grammar";
-            DemoIO serializer = new DemoIO(filename, this);
-            string[] lines = serializer.ReadLines();
-            print(lines[0]);
+            string dirName = "Grammars/";
+            DemoIO dirSerializer = new DemoIO(dirName, this);
+            List<string> grammars = dirSerializer.GetSubDirectories();
+            foreach (string grmName in grammars) {
+                print("Loading grammar: " + grmName);
+                string filename = dirName + grmName + "/" + grmName + ".grammar";
+                DemoIO serializer = new DemoIO(filename, this);
+                string[] lines = serializer.ReadLines();
+                print(lines[0]);
+            }
             yield return null;
         }
 

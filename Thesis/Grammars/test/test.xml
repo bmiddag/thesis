@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Grammar type="graph" findFirst="true">
+  <RuleSelector name="ControlledSelector" />
+  <Constraints>
+    <!-- Constraint 1: At least 2 sidepaths (if >= 5 elements exist) -->
+    <Constraint name="constraint1_sidepath">
+      <Conditions>
+        <GrammarCondition name="Or">
+          <GrammarCondition name="CountElementsWithAttribute">
+            <string></string>
+            <string></string>
+            <string>&lt;=</string>
+            <int>5</int>
+          </GrammarCondition>
+          <GrammarCondition name="CountElementsWithAttribute">
+            <string>sidepath</string>
+            <string></string>
+            <string>&gt;=</string>
+            <int>2</int>
+          </GrammarCondition>
+        </GrammarCondition>
+      </Conditions>
+      <Rules>
+        <!-- Add sidepaths -->
+        <Rule probability="0.5">
+          <RuleProbability>DynamicRuleProbability</RuleProbability>
+          <RuleMatchSelector>ControlledMatchSelector</RuleMatchSelector>
+          <RuleCondition name="CountElementsWithAttribute">
+            <string></string>
+            <string></string>
+            <string>&gt;=</string>
+            <int>10</int>
+          </RuleCondition>
+          <Query>graph3</Query>
+          <Target>graph4</Target>
+        </Rule>
+        <Rule probability="0.5">
+          <Query>graph3</Query>
+          <Target>graph5</Target>
+        </Rule>
+      </Rules>
+    </Constraint>
+  </Constraints>
+  <Rules>
+    <Rule probability="0.8">
+      <Query>graph1</Query>
+      <Target>graph2</Target>
+    </Rule>
+    <Rule probability="0.2">
+      <Query>graph6</Query>
+      <Target>graph7</Target>
+    </Rule>
+  </Rules>
+  <StopConditions>
+    <GrammarCondition name="CountElementsWithAttribute">
+      <string>new</string>
+      <string></string>
+      <string>&gt;=</string>
+      <int>2</int>
+    </GrammarCondition>
+  </StopConditions>
+</Grammar>

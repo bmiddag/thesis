@@ -277,6 +277,88 @@ namespace Demo {
             return classesDict;
         }
 
+        public List<string> GetSubDirectories() {
+            DirectoryInfo directory = new DirectoryInfo(filename);
+            DirectoryInfo[] directories = directory.GetDirectories();
+            List<string> dirList = new List<string>();
+            foreach (DirectoryInfo folder in directories)
+                dirList.Add(folder.Name);
+            return dirList;
+        }
+
+        public void ParseGrammar() {
+            string grammarType = null;
+            string findFirst = null;
+            string ruleSelector;
+            // Create an XML reader for this file.
+            using (XmlReader reader = XmlReader.Create(filename)) {
+                while (reader.Read()) {
+                    if (reader.NodeType == XmlNodeType.Element) {
+                        if (reader.Name == "Grammar") {
+                            grammarType = reader["type"];
+                            findFirst = reader["findFirst"];
+                            if (grammarType == null) return; // Deserialization failed
+                        }
+                    }
+                }
+                switch (grammarType.ToLowerInvariant()) {
+                    case "graph":
+                        Grammar<Graph> graphGrammar = new Grammar<Graph>(null, findFirst=="true");
+                        _ParseGrammar(reader, graphGrammar);
+                        controller.SetGrammar(graphGrammar);
+                        break;
+                    case "tilegrid":
+                        Grammar<TileGrid> tileGrammar = new Grammar<TileGrid>(null, findFirst=="true");
+                        _ParseGrammar(reader, tileGrammar);
+                        controller.SetGrammar(tileGrammar);
+                        break;
+                }
+            }
+        }
+
+        private void _ParseGrammar<T>(XmlReader reader, Grammar<T> grammar) where T : StructureModel {
+            Constraint<T> currentConstraint = null;
+            Stack<GrammarCondition> currentGrammarCondition = new Stack<GrammarCondition>();
+            Stack<RuleCondition> currentRuleCondition = new Stack<RuleCondition>();
+            while (reader.Read()) {
+                switch (reader.NodeType) {
+                    case XmlNodeType.Element:
+                        // Get element name and switch on it.
+                        switch (reader.Name) {
+                            case "RuleSelector":
+                                string ruleSelector = reader["name"];
+                                grammar.RuleSelector = GrammarRuleSelector.FromName(ruleSelector, grammar);
+                                break;
+                            case "Constraint":
+                                string name = reader["name"];
+                                Constraint<T> constraint = new Constraint<T>(grammar);
+                                currentConstraint = constraint;
+                                break;
+                            case "Attribute":
+                                //string key = reader["key"];
+                                //string val = reader["value"];
+                                //if (key == null || val == null) return null; // Deserialization failed
+                                //currentElement.SetAttribute(key, val);
+                                break;
+                        }
+                        break;
+                    case XmlNodeType.EndElement:
+                        switch (reader.Name) {
+                            case "GrammarCondition":
+                                currentGrammarCondition.Pop();
+                                break;
+                            case "RuleCondition":
+                                currentRuleCondition.Pop();
+                                break;
+                            case "Constraint":
+                                currentConstraint = null;
+                                break;
+                        }
+                        break;
+                }
+            }
+        }
+
         public string[] ReadLines() {
             string[] lines = File.ReadAllLines(filename, Encoding.UTF8);
             return lines;

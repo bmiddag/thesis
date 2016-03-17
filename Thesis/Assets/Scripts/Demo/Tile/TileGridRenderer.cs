@@ -4,12 +4,6 @@ using Grammars.Tile;
 using Grammars;
 using System;
 using System.Collections;
-using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Runtime.InteropServices;
-using System.Xml.Serialization;
-using System.Xml;
 
 namespace Demo {
 	public class TileGridRenderer : MonoBehaviour, IStructureRenderer {
@@ -21,10 +15,33 @@ namespace Demo {
         public CameraControl cameraControl;
         bool updateRenderer = false; // If true, tilerenderers will be updated during the next call of Update(). Prevents chaining of renderer updates.
         public DemoController controller;
+        Grammar<TileGrid> grammar = null;
 
         public IElementRenderer CurrentElement {
             get {
                 return currentTile;
+            }
+        }
+
+        public StructureModel Source {
+            get {
+                return grid;
+            }
+        }
+
+        public object Grammar {
+            get {
+                return grammar;
+            }
+
+            set {
+                if (value == null) {
+                    grammar = null;
+                } else if (value.GetType() == typeof(Grammar<TileGrid>)) {
+                    grammar = (Grammar<TileGrid>)value;
+                } else {
+                    print("Wrong grammar type for this demo renderer.");
+                }
             }
         }
 
@@ -282,6 +299,13 @@ namespace Demo {
             TileGrid newGrid = serializer.DeserializeGrid();
             SetGrid(newGrid);
             print("Loaded!");
+            yield return null;
+        }
+
+        public IEnumerator GrammarStep() {
+            if (grammar != null) {
+                grammar.Update();
+            }
             yield return null;
         }
     }

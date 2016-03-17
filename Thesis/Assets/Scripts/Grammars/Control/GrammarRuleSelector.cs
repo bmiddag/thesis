@@ -7,19 +7,37 @@ using System.Text;
 namespace Grammars {
     public class GrammarRuleSelector {
         private MethodInfo method;
+        public MethodInfo Method {
+            get { return method; }
+            set { method = value; }
+        }
         private object grammar;
+        public object Grammar {
+            get { return grammar; }
+            set { grammar = value; }
+        }
 
-        public GrammarRuleSelector(MethodInfo method, object grammar) {
+        private List<object> arguments;
+        public void AddArgument(object arg) {
+            arguments.Add(arg);
+        }
+
+        public GrammarRuleSelector(MethodInfo method, object grammar = null) {
             this.method = method;
             this.grammar = grammar;
+            arguments = new List<object>();
         }
 
         public int Select(object rules) {
             // Check method signature
-            if (method != null && method.ReturnType == typeof(int) && method.GetParameters().Count() == 2) {
-                object[] parameters = new object[2];
+            int argCount = arguments.Count;
+            if (grammar != null && method != null && method.ReturnType == typeof(int) && method.GetParameters().Count() == 2+argCount) {
+                object[] parameters = new object[2+argCount];
                 parameters[0] = grammar;
                 parameters[1] = rules;
+                for (int i = 0; i < argCount; i++) {
+                    parameters[i+2] = arguments[i];
+                }
                 int result = (int)method.Invoke(null, parameters);
                 return result;
             } else {
@@ -30,7 +48,7 @@ namespace Grammars {
         public static GrammarRuleSelector FromName<T>(string name, Grammar<T> grammar) where T : StructureModel {
             MethodInfo condition = typeof(GrammarRuleSelector).GetMethod(name);
             // Check method signature. Has to be static if created from here.
-            if (condition != null && condition.IsStatic && condition.ReturnType == typeof(int) && condition.GetParameters().Count() == 2) {
+            if (condition != null && condition.IsStatic && condition.ReturnType == typeof(int) && condition.GetParameters().Count() >= 2) {
                 return new GrammarRuleSelector(condition, grammar);
             } else return null;
         }
@@ -43,15 +61,18 @@ namespace Grammars {
         public static int ProbabilityRuleSelection<T>(Grammar<T> grammar, List<Rule<T>> rules) where T : StructureModel {
             int ruleIndex = -1;
             Random random = new Random();
-            List<Rule<T>> tempRules = new List<Rule<T>>(rules); // Make a copy of the rule list where we can change elements
+            List<Rule<T>> tempRules = new List<Rule<T>>(); // Make a temporary rule list. Impossible rules won't be added to this.
 
             double currentProbability = 0.0;
             double maxProbability = 0.0;
             List<double> probabilities = new List<double>();
-            foreach (Rule<T> rule in tempRules) {
+            foreach (Rule<T> rule in rules) {
                 double probability = rule.GetProbability();
-                maxProbability += probability;
-                probabilities.Add(probability);
+                if (probability > 0) {
+                    maxProbability += probability;
+                    probabilities.Add(probability);
+                    tempRules.Add(rule);
+                }
             }
             while (tempRules.Count > 0 && ruleIndex == -1) {
                 currentProbability = random.NextDouble() * maxProbability;

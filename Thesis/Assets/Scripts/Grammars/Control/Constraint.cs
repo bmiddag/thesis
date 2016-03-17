@@ -29,6 +29,7 @@ namespace Grammars {
 
         public Constraint(Grammar<T> grammar) {
             this.grammar = grammar;
+            grammar.AddConstraint(this);
             conditions = new List<GrammarCondition>();
             //failedConditions = new List<int>();
         }

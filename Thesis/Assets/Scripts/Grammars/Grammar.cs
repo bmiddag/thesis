@@ -51,6 +51,18 @@ namespace Grammars {
 
         List<GrammarCondition> stopConditions;
         GrammarRuleSelector ruleSelectionController = null;
+        public GrammarRuleSelector RuleSelector {
+            get {
+                return ruleSelectionController;
+            }
+            set {
+                if (value != ruleSelectionController) {
+                    iteration = 0;
+                    noRuleFound = false;
+                    ruleSelectionController = value;
+                }
+            }
+        }
         int iteration;
 
         /// <summary>
@@ -96,13 +108,13 @@ namespace Grammars {
             int ruleIndex = -1;
             int tempRuleIndex = -1;
             foreach (Rule<T> rule in ruleSet) {
-                rule.NextIteration();
+                rule.Deselect();
                 if(findFirst) rule.Find(source);
             }
             // Make a copy of the rule list without the ones that are certain to fail. 
             List<Rule<T>> tempRules = new List<Rule<T>>();
             foreach (Rule<T> rule in ruleSet) {
-                if (!findFirst || rule.HasSelected()) {
+                if(rule.CheckCondition() && (!findFirst || rule.HasSelected())) {
                     tempRules.Add(rule);
                 }
             }
@@ -149,16 +161,19 @@ namespace Grammars {
 
         public void Update() {
             // Check constraints. If any has failed, a rule for that constraint is selected. Otherwise rule selection continues as normal.
-            Constraint<T> selectedConstraint = CheckConstraints();
-            if (selectedConstraint != null) {
-                SelectRule(selectedConstraint.GetRules(), selectedConstraint.Selector, selectedConstraint.FindFirst);
-                if(noRuleFound) SelectRule(rules, ruleSelectionController, findAllRules);
-            } else {
-                SelectRule(rules, ruleSelectionController, findAllRules);
-            }
+            SelectRule(rules, ruleSelectionController, findAllRules);
             if (!noRuleFound && selectedRule != null) {
                 selectedRule.Apply(source);
             }
+
+            Constraint<T> selectedConstraint = CheckConstraints();
+            while (selectedConstraint != null) {
+                SelectRule(selectedConstraint.GetRules(), selectedConstraint.Selector, selectedConstraint.FindFirst);
+                //if (noRuleFound) break; // Can't break, because another constraint may be selected. This may still be an infinite loop
+                // TODO: Fix this!!!!
+                selectedConstraint = CheckConstraints();
+            }
+
             bool stop = CheckStopCondition();
             if (stop) {
                 // TODO: Transfer control to inter-grammar system

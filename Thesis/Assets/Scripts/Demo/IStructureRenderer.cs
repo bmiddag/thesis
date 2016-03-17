@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Grammars;
+using System.Collections;
 
 namespace Demo {
     public interface IStructureRenderer {
@@ -6,7 +7,18 @@ namespace Demo {
             get;
         }
 
+        StructureModel Source {
+            get;
+        }
+
+        object Grammar {
+            get;
+            set;
+        }
+
         IEnumerator SaveStructure();
         IEnumerator LoadStructure();
+
+        IEnumerator GrammarStep();
     }
 }

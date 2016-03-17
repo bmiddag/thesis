@@ -87,7 +87,7 @@
             return hasSelected;
         }
 
-        public void NextIteration() {
+        public void Deselect() {
             hasSelected = false;
         }
 

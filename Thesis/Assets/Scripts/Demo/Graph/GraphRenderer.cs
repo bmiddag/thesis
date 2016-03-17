@@ -4,9 +4,6 @@ using Grammars.Graph;
 using Grammars;
 using System;
 using System.Collections;
-using System.Runtime.Serialization;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Demo {
 	public class GraphRenderer : MonoBehaviour, IStructureRenderer {
@@ -18,6 +15,7 @@ namespace Demo {
         EdgeRenderer drawingEdgeRenderer;
 		public IDictionary<Edge, EdgeRenderer> edgeRenderers = new Dictionary<Edge, EdgeRenderer>();
 		IDictionary<Node, NodeRenderer> nodeRenderers = new Dictionary<Node, NodeRenderer>();
+        Grammar<Graph> grammar = null;
 
         public bool draggingNode = false;
         public CameraControl cameraControl;
@@ -31,6 +29,28 @@ namespace Demo {
                 if (currentNode != null) return currentNode;
                 if (currentEdge != null) return currentEdge;
                 return null;
+            }
+        }
+
+        public StructureModel Source {
+            get {
+                return graph;
+            }
+        }
+
+        public object Grammar {
+            get {
+                return grammar;
+            }
+
+            set {
+                if (value == null) {
+                    grammar = null;
+                } else if (value.GetType() == typeof(Grammar<Graph>)) {
+                    grammar = (Grammar<Graph>)value;
+                } else {
+                    print("Wrong grammar type for this demo renderer.");
+                }
             }
         }
 
@@ -325,6 +345,13 @@ namespace Demo {
             print(newGraph.GetNodes().Count);
             SetGraph(newGraph);
             print("Loaded!");
+            yield return null;
+        }
+
+        public IEnumerator GrammarStep() {
+            if (grammar != null) {
+                grammar.Update();
+            }
             yield return null;
         }
     }

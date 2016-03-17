@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Util;
 
 namespace Grammars.Tile {
@@ -53,6 +54,18 @@ namespace Grammars.Tile {
             TileGrid view = new TileGrid(w, h);
             view.CopyGrid(this, x, y);
             return view;
+        }
+
+        public override List<AttributedElement> GetElements() {
+            List<AttributedElement> attrList = new List<AttributedElement>();
+            int w = grid.GetLength(0);
+            int h = grid.GetLength(1);
+            for (int x = 0; x < w; x++) {
+                for (int y = 0; y < h; y++) {
+                    if (grid[x, y] != null) attrList.Add(grid[x, y]);
+                }
+            }
+            return attrList;
         }
 
         // ************************** GRID MANAGEMENT ************************** \\

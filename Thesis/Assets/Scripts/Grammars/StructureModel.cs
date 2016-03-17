@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Grammars {
     /// <summary>
@@ -16,5 +17,7 @@ namespace Grammars {
                 StructureChanged(this, EventArgs.Empty);
             }
         }
+
+        public abstract List<AttributedElement> GetElements();
 	}
 }

@@ -29,10 +29,18 @@ namespace Grammars.Graph {
             } else return nodeswithID.First();
         }
 
-		// ************************** SET MANAGEMENT ************************** \\
-		// The following code only adds and removes elements to/from sets.
-		// Element creation should be handled outside of this class.
-		public void AddNode(Node node) {
+        public override List<AttributedElement> GetElements() {
+            List<AttributedElement> attrList = new List<AttributedElement>();
+            foreach (Node node in nodes) {
+                attrList.Add(node);
+            }
+            return attrList;
+        }
+
+        // ************************** SET MANAGEMENT ************************** \\
+        // The following code only adds and removes elements to/from sets.
+        // Element creation should be handled outside of this class.
+        public void AddNode(Node node) {
 			if (nodes.Count == 0) node.Active = true; // TODO: Move this
 			nodes.Add(node);
 			ICollection<Edge> edgeList = node.GetEdges().Values;
