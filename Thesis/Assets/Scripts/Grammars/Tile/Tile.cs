@@ -44,5 +44,34 @@ namespace Grammars.Tile {
                 if(!gridReplaced) grid.SetTile(x, y, null);
             }
 		}
-	}
+
+        public override string GetAttribute(string key) {
+            string result = base.GetAttribute(key);
+            if (result == null && key != null && key.StartsWith("_structure_")) {
+                switch (key) {
+                    case "_structure_type":
+                        result = "tile"; break;
+                    case "_structure_x":
+                        result = x.ToString(); break;
+                    case "_structure_y":
+                        result = y.ToString(); break;
+                    case "_structure_neighbors":
+                        result = GetNeighbors().Count.ToString(); break;
+                    case "_structure_neighbour_up":
+                        Tile u = grid.GetTile(x, y - 1);
+                        result = (u != null).ToString(); break;
+                    case "_structure_neighbour_down":
+                        Tile d = grid.GetTile(x, y + 1);
+                        result = (d != null).ToString(); break;
+                    case "_structure_neighbour_left":
+                        Tile l = grid.GetTile(x - 1, y);
+                        result = (l != null).ToString(); break;
+                    case "_structure_neighbour_right":
+                        Tile r = grid.GetTile(x + 1, y);
+                        result = (r != null).ToString(); break;
+                }
+            }
+            return result;
+        }
+    }
 }

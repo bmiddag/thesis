@@ -62,7 +62,7 @@ namespace Grammars {
             return true;
         }
 
-        public string GetAttribute(string key) {
+        public virtual string GetAttribute(string key) {
             if (attributes.ContainsKey(key)) {
                 return attributes[key];
             } else return null;
