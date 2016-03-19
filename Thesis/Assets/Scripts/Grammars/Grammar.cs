@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 namespace Grammars {
-    public class Grammar<T>
+    public class Grammar<T> : IElementContainer
         where T : StructureModel {
         protected T source;
         public T Source {
@@ -160,12 +160,13 @@ namespace Grammars {
         }
 
         public void Update() {
-            // Check constraints. If any has failed, a rule for that constraint is selected. Otherwise rule selection continues as normal.
             SelectRule(rules, ruleSelectionController, findAllRules);
             if (!noRuleFound && selectedRule != null) {
                 selectedRule.Apply(source);
             }
 
+
+            // Check constraints. If any has failed, a rule for that constraint is selected. Otherwise rule selection continues as normal.
             Constraint<T> selectedConstraint = CheckConstraints();
             while (selectedConstraint != null) {
                 SelectRule(selectedConstraint.GetRules(), selectedConstraint.Selector, selectedConstraint.FindFirst);
@@ -217,6 +218,26 @@ namespace Grammars {
 
         public List<Constraint<T>> GetConstraints() {
             return new List<Constraint<T>>(constraints);
+        }
+
+        public List<AttributedElement> GetElements(string specifier = null) {
+            IElementContainer subcontainer = source;
+            string passSpecifier = specifier;
+            if (specifier != null && specifier.Contains(".")) {
+                string subcontainerStr = specifier.Substring(0,specifier.IndexOf("."));
+                switch (subcontainerStr) {
+                    case "source":
+                    default:
+                        subcontainer = source; break;
+                }
+                passSpecifier = specifier.Substring(specifier.IndexOf(".") + 1);
+                // Add other possibilities?
+            }
+            if (subcontainer != null) {
+                return subcontainer.GetElements(passSpecifier);
+            } else {
+                return new List<AttributedElement>();
+            }
         }
     }
 }

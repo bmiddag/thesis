@@ -31,11 +31,11 @@ namespace Grammars {
         public bool Check() {
             // Check method signature
             int argCount = arguments.Count;
-            if (grammar != null && method != null && method.ReturnType == typeof(int) && method.GetParameters().Count() == 1+argCount) {
+            if (grammar != null && method != null && method.ReturnType == typeof(int) && method.GetParameters().Count() == 1 + argCount) {
                 object[] parameters = new object[1 + argCount];
                 parameters[0] = grammar;
                 for (int i = 0; i < argCount; i++) {
-                    parameters[i+1] = arguments[i];
+                    parameters[i + 1] = arguments[i];
                 }
                 bool result = (bool)method.Invoke(null, parameters);
                 return result;
@@ -74,44 +74,36 @@ namespace Grammars {
         public static bool Or<T>(Grammar<T> grammar, GrammarCondition cond1, GrammarCondition cond2) where T : StructureModel {
             return (cond1.Check() || cond2.Check());
         }
-        
+
         /// <summary>
-        /// Count elements with a specific attribute and compare it to a number
+        /// Count elements with a specific attribute or perform any aggregate operation on them and compare it to a number
         /// </summary>
         /// <typeparam name="T">The structure the grammar generates.</typeparam>
         /// <param name="grammar">The grammar</param>
+        /// <param name="selector">The selector string (Dynamic LINQ query)</param>
         /// <param name="attrName">Attribute name. If left empty, all elements will be counted.</param>
-        /// <param name="attrValue">Attribute value. If left empty, all values will be allowed.</param>
-        /// <param name="operation">A string representing the operation to compare the element count with the number, e.g. "==".</param>
+        /// <param name="aggOperation">The aggregate operation to perform (e.g. COUNT, SUM, AVG, etc.)</param>
+        /// <param name="cmpOperation">A string representing the operation to compare the element count with the number, e.g. "==".</param>
         /// <param name="number">The number to compare the element count to.</param>
         /// <returns></returns>
-        public static bool CountElementsWithAttribute<T>(Grammar<T> grammar, string attrName, string attrValue, string operation, int number) where T : StructureModel {
-            int count;
-            if (attrName == null || attrName == "") {
-                count = grammar.Source.GetElements().Count;
-            } else if (attrValue == null || attrValue == "") {
-                count = grammar.Source.GetElements().Where(el => el.HasAttribute(attrName)).Count();
+        public static bool AggregateOperation<T>(Grammar<T> grammar, string selector, string attrName, string aggOperation, string cmpOperation, double number) where T : StructureModel {
+            List<AttributedElement> elements = ElementOperations.SelectElements(grammar, selector);
+            double result;
+            if (attrName == null || attrName.Trim() == "") {
+                result = elements.Count;
             } else {
-                count = grammar.Source.GetElements().Where(el => el.GetAttribute(attrName) == attrValue).Count();
+                result = ElementOperations.AggregateAttribute(aggOperation, elements, attrName);
             }
-            string smallOp = operation.ToLowerInvariant();
-            switch (operation) {
-                case "equals":
-                case "==":
-                    return count == number;
-                case ">=":
-                    return count >= number;
-                case "<=":
-                    return count <= number;
-                case "greater":
-                case ">":
-                    return count > number;
-                case "smaller":
-                case "<":
-                    return count < number;
-                default:
-                    return count == number;
-            }
+            return ElementOperations.CompareUsingString(cmpOperation, result, number);
+        }
+
+        public static bool CountElements<T>(Grammar<T> grammar, string selector, string cmpOperation, double number) where T : StructureModel {
+            List<AttributedElement> elements = ElementOperations.SelectElements(grammar, selector);
+            return ElementOperations.CompareUsingString(cmpOperation, elements.Count, number);
+        }
+
+        public static bool SumAttribute<T>(Grammar<T> grammar, string selector, string attrName, string cmpOperation, double number) where T : StructureModel {
+            return AggregateOperation(grammar, selector, attrName, "SUM", cmpOperation, number);
         }
     }
 }

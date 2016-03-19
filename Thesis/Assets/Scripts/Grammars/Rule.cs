@@ -1,5 +1,9 @@
-﻿namespace Grammars {
-    public class Rule<T> where T : StructureModel {
+﻿using System;
+using System.Collections.Generic;
+
+namespace Grammars {
+    public class Rule<T> : IElementContainer
+        where T : StructureModel {
         protected Grammar<T> grammar;
         protected T query;
         protected T target;
@@ -94,6 +98,31 @@
         protected void InitStructureTransformer(T source) {
             Transformer = grammar.Transformer;
             transformer.Source = source;
+        }
+
+        public List<AttributedElement> GetElements(string specifier = null) {
+            IElementContainer subcontainer = grammar;
+            string passSpecifier = specifier;
+            if (specifier != null && specifier.Contains(".")) {
+                string subcontainerStr = specifier.Substring(0, specifier.IndexOf("."));
+                switch (subcontainerStr) {
+                    case "query":
+                        subcontainer = query; break;
+                    case "target":
+                        subcontainer = target; break;
+                    case "source":
+                    case "grammar":
+                    default:
+                        subcontainer = grammar; break;
+                }
+                passSpecifier = specifier.Substring(specifier.IndexOf(".") + 1);
+                // Add other possibilities?
+            }
+            if (subcontainer != null) {
+                return subcontainer.GetElements(passSpecifier);
+            } else {
+                return new List<AttributedElement>();
+            }
         }
     }
 }

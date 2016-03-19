@@ -29,10 +29,18 @@ namespace Grammars.Graph {
             } else return nodeswithID.First();
         }
 
-        public override List<AttributedElement> GetElements() {
+        public override List<AttributedElement> GetElements(string specifier = null) {
             List<AttributedElement> attrList = new List<AttributedElement>();
-            foreach (Node node in nodes) {
-                attrList.Add(node);
+            if (specifier == "edges" || specifier == "all") {
+                foreach (Edge edge in edges) {
+                    attrList.Add(edge);
+                }
+            }
+            if (specifier != "edges") {
+                // Assume nodes should be included.
+                foreach (Node node in nodes) {
+                    attrList.Add(node);
+                }
             }
             return attrList;
         }

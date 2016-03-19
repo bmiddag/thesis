@@ -6,15 +6,14 @@
     <Constraint name="constraint1_sidepath">
       <Conditions>
         <GrammarCondition name="Or">
-          <GrammarCondition name="CountElementsWithAttribute">
-            <string></string>
+          <GrammarCondition name="CountElements">
             <string></string>
             <string>&lt;=</string>
             <int>5</int>
           </GrammarCondition>
-          <GrammarCondition name="CountElementsWithAttribute">
-            <string>sidepath</string>
+          <GrammarCondition name="SumAttribute">
             <string></string>
+            <string>sidepath</string>
             <string>&gt;=</string>
             <int>2</int>
           </GrammarCondition>

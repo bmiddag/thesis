@@ -6,6 +6,15 @@ namespace Grammars {
         protected Grammar<T> grammar;
         protected List<GrammarCondition> conditions;
         protected List<Rule<T>> rules;
+        protected bool active;
+        public bool Active {
+            get {
+                return active;
+            }
+            set {
+                active = value;
+            }
+        }
 
         // Rule selection
         protected GrammarRuleSelector selector;
@@ -27,10 +36,11 @@ namespace Grammars {
             }
         }
 
-        public Constraint(Grammar<T> grammar) {
+        public Constraint(Grammar<T> grammar, bool active=true) {
             this.grammar = grammar;
             grammar.AddConstraint(this);
             conditions = new List<GrammarCondition>();
+            this.active = active;
             //failedConditions = new List<int>();
         }
 
@@ -63,17 +73,19 @@ namespace Grammars {
         }
 
         public bool Check() {
-            //failedConditions.Clear();
-            bool failed = false;
-            for(int i = 0; i < conditions.Count; i++) {
-                if (!conditions[i].Check()) {
-                    failed = true;
-                    //failedConditions.Add(i);
+            if (active) {
+                //failedConditions.Clear();
+                bool failed = false;
+                for (int i = 0; i < conditions.Count; i++) {
+                    if (!conditions[i].Check()) {
+                        failed = true;
+                        //failedConditions.Add(i);
+                    }
                 }
-            }
-            //if (failedConditions.Count > 0) {
-            if(failed) {
-                return false;
+                //if (failedConditions.Count > 0) {
+                if (failed) {
+                    return false;
+                } else return true;
             } else return true;
         }
     }

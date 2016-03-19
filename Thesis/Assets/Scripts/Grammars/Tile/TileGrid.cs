@@ -56,7 +56,7 @@ namespace Grammars.Tile {
             return view;
         }
 
-        public override List<AttributedElement> GetElements() {
+        public override List<AttributedElement> GetElements(string specifier = null) {
             List<AttributedElement> attrList = new List<AttributedElement>();
             int w = grid.GetLength(0);
             int h = grid.GetLength(1);

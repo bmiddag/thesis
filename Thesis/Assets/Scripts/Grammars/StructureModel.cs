@@ -5,7 +5,7 @@ namespace Grammars {
     /// <summary>
     /// Abstract class for any class representing a complete structure model (e.g. Graph, TileGrid, etc.).
     /// </summary>
-	public abstract class StructureModel : AttributedElement {
+	public abstract class StructureModel : AttributedElement, IElementContainer {
         public event EventHandler StructureChanged;
 
         /// <summary>
@@ -18,6 +18,6 @@ namespace Grammars {
             }
         }
 
-        public abstract List<AttributedElement> GetElements();
+        public abstract List<AttributedElement> GetElements(string specifier = null);
 	}
 }
