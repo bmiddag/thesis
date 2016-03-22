@@ -289,7 +289,6 @@ namespace Demo {
         public void ParseGrammar() {
             string grammarType = null;
             string findFirst = null;
-            string ruleSelector;
             // Create an XML reader for this file.
             using (XmlReader reader = XmlReader.Create(filename)) {
                 while (reader.Read()) {
@@ -318,40 +317,169 @@ namespace Demo {
 
         private void _ParseGrammar<T>(XmlReader reader, Grammar<T> grammar) where T : StructureModel {
             Constraint<T> currentConstraint = null;
-            Stack<GrammarCondition> currentGrammarCondition = new Stack<GrammarCondition>();
-            Stack<RuleCondition> currentRuleCondition = new Stack<RuleCondition>();
+            Rule<T> currentRule = null;
+            //Stack<GrammarCondition> currentGrammarCondition = new Stack<GrammarCondition>();
+            //Stack<RuleCondition> currentRuleCondition = new Stack<RuleCondition>();
+            Stack<MethodCaller> currentMethodCaller = new Stack<MethodCaller>();
             while (reader.Read()) {
+                string name, activeStr;
+                bool active;
                 switch (reader.NodeType) {
                     case XmlNodeType.Element:
                         // Get element name and switch on it.
                         switch (reader.Name) {
                             case "RuleSelector":
-                                string ruleSelector = reader["name"];
-                                grammar.RuleSelector = GrammarRuleSelector.FromName(ruleSelector, grammar);
+                                name = reader["name"];
+                                if (name == null) return; // Deserialization failed
+                                GrammarRuleSelector rSel = GrammarRuleSelector.FromName(name, grammar);
+                                if (rSel == null) return; // Deserialization failed
+                                currentMethodCaller.Push(rSel);
                                 break;
                             case "Constraint":
-                                string name = reader["name"];
-                                Constraint<T> constraint = new Constraint<T>(grammar);
+                                name = reader["name"];
+                                activeStr = reader["active"];
+                                active = true;
+                                if (activeStr != null) {
+                                    if (!bool.TryParse(activeStr, out active)) {
+                                        active = true;
+                                    }
+                                }
+                                Constraint<T> constraint = new Constraint<T>(grammar, active);
                                 currentConstraint = constraint;
                                 break;
-                            case "Attribute":
-                                //string key = reader["key"];
-                                //string val = reader["value"];
-                                //if (key == null || val == null) return null; // Deserialization failed
-                                //currentElement.SetAttribute(key, val);
+                            case "GrammarCondition":
+                                name = reader["name"];
+                                if (name == null) return; // Deserialization failed
+                                GrammarCondition grCond = GrammarCondition.FromName(name, grammar);
+                                if (grCond == null) return; // Deserialization failed
+                                if (currentMethodCaller.Count > 0) {
+                                    // ARGUMENT
+                                    currentMethodCaller.Peek().AddArgument(grCond);
+                                } else if (currentConstraint != null) {
+                                    // CONSTRAINT CONDITION
+                                    currentConstraint.AddCondition(grCond);
+                                } else {
+                                    // STOP CONDITION
+                                    grammar.AddStopCondition(grCond);
+                                }
+                                currentMethodCaller.Push(grCond);
+                                break;
+                            case "Rule":
+                                string probabilityStr = reader["probability"];
+                                activeStr = reader["active"];
+                                active = true;
+                                if (activeStr != null) {
+                                    if (!bool.TryParse(activeStr, out active)) {
+                                        active = true;
+                                    }
+                                }
+                                double probability;
+                                if (probabilityStr == null || !double.TryParse(probabilityStr, out probability)) return; // Deserialization failed
+                                currentRule = new Rule<T>(probability, active);
+                                if (currentConstraint != null) {
+                                    currentConstraint.AddRule(currentRule);
+                                } else {
+                                    grammar.AddRule(currentRule);
+                                }
+                                break;
+                            case "RuleProbability":
+                                reader.Read();
+                                name = reader.Value;
+                                if (currentRule == null || name == null) return; // Deserialization failed
+                                RuleProbability rProb = RuleProbability.FromName(name, currentRule);
+                                if (rProb == null) return; // Deserialization failed
+                                if (currentMethodCaller.Count == 0) {
+                                    currentRule.DynamicProbability = rProb;
+                                } else {
+                                    currentMethodCaller.Peek().AddArgument(rProb);
+                                }
+                                currentMethodCaller.Push(rProb);
+                                break;
+                            case "RuleMatchSelector":
+                                reader.Read();
+                                name = reader.Value;
+                                if (currentRule == null || name == null) return; // Deserialization failed
+                                RuleMatchSelector rMatchSel = RuleMatchSelector.FromName(name, currentRule);
+                                if (currentMethodCaller.Count == 0) {
+                                    currentRule.MatchSelector = rMatchSel;
+                                } else {
+                                    currentMethodCaller.Peek().AddArgument(rMatchSel);
+                                }
+                                currentMethodCaller.Push(rMatchSel);
+                                break;
+                            case "RuleCondition":
+                                name = reader["name"];
+                                if (name == null) return; // Deserialization failed
+                                if (currentRule == null) return; // Deserialization failed
+                                RuleCondition rCond = RuleCondition.FromName(name, currentRule);
+                                if (currentMethodCaller.Count == 0) {
+                                    if (currentRule != null) currentRule.Condition = rCond;
+                                } else {
+                                    currentMethodCaller.Peek().AddArgument(rCond);
+                                }
+                                if (rCond == null) return; // Deserialization failed
+                                currentMethodCaller.Push(rCond);
+                                break;
+                            case "Query":
+                                reader.Read();
+                                name = reader.Value;
+                                if (name == null || currentRule == null) return; // Deserialization failed
+                                T query = Deserialize<T>(name, controller);
+                                currentRule.Query = query;
+                                break;
+                            case "Target":
+                                reader.Read();
+                                name = reader.Value;
+                                if (name == null || currentRule == null) return; // Deserialization failed
+                                T target = Deserialize<T>(name, controller);
+                                currentRule.Target = target;
+                                break;
+                            case "string":
+                                reader.Read();
+                                name = reader.Value;
+                                if (name == null) name = "";
+                                if (currentMethodCaller.Count > 0) {
+                                    currentMethodCaller.Peek().AddArgument(name);
+                                }
+                                break;
+                            case "int":
+                                reader.Read();
+                                name = reader.Value;
+                                if (name == null) return; // Deserialization failed
+                                int intResult;
+                                if (int.TryParse(name, out intResult)) {
+                                    if (currentMethodCaller.Count > 0) {
+                                        currentMethodCaller.Peek().AddArgument(intResult);
+                                    }
+                                }
+                                break;
+                            case "double":
+                                reader.Read();
+                                name = reader.Value;
+                                if (name == null) return; // Deserialization failed
+                                double doubleResult;
+                                if (double.TryParse(name, out doubleResult)) {
+                                    if (currentMethodCaller.Count > 0) {
+                                        currentMethodCaller.Peek().AddArgument(doubleResult);
+                                    }
+                                }
                                 break;
                         }
                         break;
                     case XmlNodeType.EndElement:
                         switch (reader.Name) {
                             case "GrammarCondition":
-                                currentGrammarCondition.Pop();
-                                break;
+                            case "RuleSelector":
                             case "RuleCondition":
-                                currentRuleCondition.Pop();
+                            case "RuleProbability":
+                            case "RuleMatchSelector":
+                                currentMethodCaller.Pop();
                                 break;
                             case "Constraint":
                                 currentConstraint = null;
+                                break;
+                            case "Rule":
+                                currentRule = null;
                                 break;
                         }
                         break;
@@ -363,5 +491,21 @@ namespace Demo {
             string[] lines = File.ReadAllLines(filename, Encoding.UTF8);
             return lines;
         }
+
+        public static T Deserialize<T>(string name, DemoController controller) where T : StructureModel {
+            if (name == null || name.Trim() == "") return null;
+            string filename = name;
+            if (typeof(T) == typeof(Graph)) {
+                filename = "Graph/" + filename + ".xml";
+                DemoIO serializer = new DemoIO(filename, controller);
+                TileGrid grid = serializer.DeserializeGrid();
+                return (T)(object)grid;
+            } else if (typeof(T) == typeof(TileGrid)) {
+                filename = "TileGrid/" + filename + ".xml";
+                DemoIO serializer = new DemoIO(filename, controller);
+                Graph graph = serializer.DeserializeGraph();
+                return (T)(object)graph;
+            }
+            return null;
     }
 }

@@ -2,30 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace Grammars {
-    public class GrammarRuleSelector {
-        private MethodInfo method;
-        public MethodInfo Method {
-            get { return method; }
-            set { method = value; }
-        }
+    public class GrammarRuleSelector : MethodCaller {
         private object grammar;
         public object Grammar {
             get { return grammar; }
             set { grammar = value; }
         }
 
-        private List<object> arguments;
-        public void AddArgument(object arg) {
-            arguments.Add(arg);
-        }
-
-        public GrammarRuleSelector(MethodInfo method, object grammar = null) {
-            this.method = method;
+        public GrammarRuleSelector(MethodInfo method, object grammar = null) : base(method) {
             this.grammar = grammar;
-            arguments = new List<object>();
         }
 
         public int Select(object rules) {

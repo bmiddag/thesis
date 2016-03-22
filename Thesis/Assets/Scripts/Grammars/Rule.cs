@@ -6,7 +6,25 @@ namespace Grammars {
         where T : StructureModel {
         protected Grammar<T> grammar;
         protected T query;
+        public T Query {
+            get {
+                return query;
+            }
+            set {
+                query = value;
+            }
+        }
+
         protected T target;
+        public T Target {
+            get {
+                return target;
+            }
+            set {
+                target = value;
+            }
+        }
+
         protected IStructureTransformer<T> transformer = null;
         public IStructureTransformer<T> Transformer {
             get {
@@ -24,23 +42,51 @@ namespace Grammars {
 
         protected double probability;
         protected RuleCondition condition = null;
+        public RuleCondition Condition {
+            get {
+                return condition;
+            }
+            set {
+                condition = value;
+            }
+        }
+
         protected RuleProbability dynamicProbability = null;
-        protected RuleMatchSelector controlledSelection = null;
+        public RuleProbability DynamicProbability {
+            get {
+                return dynamicProbability;
+            }
+            set {
+                dynamicProbability = value;
+            }
+        }
+        protected RuleMatchSelector matchSelector = null;
+        public RuleMatchSelector MatchSelector {
+            get {
+                return matchSelector;
+            }
+            set {
+                matchSelector = value;
+            }
+        }
 
         bool hasSelected;
+        bool active;
 
-        public Rule(T query, T target, double probability, RuleCondition condition = null,
-            RuleProbability dynamicProbability = null, RuleMatchSelector controlledSelection = null) {
+        public Rule(double probability, bool active = true, T query = null, T target = null, RuleCondition condition = null,
+            RuleProbability dynamicProbability = null, RuleMatchSelector matchSelector = null) {
             this.query = query;
             this.target = target;
             this.probability = probability;
             this.condition = condition;
             this.dynamicProbability = dynamicProbability;
-            this.controlledSelection = controlledSelection;
+            this.matchSelector = matchSelector;
+            this.active = active;
             hasSelected = false;
         }
 
         public bool CheckCondition() {
+            if (!active) return false;
             if (condition != null) {
                 return condition.Check();
             } else {
@@ -49,6 +95,7 @@ namespace Grammars {
         }
 
         public double GetProbability(bool useDynamic = true) {
+            if (!active) return 0;
             if (dynamicProbability != null && useDynamic) {
                 double calculated = dynamicProbability.Calculate();
                 if (calculated >= 0) return calculated;
@@ -61,10 +108,10 @@ namespace Grammars {
             InitStructureTransformer(source);
             bool found = transformer.Find(query);
             if (found) {
-                if (controlledSelection != null) {
+                if (matchSelector != null) {
                     object[] parameters = new object[1];
                     parameters[0] = this;
-                    transformer.Select(controlledSelection);
+                    transformer.Select(matchSelector);
                 } else {
                     transformer.Select();
                 }

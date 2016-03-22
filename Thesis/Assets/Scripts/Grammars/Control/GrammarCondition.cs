@@ -1,31 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace Grammars {
-    public class GrammarCondition {
-        private MethodInfo method;
-        public MethodInfo Method {
-            get { return method; }
-            set { method = value; }
-        }
+    public class GrammarCondition : MethodCaller {
         private object grammar;
         public object Grammar {
             get { return grammar; }
             set { grammar = value; }
         }
 
-        private List<object> arguments;
-        public void AddArgument(object arg) {
-            arguments.Add(arg);
-        }
-
-        public GrammarCondition(MethodInfo method = null, object grammar = null) {
-            this.method = method;
+        public GrammarCondition(MethodInfo method = null, object grammar = null) : base(method) {
             this.grammar = grammar;
-            arguments = new List<object>();
         }
 
         public bool Check() {
