@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Grammar type="graph" findFirst="true">
-  <RuleSelector name="ControlledSelector" />
   <Constraints>
     <!-- Constraint 1: At least 2 sidepaths (if >= 5 elements exist) -->
     <Constraint name="constraint1_sidepath">
@@ -9,53 +8,61 @@
           <GrammarCondition name="CountElements">
             <string></string>
             <string>&lt;=</string>
-            <int>5</int>
+            <int>10</int>
           </GrammarCondition>
           <GrammarCondition name="SumAttribute">
             <string></string>
             <string>sidepath</string>
             <string>&gt;=</string>
-            <int>2</int>
+            <double>0.4</double>
           </GrammarCondition>
         </GrammarCondition>
       </Conditions>
       <Rules>
         <!-- Add sidepaths -->
-        <Rule probability="0.5">
-          <RuleProbability>DynamicRuleProbability</RuleProbability>
-          <RuleMatchSelector>ControlledMatchSelector</RuleMatchSelector>
-          <RuleCondition name="CountElementsWithAttribute">
-            <string></string>
-            <string></string>
-            <string>&gt;=</string>
-            <int>10</int>
-          </RuleCondition>
-          <Query>graph3</Query>
-          <Target>graph4</Target>
+        <Rule probability="0.2">
+          <Query>generic0_to_generic1</Query>
+          <Target>generic0_to_generic1_sidepath</Target>
         </Rule>
-        <Rule probability="0.5">
-          <Query>graph3</Query>
-          <Target>graph5</Target>
+        <Rule probability="0.8">
+          <Query>blue0_to_yellow1</Query>
+          <Target>generic0_to_generic1_sidepath2</Target>
         </Rule>
       </Rules>
     </Constraint>
   </Constraints>
   <Rules>
-    <Rule probability="0.8">
-      <Query>graph1</Query>
-      <Target>graph2</Target>
+    <Rule probability="0.1">
+      <Query>blue0</Query>
+      <Target>blue0_to_yellow1</Target>
     </Rule>
     <Rule probability="0.2">
-      <Query>graph6</Query>
-      <Target>graph7</Target>
+      <Query>blue0_to_yellow1</Query>
+      <Target>yellow1_to_blue0</Target>
+    </Rule>
+    <Rule probability="0.05">
+      <Query>generic0_to_generic1</Query>
+      <Target>generic0_to_generic1_sidepath</Target>
+    </Rule>
+    <Rule probability="0.05">
+      <Query>generic0_to_generic1</Query>
+      <Target>generic0_to_generic1_sidepath2</Target>
+    </Rule>
+    <Rule probability="0.05">
+      <Query>yellow1_to_generic0</Query>
+      <Target>yellow1_to_generic0_sidepath</Target>
+    </Rule>
+    <Rule probability="0.15">
+      <Query>yellow1_to_generic0</Query>
+      <Target>blue0_to_yellow1</Target>
     </Rule>
   </Rules>
   <StopConditions>
-    <GrammarCondition name="CountElementsWithAttribute">
-      <string>new</string>
+    <GrammarCondition name="SumAttribute">
       <string></string>
+      <string>sidepath</string>
       <string>&gt;=</string>
-      <int>2</int>
+      <double>0.7</double>
     </GrammarCondition>
   </StopConditions>
 </Grammar>

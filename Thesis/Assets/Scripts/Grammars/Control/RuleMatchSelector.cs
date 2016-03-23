@@ -32,6 +32,7 @@ namespace Grammars {
 
         public static RuleMatchSelector FromName<T>(string name, Rule<T> rule) where T : StructureModel {
             MethodInfo condition = typeof(RuleMatchSelector).GetMethod(name);
+            if (condition != null) condition = condition.MakeGenericMethod(typeof(T));
             // Check method signature. Has to be static if created from here.
             if (condition != null && condition.IsStatic && condition.ReturnType == typeof(int) && condition.GetParameters().Count() >= 2) {
                 return new RuleMatchSelector(condition, rule);

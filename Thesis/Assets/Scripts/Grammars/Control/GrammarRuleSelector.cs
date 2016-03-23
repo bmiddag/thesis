@@ -25,6 +25,7 @@ namespace Grammars {
                 for (int i = 0; i < argCount; i++) {
                     parameters[i+2] = arguments[i];
                 }
+                //int result = (int)method.Invoke(null, BindingFlags.Public | BindingFlags.Static | BindingFlags.ExactBinding, null, parameters, System.Globalization.CultureInfo.InvariantCulture);
                 int result = (int)method.Invoke(null, parameters);
                 return result;
             } else {
@@ -34,6 +35,7 @@ namespace Grammars {
 
         public static GrammarRuleSelector FromName<T>(string name, Grammar<T> grammar) where T : StructureModel {
             MethodInfo condition = typeof(GrammarRuleSelector).GetMethod(name);
+            if (condition != null) condition = condition.MakeGenericMethod(typeof(T));
             // Check method signature. Has to be static if created from here.
             if (condition != null && condition.IsStatic && condition.ReturnType == typeof(int) && condition.GetParameters().Count() >= 2) {
                 return new GrammarRuleSelector(condition, grammar);

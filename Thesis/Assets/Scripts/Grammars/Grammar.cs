@@ -75,11 +75,13 @@ namespace Grammars {
             }
         }
 
-        public Grammar(GrammarRuleSelector ruleSelectionController = null, bool findAllRules = false) {
+        public Grammar(Type transformerType = null, GrammarRuleSelector ruleSelectionController = null, bool findAllRules = false) {
+            this.transformerType = transformerType;
             this.ruleSelectionController = ruleSelectionController;
             this.findAllRules = findAllRules;
             stopConditions = new List<GrammarCondition>();
             constraints = new List<Constraint<T>>();
+            rules = new List<Rule<T>>();
             iteration = 0;
             noRuleFound = false;
         }
@@ -118,6 +120,7 @@ namespace Grammars {
                     tempRules.Add(rule);
                 }
             }
+
             // Controlled rule selection
             if (selectionHandler != null) {
                 tempRuleIndex = ruleSelectionController.Select(new List<Rule<T>>(tempRules));
@@ -170,11 +173,14 @@ namespace Grammars {
             Constraint<T> selectedConstraint = CheckConstraints();
             while (selectedConstraint != null) {
                 SelectRule(selectedConstraint.GetRules(), selectedConstraint.Selector, selectedConstraint.FindFirst);
-                //if (noRuleFound) break; // Can't break, because another constraint may be selected. This may still be an infinite loop
-                // TODO: Fix this!!!!
+                if (!noRuleFound && selectedRule != null) {
+                    selectedRule.Apply(source);
+                } else {
+                    break;// Can't break, because another constraint may be selected. This may still be an infinite loop
+                          // TODO: Fix this!!!!
+                }
                 selectedConstraint = CheckConstraints();
             }
-
             bool stop = CheckStopCondition();
             if (stop) {
                 // TODO: Transfer control to inter-grammar system

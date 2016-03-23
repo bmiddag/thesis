@@ -17,7 +17,7 @@ namespace Grammars {
         public bool Check() {
             // Check method signature
             int argCount = arguments.Count;
-            if (grammar != null && method != null && method.ReturnType == typeof(int) && method.GetParameters().Count() == 1 + argCount) {
+            if (grammar != null && method != null && method.ReturnType == typeof(bool) && method.GetParameters().Count() == 1 + argCount) {
                 object[] parameters = new object[1 + argCount];
                 parameters[0] = grammar;
                 for (int i = 0; i < argCount; i++) {
@@ -32,6 +32,7 @@ namespace Grammars {
 
         public static GrammarCondition FromName<T>(string name, Grammar<T> grammar) where T : StructureModel {
             MethodInfo condition = typeof(GrammarCondition).GetMethod(name);
+            if (condition != null) condition = condition.MakeGenericMethod(typeof(T));
             // Check method signature. Has to be static if created from here.
             if (condition != null && condition.IsStatic && condition.ReturnType == typeof(bool) && condition.GetParameters().Count() >= 1) {
                 return new GrammarCondition(condition, grammar);

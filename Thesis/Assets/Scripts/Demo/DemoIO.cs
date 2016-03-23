@@ -296,18 +296,19 @@ namespace Demo {
                         if (reader.Name == "Grammar") {
                             grammarType = reader["type"];
                             findFirst = reader["findFirst"];
-                            if (grammarType == null) return; // Deserialization failed
+                            if (grammarType == null) throw new System.FormatException("Serialization failed");
+                            break;
                         }
                     }
                 }
                 switch (grammarType.ToLowerInvariant()) {
                     case "graph":
-                        Grammar<Graph> graphGrammar = new Grammar<Graph>(null, findFirst=="true");
+                        Grammar<Graph> graphGrammar = new Grammar<Graph>(typeof(GraphTransformer), null, findFirst=="true");
                         _ParseGrammar(reader, graphGrammar);
                         controller.SetGrammar(graphGrammar);
                         break;
                     case "tilegrid":
-                        Grammar<TileGrid> tileGrammar = new Grammar<TileGrid>(null, findFirst=="true");
+                        Grammar<TileGrid> tileGrammar = new Grammar<TileGrid>(typeof(TileGridTransformer), null, findFirst=="true");
                         _ParseGrammar(reader, tileGrammar);
                         controller.SetGrammar(tileGrammar);
                         break;
@@ -330,9 +331,9 @@ namespace Demo {
                         switch (reader.Name) {
                             case "RuleSelector":
                                 name = reader["name"];
-                                if (name == null) return; // Deserialization failed
+                                if (name == null) throw new System.FormatException("Serialization failed");
                                 GrammarRuleSelector rSel = GrammarRuleSelector.FromName(name, grammar);
-                                if (rSel == null) return; // Deserialization failed
+                                if (rSel == null) throw new System.FormatException("Serialization failed");
                                 currentMethodCaller.Push(rSel);
                                 break;
                             case "Constraint":
@@ -349,9 +350,9 @@ namespace Demo {
                                 break;
                             case "GrammarCondition":
                                 name = reader["name"];
-                                if (name == null) return; // Deserialization failed
+                                if (name == null) throw new System.FormatException("Serialization failed");
                                 GrammarCondition grCond = GrammarCondition.FromName(name, grammar);
-                                if (grCond == null) return; // Deserialization failed
+                                if (grCond == null) throw new System.FormatException("Serialization failed");
                                 if (currentMethodCaller.Count > 0) {
                                     // ARGUMENT
                                     currentMethodCaller.Peek().AddArgument(grCond);
@@ -374,8 +375,8 @@ namespace Demo {
                                     }
                                 }
                                 double probability;
-                                if (probabilityStr == null || !double.TryParse(probabilityStr, out probability)) return; // Deserialization failed
-                                currentRule = new Rule<T>(probability, active);
+                                if (probabilityStr == null || !double.TryParse(probabilityStr, out probability)) throw new System.FormatException("Serialization failed");
+                                currentRule = new Rule<T>(grammar, probability, active);
                                 if (currentConstraint != null) {
                                     currentConstraint.AddRule(currentRule);
                                 } else {
@@ -385,9 +386,9 @@ namespace Demo {
                             case "RuleProbability":
                                 reader.Read();
                                 name = reader.Value;
-                                if (currentRule == null || name == null) return; // Deserialization failed
+                                if (currentRule == null || name == null) throw new System.FormatException("Serialization failed");
                                 RuleProbability rProb = RuleProbability.FromName(name, currentRule);
-                                if (rProb == null) return; // Deserialization failed
+                                if (rProb == null) throw new System.FormatException("Serialization failed");
                                 if (currentMethodCaller.Count == 0) {
                                     currentRule.DynamicProbability = rProb;
                                 } else {
@@ -398,7 +399,7 @@ namespace Demo {
                             case "RuleMatchSelector":
                                 reader.Read();
                                 name = reader.Value;
-                                if (currentRule == null || name == null) return; // Deserialization failed
+                                if (currentRule == null || name == null) throw new System.FormatException("Serialization failed");
                                 RuleMatchSelector rMatchSel = RuleMatchSelector.FromName(name, currentRule);
                                 if (currentMethodCaller.Count == 0) {
                                     currentRule.MatchSelector = rMatchSel;
@@ -409,29 +410,29 @@ namespace Demo {
                                 break;
                             case "RuleCondition":
                                 name = reader["name"];
-                                if (name == null) return; // Deserialization failed
-                                if (currentRule == null) return; // Deserialization failed
+                                if (name == null) throw new System.FormatException("Serialization failed");
+                                if (currentRule == null) throw new System.FormatException("Serialization failed");
                                 RuleCondition rCond = RuleCondition.FromName(name, currentRule);
                                 if (currentMethodCaller.Count == 0) {
                                     if (currentRule != null) currentRule.Condition = rCond;
                                 } else {
                                     currentMethodCaller.Peek().AddArgument(rCond);
                                 }
-                                if (rCond == null) return; // Deserialization failed
+                                if (rCond == null) throw new System.FormatException("Serialization failed");
                                 currentMethodCaller.Push(rCond);
                                 break;
                             case "Query":
                                 reader.Read();
                                 name = reader.Value;
-                                if (name == null || currentRule == null) return; // Deserialization failed
-                                T query = Deserialize<T>(name, controller);
+                                if (name == null || currentRule == null) throw new System.FormatException("Serialization failed");
+                                T query = Deserialize<T>(new FileInfo(filename).Directory.FullName, name, controller);
                                 currentRule.Query = query;
                                 break;
                             case "Target":
                                 reader.Read();
                                 name = reader.Value;
-                                if (name == null || currentRule == null) return; // Deserialization failed
-                                T target = Deserialize<T>(name, controller);
+                                if (name == null || currentRule == null) throw new System.FormatException("Serialization failed");
+                                T target = Deserialize<T>(new FileInfo(filename).Directory.FullName, name, controller);
                                 currentRule.Target = target;
                                 break;
                             case "string":
@@ -445,7 +446,7 @@ namespace Demo {
                             case "int":
                                 reader.Read();
                                 name = reader.Value;
-                                if (name == null) return; // Deserialization failed
+                                if (name == null) throw new System.FormatException("Serialization failed");
                                 int intResult;
                                 if (int.TryParse(name, out intResult)) {
                                     if (currentMethodCaller.Count > 0) {
@@ -456,7 +457,7 @@ namespace Demo {
                             case "double":
                                 reader.Read();
                                 name = reader.Value;
-                                if (name == null) return; // Deserialization failed
+                                if (name == null) throw new System.FormatException("Serialization failed");
                                 double doubleResult;
                                 if (double.TryParse(name, out doubleResult)) {
                                     if (currentMethodCaller.Count > 0) {
@@ -492,20 +493,21 @@ namespace Demo {
             return lines;
         }
 
-        public static T Deserialize<T>(string name, DemoController controller) where T : StructureModel {
+        public static T Deserialize<T>(string dirname, string name, DemoController controller) where T : StructureModel {
             if (name == null || name.Trim() == "") return null;
             string filename = name;
             if (typeof(T) == typeof(Graph)) {
-                filename = "Graph/" + filename + ".xml";
-                DemoIO serializer = new DemoIO(filename, controller);
-                TileGrid grid = serializer.DeserializeGrid();
-                return (T)(object)grid;
-            } else if (typeof(T) == typeof(TileGrid)) {
-                filename = "TileGrid/" + filename + ".xml";
+                filename = dirname + "/Graph/" + filename + ".xml";
                 DemoIO serializer = new DemoIO(filename, controller);
                 Graph graph = serializer.DeserializeGraph();
                 return (T)(object)graph;
+            } else if (typeof(T) == typeof(TileGrid)) {
+                filename = dirname + "/TileGrid/" + filename + ".xml";
+                DemoIO serializer = new DemoIO(filename, controller);
+                TileGrid grid = serializer.DeserializeGrid();
+                return (T)(object)grid;
             }
             return null;
+        }
     }
 }

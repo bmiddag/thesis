@@ -73,8 +73,9 @@ namespace Grammars {
         bool hasSelected;
         bool active;
 
-        public Rule(double probability, bool active = true, T query = null, T target = null, RuleCondition condition = null,
+        public Rule(Grammar<T> grammar, double probability, bool active = true, T query = null, T target = null, RuleCondition condition = null,
             RuleProbability dynamicProbability = null, RuleMatchSelector matchSelector = null) {
+            this.grammar = grammar;
             this.query = query;
             this.target = target;
             this.probability = probability;

@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Graph>
+  <Nodes>
+    <Node id="0" hashCode="-367086848" active="True" />
+    <Node id="1" hashCode="-1005420672" active="True" />
+    <Node id="2" hashCode="-966286336" active="True">
+      <Attributes>
+        <Attribute key="_demo_color" value="green" />
+        <Attribute key="sidepath" value="0.1" />
+      </Attributes>
+    </Node>
+  </Nodes>
+  <Edges>
+    <Edge node1="-367086848" node2="-1005420672" directed="True" />
+    <Edge node1="-966286336" node2="-367086848" directed="False">
+      <Attributes>
+        <Attribute key="_demo_color" value="green" />
+      </Attributes>
+    </Edge>
+    <Edge node1="-966286336" node2="-1005420672" directed="False">
+      <Attributes>
+        <Attribute key="_demo_color" value="green" />
+      </Attributes>
+    </Edge>
+  </Edges>
+</Graph>

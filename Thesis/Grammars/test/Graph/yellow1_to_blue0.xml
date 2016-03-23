@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Graph>
+  <Nodes>
+    <Node id="0" hashCode="203395584" active="True">
+      <AttributeClasses>
+        <AttributeClass name="blue_squares" />
+      </AttributeClasses>
+      <Attributes>
+        <Attribute key="_demo_shape" value="square" />
+        <Attribute key="_demo_color" value="blue" />
+      </Attributes>
+    </Node>
+    <Node id="1" hashCode="-1071959296" active="True">
+      <AttributeClasses>
+        <AttributeClass name="yellow_triangles" />
+      </AttributeClasses>
+      <Attributes>
+        <Attribute key="_demo_shape" value="triangle" />
+        <Attribute key="_demo_color" value="yellow" />
+      </Attributes>
+    </Node>
+  </Nodes>
+  <Edges>
+    <Edge node1="-1071959296" node2="203395584" directed="True" />
+  </Edges>
+</Graph>

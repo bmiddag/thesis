@@ -31,6 +31,7 @@ namespace Grammars {
 
         public static RuleProbability FromName<T>(string name, Rule<T> rule) where T : StructureModel {
             MethodInfo condition = typeof(RuleProbability).GetMethod(name);
+            if (condition != null) condition = condition.MakeGenericMethod(typeof(T));
             // Check method signature. Has to be static if created from here.
             if (condition != null && condition.IsStatic && condition.ReturnType == typeof(double) && condition.GetParameters().Count() >= 1) {
                 return new RuleProbability(condition, rule);

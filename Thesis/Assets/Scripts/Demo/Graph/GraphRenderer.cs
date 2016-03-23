@@ -20,6 +20,8 @@ namespace Demo {
         public bool draggingNode = false;
         public CameraControl cameraControl;
 
+        bool snapToMouse = false;
+
         bool updateRenderer = false; // If true, node/edge renderers will be updated during the next call of Update(). Prevents chaining of renderer updates.
 
         public DemoController controller;
@@ -142,11 +144,13 @@ namespace Demo {
                             startNode = null;
                             drawingEdge = false;
                         } else {
-                            Vector3 newPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                            // Vector3 newPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                            snapToMouse = true;
                             Node node = new Node(graph, graph.GetNodes().Count);
-                            controller.AddAttributeClass(node, "white_circles");
-                            node.SetAttribute("_demo_x", newPos.x.ToString());
-                            node.SetAttribute("_demo_y", newPos.y.ToString());
+
+                            //controller.AddAttributeClass(node, "white_circles");
+                            //node.SetAttribute("_demo_x", newPos.x.ToString());
+                            //node.SetAttribute("_demo_y", newPos.y.ToString());
                         }
                     } else {
                         if (drawingEdge) {
@@ -234,8 +238,10 @@ namespace Demo {
             NodeRenderer obj = new GameObject().AddComponent<NodeRenderer>();
             obj.gameObject.name = "Node " + node.GetID().ToString();
             obj.graphRenderer = this;
-            if (node.HasAttribute("_demo_x") && node.HasAttribute("_demo_y")) {
-                obj.gameObject.transform.position = new Vector3(float.Parse(node["_demo_x"]), float.Parse(node["_demo_y"]));
+            if (snapToMouse) {
+                Vector3 newPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                obj.gameObject.transform.position = new Vector3(newPos.x, newPos.y);
+                snapToMouse = false;
             } else {
                 obj.gameObject.transform.position = new Vector3(x, y);
             }

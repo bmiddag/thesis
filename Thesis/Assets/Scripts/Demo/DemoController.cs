@@ -206,10 +206,9 @@ namespace Demo {
             List<string> grammars = dirSerializer.GetSubDirectories();
             foreach (string grmName in grammars) {
                 print("Loading grammar: " + grmName);
-                string filename = dirName + grmName + "/" + grmName + ".grammar";
+                string filename = dirName + grmName + "/" + grmName + ".xml";
                 DemoIO serializer = new DemoIO(filename, this);
-                string[] lines = serializer.ReadLines();
-                print(lines[0]);
+                serializer.ParseGrammar();
             }
             yield return null;
         }

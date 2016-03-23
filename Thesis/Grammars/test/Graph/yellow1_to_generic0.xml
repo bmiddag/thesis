@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Graph>
+  <Nodes>
+    <Node id="0" hashCode="115601664" active="False" />
+    <Node id="1" hashCode="-1158729856" active="False">
+      <AttributeClasses>
+        <AttributeClass name="yellow_triangles" />
+      </AttributeClasses>
+      <Attributes>
+        <Attribute key="_demo_shape" value="triangle" />
+        <Attribute key="_demo_color" value="yellow" />
+      </Attributes>
+    </Node>
+  </Nodes>
+  <Edges>
+    <Edge node1="-1158729856" node2="115601664" directed="True" />
+  </Edges>
+</Graph>

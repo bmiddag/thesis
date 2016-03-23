@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Graph>
+  <Nodes>
+    <Node id="0" hashCode="-825910016" active="True">
+      <AttributeClasses>
+        <AttributeClass name="blue_squares" />
+      </AttributeClasses>
+      <Attributes>
+        <Attribute key="_demo_shape" value="square" />
+        <Attribute key="_demo_color" value="blue" />
+      </Attributes>
+    </Node>
+  </Nodes>
+  <Edges />
+</Graph>

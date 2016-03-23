@@ -40,6 +40,7 @@ namespace Grammars {
             this.grammar = grammar;
             grammar.AddConstraint(this);
             conditions = new List<GrammarCondition>();
+            rules = new List<Rule<T>>();
             this.active = active;
             //failedConditions = new List<int>();
         }

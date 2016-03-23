@@ -9,6 +9,14 @@ namespace Grammars.Tile {
         Pair selectedOffset;
         TileGrid query = null;
         bool findFirst = false;
+        public bool FindFirst {
+            get {
+                return findFirst;
+            }
+            set {
+                findFirst = value;
+            }
+        }
         List<Pair> matches;
 
         public TileGrid Source {
@@ -28,10 +36,10 @@ namespace Grammars.Tile {
             }
         }
 
-        public TileGridTransformer(bool findFirst = false) {
+        public TileGridTransformer() {
             selectedOffset = null;
-            this.findFirst = findFirst;
-		}
+            findFirst = false;
+        }
 
 		public Pair GetSelectedOffset() {
             return selectedOffset;

@@ -9,6 +9,14 @@ namespace Grammars.Graph {
         Dictionary<Node, Node> selectedMatch; // Associates <node in source graph, node in query graph> with each other
         Graph query = null;
         bool findFirst = false;
+        public bool FindFirst {
+            get {
+                return findFirst;
+            }
+            set {
+                findFirst = value;
+            }
+        }
 
         public Graph Source {
             get {
@@ -27,10 +35,10 @@ namespace Grammars.Graph {
             }
         }
 
-        public GraphTransformer(bool findFirst = false) {
+        public GraphTransformer() {
             selectedMatch = null;
-            this.findFirst = findFirst;
-		}
+            findFirst = false;
+        }
 
 		public HashSet<Node> GetSelectedNodes() {
             if (selectedMatch != null) {
@@ -235,6 +243,7 @@ namespace Grammars.Graph {
                 } else {
                     // For all edges outgoing from this node in query graph, check if there is a corresponding edge in target graph
                     foreach (Edge queryEdge in queryNode.GetEdges().Values) {
+                        if (queryEdge.GetNode1() != queryNode) continue;
                         // Find that edge in the target graph
                         Edge targetEdge = null;
                         foreach (Edge targetEdgeIter in targetNode.GetEdges().Values) {
