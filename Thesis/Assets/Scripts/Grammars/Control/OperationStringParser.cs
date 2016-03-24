@@ -31,56 +31,25 @@ namespace Grammars {
                 }
             }
             sourceList = container.GetElements(fromSelector);
+            //UnityEngine.MonoBehaviour.print(sourceList.Count);
+            //UnityEngine.MonoBehaviour.print(whereSelector);
             if (whereSelector == null) {
                 return new List<AttributedElement>(sourceList);
             } else {
                 // This uses Dynamic LINQ: http://weblogs.asp.net/scottgu/dynamic-linq-part-1-using-the-linq-dynamic-query-library
-                IQueryable<AttributedElement> filtered = sourceList.AsQueryable().Where(selector);
+                IQueryable<AttributedElement> filtered = sourceList.AsQueryable().Where(ParseExpression(whereSelector));
                 return new List<AttributedElement>(filtered);
             }
         }
 
-        private static string ParseExpression(AttributedElement el, string expression) {
-            return "";
-        }
-
-        private static bool ParseBooleanExpression(AttributedElement el, string expression) {
-            expression = expression.Trim();
-            if (expression.StartsWith("(") && expression.EndsWith(")")) {
-                ParseBooleanExpression(el, expression.Substring(1, expression.Length - 2));
-            }
-            string comparisonPattern = @"(?<left.+>)(?<operator>(<=|>=|!=|==|=|>|<))(?<right.+>)";
-            Match comparisonMatch = Regex.Match(expression, comparisonPattern, RegexOptions.IgnoreCase);
-            if (comparisonMatch.Success) {
-                return CompareStringExpressions(el, fromMatch.Groups["from"].Value.Trim();
-            }
-            return "";
-        }
-
-        private static bool CompareStringExpressions(AttributedElement el, string operation, string left, string right) {
-            string leftResult = ParseExpression(el, left);
-            string rightResult = ParseExpression(el, right);
-            double lD, rD;
-            bool lDbool = double.TryParse(leftResult, out lD);
-            bool rDbool = double.TryParse(rightResult, out rD);
-
-            string smallCmpOp = operation.ToLowerInvariant();
-            switch (smallCmpOp) {
-                case "equals":
-                case "=":
-                case "==":
-                    if (lDbool && rDbool) {
-                        return Compare(operation, lD, rD);
-                    } else return leftResult == rightResult;
-                case "!=":
-                    if (lDbool && rDbool) {
-                        return Compare(operation, lD, rD);
-                    } else return leftResult != rightResult;
-                default:
-                    if (lDbool && rDbool) {
-                        return Compare(operation, lD, rD);
-                    } else return false;
-            }
+        private static string ParseExpression(string expression) {
+            // attributes start with # and end with whitespace, #, ), +, -, (, *, ., or =
+            string expandedExpression = Regex.Replace(expression, @"Has\(#(?<attName>[^\s\#\)\+\-\(\*\.=]+)\)", "HasAttribute(\"${attName}\")");
+            expandedExpression = Regex.Replace(expression, @"d\(#(?<attName>[^\s\#\)\+\-\(\*\.=]+)\)",
+                "(HasAttribute(\"${attName}\") ? double.Parse(GetAttribute(\"${attName}\")) : -1)");
+            expandedExpression = Regex.Replace(expandedExpression, @"#(?<attName>[^\s\#\)\+\-\(\*\.=]+)", "GetAttribute(\"${attName}\")");
+            UnityEngine.MonoBehaviour.print(expandedExpression);
+            return expandedExpression;
         }
 
         public static bool Compare(string operation, double number1, double number2) {

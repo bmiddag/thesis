@@ -562,7 +562,8 @@ namespace System.Linq.Dynamic
             typeof(TimeSpan),
             typeof(Guid),
             typeof(Math),
-            typeof(Convert)
+            typeof(Convert),
+            typeof(Grammars.AttributedElement)
         };
 
         static readonly Expression trueLiteral = Expression.Constant(true);

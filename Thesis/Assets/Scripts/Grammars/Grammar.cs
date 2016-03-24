@@ -212,6 +212,7 @@ namespace Grammars {
             bool stop = CheckStopCondition();
             if (stop) {
                 // TODO: Transfer control to inter-grammar system
+                UnityEngine.MonoBehaviour.print("STOP!");
             }
             iteration++;
         }
