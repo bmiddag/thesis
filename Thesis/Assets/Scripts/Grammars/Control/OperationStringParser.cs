@@ -5,9 +5,10 @@ using System.Reflection;
 using System.Linq.Dynamic;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Linq.Expressions;
 
 namespace Grammars {
-    public static class ElementOperations {
+    public static class OperationStringParser {
         public static List<AttributedElement> SelectElements(IElementContainer container, string selector) {
             List<AttributedElement> sourceList;
             string fromSelector = null;
@@ -15,8 +16,8 @@ namespace Grammars {
             if (selector == null || selector.Trim() == "") {
                 return new List<AttributedElement>(container.GetElements());
             } else {
-                string fromPattern = @"from \[\[(?<from>.+?)\]\]";
-                string wherePattern = @"where \[\[(?<where>.+?)\]\]";
+                string fromPattern = @"from \[(?<from>.+?)\]";
+                string wherePattern = @"where \[(?<where>.+?)\]";
                 Match fromMatch = Regex.Match(selector, fromPattern, RegexOptions.IgnoreCase);
                 Match whereMatch = Regex.Match(selector, wherePattern, RegexOptions.IgnoreCase);
                 if (fromMatch.Success) {
@@ -39,12 +40,58 @@ namespace Grammars {
             }
         }
 
-        public static bool CompareUsingString(string operation, double number1, double number2) {
+        private static string ParseExpression(AttributedElement el, string expression) {
+            return "";
+        }
+
+        private static bool ParseBooleanExpression(AttributedElement el, string expression) {
+            expression = expression.Trim();
+            if (expression.StartsWith("(") && expression.EndsWith(")")) {
+                ParseBooleanExpression(el, expression.Substring(1, expression.Length - 2));
+            }
+            string comparisonPattern = @"(?<left.+>)(?<operator>(<=|>=|!=|==|=|>|<))(?<right.+>)";
+            Match comparisonMatch = Regex.Match(expression, comparisonPattern, RegexOptions.IgnoreCase);
+            if (comparisonMatch.Success) {
+                return CompareStringExpressions(el, fromMatch.Groups["from"].Value.Trim();
+            }
+            return "";
+        }
+
+        private static bool CompareStringExpressions(AttributedElement el, string operation, string left, string right) {
+            string leftResult = ParseExpression(el, left);
+            string rightResult = ParseExpression(el, right);
+            double lD, rD;
+            bool lDbool = double.TryParse(leftResult, out lD);
+            bool rDbool = double.TryParse(rightResult, out rD);
+
             string smallCmpOp = operation.ToLowerInvariant();
             switch (smallCmpOp) {
                 case "equals":
+                case "=":
+                case "==":
+                    if (lDbool && rDbool) {
+                        return Compare(operation, lD, rD);
+                    } else return leftResult == rightResult;
+                case "!=":
+                    if (lDbool && rDbool) {
+                        return Compare(operation, lD, rD);
+                    } else return leftResult != rightResult;
+                default:
+                    if (lDbool && rDbool) {
+                        return Compare(operation, lD, rD);
+                    } else return false;
+            }
+        }
+
+        public static bool Compare(string operation, double number1, double number2) {
+            string smallCmpOp = operation.ToLowerInvariant();
+            switch (smallCmpOp) {
+                case "equals":
+                case "=":
                 case "==":
                     return number1 == number2;
+                case "!=":
+                    return number1 != number2;
                 case ">=":
                     return number1 >= number2;
                 case "<=":

@@ -108,7 +108,7 @@ namespace Demo {
                         int y = (int)Math.Round(tilePos.y, 0);
                         if (x < 0 || x >= grid.GetGridSize().x) return;
                         if (y < 0 || y >= grid.GetGridSize().y) return;
-                        Tile tile = new Tile(grid, x, y);
+                        new Tile(grid, x, y);
                         //controller.AddAttributeClass(tile, "white_circles");
                     }
                 }

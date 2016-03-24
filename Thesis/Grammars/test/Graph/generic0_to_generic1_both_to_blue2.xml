@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Graph>
+  <Nodes>
+    <Node id="0" hashCode="982287104" active="True" />
+    <Node id="1" hashCode="-1324932992" active="True" />
+    <Node id="2" hashCode="-293847552" active="True">
+      <AttributeClasses>
+        <AttributeClass name="blue_squares" />
+      </AttributeClasses>
+      <Attributes>
+        <Attribute key="_demo_shape" value="square" />
+        <Attribute key="_demo_color" value="blue" />
+      </Attributes>
+    </Node>
+  </Nodes>
+  <Edges>
+    <Edge node1="982287104" node2="-1324932992" directed="True" />
+    <Edge node1="982287104" node2="-293847552" directed="True" />
+    <Edge node1="-1324932992" node2="-293847552" directed="True" />
+  </Edges>
+</Graph>

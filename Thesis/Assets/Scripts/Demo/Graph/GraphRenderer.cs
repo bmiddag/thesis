@@ -146,7 +146,7 @@ namespace Demo {
                         } else {
                             // Vector3 newPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                             snapToMouse = true;
-                            Node node = new Node(graph, graph.GetNodes().Count);
+                            new Node(graph, graph.GetNodes().Count);
 
                             //controller.AddAttributeClass(node, "white_circles");
                             //node.SetAttribute("_demo_x", newPos.x.ToString());
@@ -156,7 +156,7 @@ namespace Demo {
                         if (drawingEdge) {
                             if (currentNode != startNode) {
                                 // Create new edge to currentNode from startNode
-                                Edge edge = startNode.GetNode().AddEdge(currentNode.GetNode(), true);
+                                startNode.GetNode().AddEdge(currentNode.GetNode(), true);
                                 startNode = null;
                                 drawingEdge = false;
                             }

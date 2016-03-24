@@ -181,7 +181,7 @@ namespace Demo {
         }
 
         public void SetGrammar<T>(Grammar<T> grammar) where T : StructureModel {
-            Type renType = currentStructureRenderer.GetType();
+            //Type renType = currentStructureRenderer.GetType();
             if (typeof(T) != currentStructureRenderer.Source.GetType()) return;
             grammar.Source = (T)currentStructureRenderer.Source;
             currentStructureRenderer.Grammar = grammar;

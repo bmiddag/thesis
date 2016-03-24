@@ -4,29 +4,51 @@ using System.Collections.Generic;
 namespace Grammars {
     public class Constraint<T> where T : StructureModel {
         protected Grammar<T> grammar;
-        protected List<GrammarCondition> conditions;
+        protected GrammarCondition condition;
+        public GrammarCondition Condition {
+            get { return condition; }
+            set { condition = value; }
+        }
+
+        protected GrammarProbability probabilityCalculator;
+        public GrammarProbability ProbabilityCalculator {
+            get { return probabilityCalculator; }
+            set { probabilityCalculator = value; }
+        }
+
+        protected double probability;
+        public double Probability {
+            get { return GetProbability(false); }
+        }
+        protected bool valid;
+        public bool Valid {
+            get { return valid; }
+        }
+
         protected List<Rule<T>> rules;
         protected bool active;
         public bool Active {
-            get {
-                return active;
-            }
-            set {
-                active = value;
-            }
+            get { return active; }
+            set { active = value; }
+        }
+
+        protected string name = null;
+        public string Name {
+            get { return name; }
         }
 
         // Rule selection
-        protected GrammarRuleSelector selector;
+        protected GrammarRuleSelector selector = null;
         public GrammarRuleSelector Selector {
             get {
+                if (selector == null) return grammar.RuleSelector;
                 return selector;
             }
             set {
                 selector = value;
             }
         }
-        protected bool findFirst;
+        protected bool findFirst = false;
         public bool FindFirst {
             get {
                 return findFirst;
@@ -36,27 +58,16 @@ namespace Grammars {
             }
         }
 
-        public Constraint(Grammar<T> grammar, bool active=true) {
+        public Constraint(Grammar<T> grammar, string name, bool active=true) {
             this.grammar = grammar;
-            grammar.AddConstraint(this);
-            conditions = new List<GrammarCondition>();
+            grammar.AddConstraint(name, this);
+            condition = null;
+            probabilityCalculator = null;
             rules = new List<Rule<T>>();
             this.active = active;
-            //failedConditions = new List<int>();
-        }
-
-        public void AddCondition(GrammarCondition cond) {
-            conditions.Add(cond);
-        }
-
-        public void RemoveCondition(GrammarCondition cond) {
-            if (conditions.Contains(cond)) {
-                conditions.Remove(cond);
-            }
-        }
-
-        public List<GrammarCondition> GetConditions() {
-            return new List<GrammarCondition>(conditions); // Return a copy of the conditions
+            this.name = name;
+            probability = 1;
+            valid = false;
         }
 
         public void AddRule(Rule<T> rule) {
@@ -73,21 +84,25 @@ namespace Grammars {
             return new List<Rule<T>>(rules); // Return a copy of the rule list
         }
 
-        public bool Check() {
+        /// <summary>
+        /// Returns the probability that rules from this constraint should be applied
+        /// </summary>
+        /// <param name="recalculate"></param>
+        /// <returns></returns>
+        public double GetProbability(bool recalculate=true) {
             if (active) {
-                //failedConditions.Clear();
-                bool failed = false;
-                for (int i = 0; i < conditions.Count; i++) {
-                    if (!conditions[i].Check()) {
-                        failed = true;
-                        //failedConditions.Add(i);
+                if (recalculate) {
+                    if (condition != null) valid = condition.Check();
+                    if (valid) {
+                        probability = 0;
+                    } else {
+                        if (probabilityCalculator != null) {
+                            probability = probabilityCalculator.Calculate();
+                        } else probability = 1;
                     }
                 }
-                //if (failedConditions.Count > 0) {
-                if (failed) {
-                    return false;
-                } else return true;
-            } else return true;
+                return probability;
+            } else return 0;
         }
     }
 }

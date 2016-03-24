@@ -20,7 +20,7 @@ namespace Grammars {
         protected List<Rule<T>> rules;
         Rule<T> selectedRule = null;
 
-        protected List<Constraint<T>> constraints;
+        protected Dictionary<string, Constraint<T>> constraints;
 
         protected Type transformerType;
         public IStructureTransformer<T> Transformer {
@@ -80,7 +80,7 @@ namespace Grammars {
             this.ruleSelectionController = ruleSelectionController;
             this.findAllRules = findAllRules;
             stopConditions = new List<GrammarCondition>();
-            constraints = new List<Constraint<T>>();
+            constraints = new Dictionary<string, Constraint<T>>();
             rules = new List<Rule<T>>();
             iteration = 0;
             noRuleFound = false;
@@ -120,6 +120,10 @@ namespace Grammars {
                     tempRules.Add(rule);
                 }
             }
+            if (tempRules.Count == 0) {
+                noRuleFound = true;
+                return;
+            }
 
             // Controlled rule selection
             if (selectionHandler != null) {
@@ -146,15 +150,32 @@ namespace Grammars {
             } else noRuleFound = true;
         }
 
-        protected Constraint<T> CheckConstraints() {
+        protected Constraint<T> CheckConstraints(List<Constraint<T>> checkedConstraints = null) {
+            bool prioritize = false;
+            Random random = new Random();
             List<Constraint<T>> failedConstraints = new List<Constraint<T>>();
-            foreach (Constraint<T> constraint in constraints) {
-                if (!constraint.Check()) { // Constraint failed
-                    failedConstraints.Add(constraint);
+
+            foreach (KeyValuePair<string, Constraint<T>> constraintPair in constraints) {
+                Constraint<T> constraint = constraintPair.Value;
+                if (checkedConstraints != null && checkedConstraints.Contains(constraint)) continue;
+                // Calculate probability, but only if a rule was applied before this.
+                if (checkedConstraints == null || checkedConstraints.Count == 0) constraint.GetProbability(true);
+                if (constraint.Probability > 0) { // Constraint failed
+                    if (constraint.Probability >= 1) {
+                        if (!prioritize) {
+                            failedConstraints.Clear();
+                            prioritize = true;
+                        }
+                        failedConstraints.Add(constraint);
+                    } else if (!prioritize) {
+                        double randomProbability = random.NextDouble();
+                        if (randomProbability < constraint.Probability) {
+                            failedConstraints.Add(constraint);
+                        }
+                    }
                 }
             }
             if (failedConstraints.Count > 0) {
-                Random random = new Random();
                 int index = random.Next(failedConstraints.Count);
                 return failedConstraints[index];
             } else {
@@ -171,15 +192,22 @@ namespace Grammars {
 
             // Check constraints. If any has failed, a rule for that constraint is selected. Otherwise rule selection continues as normal.
             Constraint<T> selectedConstraint = CheckConstraints();
+            List<Constraint<T>> checkedConstraints = new List<Constraint<T>>();
+            //Random random = new Random();
             while (selectedConstraint != null) {
                 SelectRule(selectedConstraint.GetRules(), selectedConstraint.Selector, selectedConstraint.FindFirst);
                 if (!noRuleFound && selectedRule != null) {
+                    UnityEngine.MonoBehaviour.print("Rule found");
+                    //if(random.NextDouble() < 0.4) return;
                     selectedRule.Apply(source);
+                    checkedConstraints.Clear(); // List is cleared so this could be an infinite loop if rules are written badly.
+                    selectedConstraint = CheckConstraints(checkedConstraints);
                 } else {
-                    break;// Can't break, because another constraint may be selected. This may still be an infinite loop
-                          // TODO: Fix this!!!!
+                    UnityEngine.MonoBehaviour.print("No rule found");
+                    //if (random.NextDouble() < 0.4) return;
+                    checkedConstraints.Add(selectedConstraint);
+                    selectedConstraint = CheckConstraints(checkedConstraints);
                 }
-                selectedConstraint = CheckConstraints();
             }
             bool stop = CheckStopCondition();
             if (stop) {
@@ -212,18 +240,24 @@ namespace Grammars {
             return new List<Rule<T>>(rules); // Return a copy of the rule list
         }
 
-        public void AddConstraint(Constraint<T> constraint) {
-            constraints.Add(constraint);
+        public void AddConstraint(string name, Constraint<T> constraint) {
+            constraints.Add(name, constraint);
         }
 
         public void RemoveConstraint(Constraint<T> constraint) {
-            if (constraints.Contains(constraint)) {
-                constraints.Remove(constraint);
+            if (constraint == null) return;
+            if (constraints.ContainsKey(constraint.Name) && constraints[constraint.Name] == constraint) {
+                constraints.Remove(constraint.Name);
             }
         }
 
-        public List<Constraint<T>> GetConstraints() {
-            return new List<Constraint<T>>(constraints);
+        public void RemoveConstraint(string name) {
+            if (name == null) return;
+            if (constraints.ContainsKey(name)) constraints.Remove(name);
+        }
+
+        public Dictionary<string, Constraint<T>> GetConstraints() {
+            return new Dictionary<string, Constraint<T>>(constraints);
         }
 
         public List<AttributedElement> GetElements(string specifier = null) {

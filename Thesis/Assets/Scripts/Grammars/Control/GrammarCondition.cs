@@ -62,6 +62,11 @@ namespace Grammars {
             return (cond1.Check() || cond2.Check());
         }
 
+        // NOT-result of a grammar condition
+        public static bool Not<T>(Grammar<T> grammar, GrammarCondition cond) where T : StructureModel {
+            return !cond.Check();
+        }
+
         /// <summary>
         /// Count elements with a specific attribute or perform any aggregate operation on them and compare it to a number
         /// </summary>
@@ -74,19 +79,19 @@ namespace Grammars {
         /// <param name="number">The number to compare the element count to.</param>
         /// <returns></returns>
         public static bool AggregateOperation<T>(Grammar<T> grammar, string selector, string attrName, string aggOperation, string cmpOperation, double number) where T : StructureModel {
-            List<AttributedElement> elements = ElementOperations.SelectElements(grammar, selector);
+            List<AttributedElement> elements = OperationStringParser.SelectElements(grammar, selector);
             double result;
             if (attrName == null || attrName.Trim() == "") {
                 result = elements.Count;
             } else {
-                result = ElementOperations.AggregateAttribute(aggOperation, elements, attrName);
+                result = OperationStringParser.AggregateAttribute(aggOperation, elements, attrName);
             }
-            return ElementOperations.CompareUsingString(cmpOperation, result, number);
+            return OperationStringParser.Compare(cmpOperation, result, number);
         }
 
         public static bool CountElements<T>(Grammar<T> grammar, string selector, string cmpOperation, double number) where T : StructureModel {
-            List<AttributedElement> elements = ElementOperations.SelectElements(grammar, selector);
-            return ElementOperations.CompareUsingString(cmpOperation, elements.Count, number);
+            List<AttributedElement> elements = OperationStringParser.SelectElements(grammar, selector);
+            return OperationStringParser.Compare(cmpOperation, elements.Count, number);
         }
 
         public static bool SumAttribute<T>(Grammar<T> grammar, string selector, string attrName, string cmpOperation, double number) where T : StructureModel {
