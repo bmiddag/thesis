@@ -61,21 +61,31 @@ namespace Grammars {
             }
             string left = null;
             string right = null;
-            Match andOrMatch = Regex.Match(expression, @"^(<?left>.+)(<?operator>(\|\|)|(&&))(<?right>.+)$");
-            if (andOrMatch.Success) {
-                left = andOrMatch.Groups["left"].Value.Trim();
-                right = andOrMatch.Groups["right"].Value.Trim();
-                string op = andOrMatch.Groups["operator"].Value.Trim();
+            Match binaryOperatorMatch = Regex.Match(expression, @"^(<?left>.+)(<?operator>(\|\|)|(&&)|(\+)|(-)|(\*)|(/)|(==))(<?right>.+)$");
+            if (binaryOperatorMatch.Success) {
+                left = binaryOperatorMatch.Groups["left"].Value.Trim();
+                right = binaryOperatorMatch.Groups["right"].Value.Trim();
+                string op = binaryOperatorMatch.Groups["operator"].Value.Trim();
                 if (CheckBalancedParentheses(left) && CheckBalancedParentheses(right)) {
                     args = new string[] { left, right };
                     if (op == "&&") return "And";
                     if (op == "||") return "Or";
+                    if (op == "+") return "Sum";
+                    if (op == "-") return "Difference";
+                    if (op == "*") return "Multiply";
+                    if (op == "/") return "Divide";
+                    if (op == "==") return "Equality";
                 }
             }
             if (expression.StartsWith("!")) {
                 left = expression.Substring(1).Trim();
                 args = new string[] { left };
                 return "Not";
+            }
+            if (expression.StartsWith("$")) {
+                left = expression.Substring(1).Trim();
+                args = new string[] { left };
+                return "Constant";
             }
             int currentArgIndex = 0;
             string methodName = "";
@@ -138,6 +148,63 @@ namespace Grammars {
                 }
             }
             return (parentheses.Count == 0);
+        }
+
+        public static MethodCaller ParseMethodCaller<T>(string methodString, Type methodCallerType, Grammar<T> grammar = null, Rule<T> rule = null,
+            AttributedElement element = null, string attName = null) where T : StructureModel {
+            if (!typeof(MethodCaller).IsAssignableFrom(methodCallerType)) return null;
+            string[] args = null;
+            string methodName = ParseMethodString(methodString, out args);
+            if (methodName == null || methodName.Trim() == "") return null;
+
+            if (grammar == null && rule != null) grammar = rule.Grammar;
+
+            MethodCaller caller = null;
+            int defaultArgs = 0;
+            if (methodCallerType == typeof(GrammarCondition)) {
+                caller = GrammarCondition.FromName(methodName, grammar);
+                defaultArgs = 1;
+            } else if (methodCallerType == typeof(GrammarProbability)) {
+                caller = GrammarProbability.FromName(methodName, grammar);
+                defaultArgs = 1;
+            } else if (methodCallerType == typeof(GrammarRuleSelector)) {
+                caller = GrammarRuleSelector.FromName(methodName, grammar);
+                defaultArgs = 2;
+            } else if (methodCallerType == typeof(RuleCondition)) {
+                caller = RuleCondition.FromName(methodName, rule);
+                defaultArgs = 1;
+            } else if (methodCallerType == typeof(RuleProbability)) {
+                caller = RuleProbability.FromName(methodName, rule);
+                defaultArgs = 1;
+            } else if (methodCallerType == typeof(RuleMatchSelector)) {
+                caller = RuleMatchSelector.FromName(methodName, rule);
+                defaultArgs = 2;
+            } else if (methodCallerType == typeof(AttributeModifier)) {
+                caller = AttributeModifier.FromName(methodName, rule, element, attName);
+                defaultArgs = 3;
+            }
+            if (caller == null) return null;
+            if (caller.Method.GetParameters().Length != args.Length + defaultArgs) return null;
+            for (int i = 0; i < args.Length; i++) {
+                Type paramType = caller.Method.GetParameters()[i + defaultArgs].ParameterType;
+                string arg = args[i].Trim();
+                if (typeof(MethodCaller).IsAssignableFrom(paramType)) {
+                    MethodCaller argCall = ParseMethodCaller(arg, paramType, grammar, rule, element, attName);
+                    caller.AddArgument(argCall);
+                } else if (paramType == typeof(string)) {
+                    if (((arg.StartsWith("\"") && arg.EndsWith("\""))) || ((arg.StartsWith("'") && arg.EndsWith("'")))) {
+                        arg = arg.Substring(1, arg.Length - 2);
+                    }
+                    caller.AddArgument(arg);
+                } else if (paramType == typeof(int)) {
+                    int intArg = int.Parse(arg);
+                    caller.AddArgument(intArg);
+                } else if (paramType == typeof(double)) {
+                    double doubleArg = double.Parse(arg);
+                    caller.AddArgument(doubleArg);
+                }
+            }
+            return caller;
         }
 
         public static bool Compare(string operation, double number1, double number2) {

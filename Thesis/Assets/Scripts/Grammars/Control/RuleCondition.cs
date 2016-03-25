@@ -30,11 +30,11 @@ namespace Grammars {
         }
 
         public static RuleCondition FromName<T>(string name, Rule<T> rule) where T : StructureModel {
-            MethodInfo condition = typeof(RuleCondition).GetMethod(name);
-            if (condition != null) condition = condition.MakeGenericMethod(typeof(T));
+            MethodInfo method = typeof(RuleCondition).GetMethod(name);
+            if (method != null) method = method.MakeGenericMethod(typeof(T));
             // Check method signature. Has to be static if created from here.
-            if (condition != null && condition.IsStatic && condition.ReturnType == typeof(bool) && condition.GetParameters().Count() >= 1) {
-                return new RuleCondition(condition, rule);
+            if (method != null && method.IsStatic && method.ReturnType == typeof(bool) && method.GetParameters().Count() >= 1) {
+                return new RuleCondition(method, rule);
             } else return null;
         }
 

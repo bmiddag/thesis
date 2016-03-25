@@ -31,33 +31,12 @@ namespace Grammars {
         }
 
         public static GrammarCondition FromName<T>(string name, Grammar<T> grammar) where T : StructureModel {
-            MethodInfo condition = typeof(GrammarCondition).GetMethod(name);
-            if (condition != null) condition = condition.MakeGenericMethod(typeof(T));
+            MethodInfo method = typeof(GrammarCondition).GetMethod(name);
+            if (method != null) method = method.MakeGenericMethod(typeof(T));
             // Check method signature. Has to be static if created from here.
-            if (condition != null && condition.IsStatic && condition.ReturnType == typeof(bool) && condition.GetParameters().Count() >= 1) {
-                return new GrammarCondition(condition, grammar);
+            if (method != null && method.IsStatic && method.ReturnType == typeof(bool) && method.GetParameters().Count() >= 1) {
+                return new GrammarCondition(method, grammar);
             } else return null;
-        }
-
-        public static GrammarCondition Parse<T>(string methodString, Grammar<T> grammar) where T : StructureModel {
-            string[] args = null;
-            string methodName = OperationStringParser.ParseMethodString(methodString, out args);
-            if (methodName == null || methodName.Trim() == "") {
-                return null;
-            } else {
-                GrammarCondition grCond = FromName(methodName, grammar);
-                if (grCond.Method.GetParameters().Length != args.Length + 1) return null;
-                for (int i = 0; i < args.Length; i++) {
-                    if (grCond.Method.GetParameters()[i+1].ParameterType == typeof(GrammarCondition)) {
-                        GrammarCondition argCond = Parse(args[i], grammar);
-                        grCond.AddArgument(argCond);
-                    } else if (grCond.Method.GetParameters()[i + 1].ParameterType == typeof(GrammarProbability)) {
-                        GrammarProbability argProb = GrammarProbability.Parse(args[i], grammar);
-                        grCond.AddArgument(argProb);
-                    }
-                }
-                return grCond;
-            }
         }
 
         // ********************************************************************************************************************

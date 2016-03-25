@@ -31,41 +31,40 @@ namespace Grammars {
         }
 
         public static GrammarProbability FromName<T>(string name, Grammar<T> grammar) where T : StructureModel {
-            MethodInfo condition = typeof(GrammarProbability).GetMethod(name);
-            if (condition != null) condition = condition.MakeGenericMethod(typeof(T));
+            MethodInfo method = typeof(GrammarProbability).GetMethod(name);
+            if (method != null) method = method.MakeGenericMethod(typeof(T));
             // Check method signature. Has to be static if created from here.
-            if (condition != null && condition.IsStatic && condition.ReturnType == typeof(double) && condition.GetParameters().Count() >= 1) {
-                return new GrammarProbability(condition, grammar);
+            if (method != null && method.IsStatic && method.ReturnType == typeof(double) && method.GetParameters().Count() >= 1) {
+                return new GrammarProbability(method, grammar);
             } else return null;
-        }
-
-        public static GrammarProbability Parse<T>(string methodString, Grammar<T> grammar) where T : StructureModel {
-            string[] args = null;
-            string methodName = OperationStringParser.ParseMethodString(methodString, out args);
-            if (methodName == null || methodName.Trim() == "") {
-                return null;
-            } else {
-                GrammarProbability grProb = FromName(methodName, grammar);
-                if (grProb.Method.GetParameters().Length != args.Length + 1) return null;
-                for (int i = 0; i < args.Length; i++) {
-                    if (grProb.Method.GetParameters()[i + 1].ParameterType == typeof(GrammarProbability)) {
-                        GrammarProbability argProb = Parse(args[i], grammar);
-                        grProb.AddArgument(argProb);
-                    } else if (grProb.Method.GetParameters()[i + 1].ParameterType == typeof(GrammarCondition)) {
-                        GrammarCondition argCond = GrammarCondition.Parse(args[i], grammar);
-                        grProb.AddArgument(argCond);
-                    }
-                }
-                return grProb;
-            }
         }
 
         // ********************************************************************************************************************
         // Example fitness / probability condition methods are listed here
         // ********************************************************************************************************************
 
-        public static double Multiply<T>(Grammar<T> grammar, GrammarProbability prob, double multiplier) where T : StructureModel {
-            return multiplier * prob.Calculate();
+        public static double Multiply<T>(Grammar<T> grammar, GrammarProbability prob1, GrammarProbability prob2) where T : StructureModel {
+            return prob1.Calculate() * prob2.Calculate();
+        }
+
+        public static double And<T>(Grammar<T> grammar, GrammarProbability prob1, GrammarProbability prob2) where T : StructureModel {
+            return Multiply(grammar, prob1, prob2);
+        }
+
+        public static double Divide<T>(Grammar<T> grammar, GrammarProbability prob1, GrammarProbability prob2) where T : StructureModel {
+            return prob1.Calculate() / prob2.Calculate();
+        }
+
+        public static double Sum<T>(Grammar<T> grammar, GrammarProbability prob1, GrammarProbability prob2) where T : StructureModel {
+            return prob1.Calculate() + prob2.Calculate();
+        }
+
+        public static double Or<T>(Grammar<T> grammar, GrammarProbability prob1, GrammarProbability prob2) where T : StructureModel {
+            return Sum(grammar, prob1, prob2);
+        }
+
+        public static double Difference<T>(Grammar<T> grammar, GrammarProbability prob1, GrammarProbability prob2) where T : StructureModel {
+            return prob1.Calculate() - prob2.Calculate();
         }
 
         public static double Min<T>(Grammar<T> grammar, GrammarProbability prob1, GrammarProbability prob2) where T : StructureModel {
@@ -78,6 +77,14 @@ namespace Grammars {
 
         public static double Inverse<T>(Grammar<T> grammar, GrammarProbability prob) where T : StructureModel {
             return 1 - prob.Calculate();
+        }
+
+        public static double Not<T>(Grammar<T> grammar, GrammarProbability prob) where T : StructureModel {
+            return Inverse(grammar, prob);
+        }
+
+        public static double Constant<T>(Grammar<T> grammar, double constant) where T : StructureModel {
+            return constant;
         }
 
         public static double Bounds<T>(Grammar<T> grammar, GrammarProbability prob, double lower, double upper) where T : StructureModel {

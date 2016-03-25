@@ -34,36 +34,12 @@ namespace Grammars {
         }
 
         public static GrammarRuleSelector FromName<T>(string name, Grammar<T> grammar) where T : StructureModel {
-            MethodInfo rSel = typeof(GrammarRuleSelector).GetMethod(name);
-            if (rSel != null) rSel = rSel.MakeGenericMethod(typeof(T));
+            MethodInfo method = typeof(GrammarRuleSelector).GetMethod(name);
+            if (method != null) method = method.MakeGenericMethod(typeof(T));
             // Check method signature. Has to be static if created from here.
-            if (rSel != null && rSel.IsStatic && rSel.ReturnType == typeof(int) && rSel.GetParameters().Count() >= 2) {
-                return new GrammarRuleSelector(rSel, grammar);
+            if (method != null && method.IsStatic && method.ReturnType == typeof(int) && method.GetParameters().Count() >= 2) {
+                return new GrammarRuleSelector(method, grammar);
             } else return null;
-        }
-
-        public static GrammarRuleSelector Parse<T>(string methodString, Grammar<T> grammar) where T : StructureModel {
-            string[] args = null;
-            string methodName = OperationStringParser.ParseMethodString(methodString, out args);
-            if (methodName == null || methodName.Trim() == "") {
-                return null;
-            } else {
-                GrammarRuleSelector rSel = FromName(methodName, grammar);
-                if (rSel.Method.GetParameters().Length != args.Length + 1) return null;
-                for (int i = 0; i < args.Length; i++) {
-                    if (rSel.Method.GetParameters()[i + 1].ParameterType == typeof(GrammarRuleSelector)) {
-                        GrammarRuleSelector argSel = Parse(args[i], grammar);
-                        rSel.AddArgument(argSel);
-                    } else if(rSel.Method.GetParameters()[i + 1].ParameterType == typeof(GrammarProbability)) {
-                        GrammarProbability argProb = GrammarProbability.Parse(args[i], grammar);
-                        rSel.AddArgument(argProb);
-                    } else if (rSel.Method.GetParameters()[i + 1].ParameterType == typeof(GrammarCondition)) {
-                        GrammarCondition argCond = GrammarCondition.Parse(args[i], grammar);
-                        rSel.AddArgument(argCond);
-                    }
-                }
-                return rSel;
-            }
         }
 
         // ********************************************************************************************************************
