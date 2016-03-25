@@ -52,6 +52,94 @@ namespace Grammars {
             return expandedExpression;
         }
 
+        public static string ParseMethodString(string expression, out string[] args) {
+            expression = expression.Trim();
+            if (expression.StartsWith("(") && expression.EndsWith(")")) {
+                while (CheckBalancedParentheses(expression.Substring(1, expression.Length - 2))) {
+                    expression = expression.Substring(1, expression.Length - 2).Trim();
+                }
+            }
+            string left = null;
+            string right = null;
+            Match andOrMatch = Regex.Match(expression, @"^(<?left>.+)(<?operator>(\|\|)|(&&))(<?right>.+)$");
+            if (andOrMatch.Success) {
+                left = andOrMatch.Groups["left"].Value.Trim();
+                right = andOrMatch.Groups["right"].Value.Trim();
+                string op = andOrMatch.Groups["operator"].Value.Trim();
+                if (CheckBalancedParentheses(left) && CheckBalancedParentheses(right)) {
+                    args = new string[] { left, right };
+                    if (op == "&&") return "And";
+                    if (op == "||") return "Or";
+                }
+            }
+            if (expression.StartsWith("!")) {
+                left = expression.Substring(1).Trim();
+                args = new string[] { left };
+                return "Not";
+            }
+            int currentArgIndex = 0;
+            string methodName = "";
+            args = null;
+            Stack<int> startIndices = new Stack<int>();
+            for (int i = 0; i < expression.Length; i++) {
+                if (i == 0 || expression[i - 1] != '\\') {
+                    if (expression[i] == '(') {
+                        if (startIndices.Count == 0) {
+                            Match m = Regex.Match(expression.Substring(0, i), @"(\w+)$");
+                            if (m.Success) {
+                                methodName = m.Value;
+                            } else methodName = "";
+                            currentArgIndex = i + 1;
+                        }
+                        startIndices.Push(i);
+                    } else if (expression[i] == ')') {
+                        if (startIndices.Count == 0) return null; // Brackets don't match
+                        int startI = startIndices.Pop();
+                        if (startIndices.Count == 0) {
+                            if (methodName == "") {
+                                string substring = expression.Substring(startI + 1, i - startI - 1);
+                                substring = substring.Trim();
+                                return ParseMethodString(substring, out args);
+                            } else {
+                                if (args == null) args = new string[0];
+                                return methodName;
+                            }
+                        }
+                    } else if (expression[i] == ',' && startIndices.Count == 1) {
+                        string arg = expression.Substring(currentArgIndex, i - currentArgIndex - 1).Trim();
+                        if (args == null) {
+                            args = new string[] { arg };
+                        } else {
+                            int amount = args.Length;
+                            string[] tempArgs = new string[amount + 1];
+                            for (int j = 0; j < amount; j++) {
+                                tempArgs[j] = args[j];
+                            }
+                            tempArgs[amount] = arg;
+                            args = tempArgs;
+                        }
+                    }
+                }
+            }
+            args = null;
+            return null; // Brackets don't match
+        }
+
+        private static bool CheckBalancedParentheses(string expression) {
+            Stack<char> parentheses = new Stack<char>();
+            for (int i = 0; i < expression.Length; i++) {
+                if (i == 0 || expression[i - 1] != '\\') {
+                    if (expression[i] == '(') {
+                        parentheses.Push('(');
+                    } else if (expression[i] == ')') {
+                        if (parentheses.Count == 0) return false;
+                        parentheses.Pop();
+                    }
+                }
+            }
+            return (parentheses.Count == 0);
+        }
+
         public static bool Compare(string operation, double number1, double number2) {
             string smallCmpOp = operation.ToLowerInvariant();
             switch (smallCmpOp) {

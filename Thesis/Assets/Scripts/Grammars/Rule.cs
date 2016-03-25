@@ -5,31 +5,25 @@ namespace Grammars {
     public class Rule<T> : IElementContainer
         where T : StructureModel {
         protected Grammar<T> grammar;
+        public Grammar<T> Grammar {
+            get { return grammar; }
+        }
+
         protected T query;
         public T Query {
-            get {
-                return query;
-            }
-            set {
-                query = value;
-            }
+            get { return query; }
+            set { query = value; }
         }
 
         protected T target;
         public T Target {
-            get {
-                return target;
-            }
-            set {
-                target = value;
-            }
+            get { return target; }
+            set { target = value; }
         }
 
         protected IStructureTransformer<T> transformer = null;
         public IStructureTransformer<T> Transformer {
-            get {
-                return transformer;
-            }
+            get { return transformer; }
             set {
                 if (transformer != value) {
                     if (transformer != null) {
@@ -43,31 +37,19 @@ namespace Grammars {
         protected double probability;
         protected RuleCondition condition = null;
         public RuleCondition Condition {
-            get {
-                return condition;
-            }
-            set {
-                condition = value;
-            }
+            get { return condition; }
+            set { condition = value; }
         }
 
         protected RuleProbability dynamicProbability = null;
         public RuleProbability DynamicProbability {
-            get {
-                return dynamicProbability;
-            }
-            set {
-                dynamicProbability = value;
-            }
+            get { return dynamicProbability; }
+            set { dynamicProbability = value; }
         }
         protected RuleMatchSelector matchSelector = null;
         public RuleMatchSelector MatchSelector {
-            get {
-                return matchSelector;
-            }
-            set {
-                matchSelector = value;
-            }
+            get { return matchSelector; }
+            set { matchSelector = value; }
         }
 
         bool hasSelected;

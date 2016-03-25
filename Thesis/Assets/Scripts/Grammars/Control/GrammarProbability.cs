@@ -39,6 +39,27 @@ namespace Grammars {
             } else return null;
         }
 
+        public static GrammarProbability Parse<T>(string methodString, Grammar<T> grammar) where T : StructureModel {
+            string[] args = null;
+            string methodName = OperationStringParser.ParseMethodString(methodString, out args);
+            if (methodName == null || methodName.Trim() == "") {
+                return null;
+            } else {
+                GrammarProbability grProb = FromName(methodName, grammar);
+                if (grProb.Method.GetParameters().Length != args.Length + 1) return null;
+                for (int i = 0; i < args.Length; i++) {
+                    if (grProb.Method.GetParameters()[i + 1].ParameterType == typeof(GrammarProbability)) {
+                        GrammarProbability argProb = Parse(args[i], grammar);
+                        grProb.AddArgument(argProb);
+                    } else if (grProb.Method.GetParameters()[i + 1].ParameterType == typeof(GrammarCondition)) {
+                        GrammarCondition argCond = GrammarCondition.Parse(args[i], grammar);
+                        grProb.AddArgument(argCond);
+                    }
+                }
+                return grProb;
+            }
+        }
+
         // ********************************************************************************************************************
         // Example fitness / probability condition methods are listed here
         // ********************************************************************************************************************
