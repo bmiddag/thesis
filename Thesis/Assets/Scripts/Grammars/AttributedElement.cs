@@ -65,7 +65,11 @@ namespace Grammars {
             return true;
         }
 
-        public virtual string GetAttribute(string key, bool raw=false) {
+        public string GetAttribute(string key) {
+            return GetAttribute(key, false);
+        }
+
+        public virtual string GetAttribute(string key, bool raw) {
             if (dynamicAttributes.ContainsKey(key) && !raw) {
                 return dynamicAttributes[key].GetAttributeValue();
             } else if (attributes.ContainsKey(key)) {
@@ -98,6 +102,21 @@ namespace Grammars {
             }
 			attributes[key] = value;
             if(notify) OnAttributeChanged(EventArgs.Empty);
+        }
+
+        /// <summary>
+        /// Used in special situations when the dynamic attribute cannot be parsed from a string. Note that this type of attribute cannot be copied!
+        /// </summary>
+        /// <param name="key">attribute key</param>
+        /// <param name="da">dynamic attribute object</param>
+        /// <param name="notify">send an attribute changed event?</param>
+        public void SetDynamicAttribute(string key, DynamicAttribute da, bool notify = true) {
+            if (da != null) {
+                string value = "@>" + da.Method.Name;
+                dynamicAttributes.Add(key, new DynamicAttribute(da, this));
+                attributes[key] = value;
+                if (notify) OnAttributeChanged(EventArgs.Empty);
+            }
         }
 
         public void RemoveAttribute(string key, bool notify=true) {

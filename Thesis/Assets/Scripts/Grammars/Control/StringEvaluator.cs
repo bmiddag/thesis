@@ -31,8 +31,6 @@ namespace Grammars {
                 }
             }
             sourceList = container.GetElements(fromSelector);
-            //UnityEngine.MonoBehaviour.print(sourceList.Count);
-            //UnityEngine.MonoBehaviour.print(whereSelector);
             if (whereSelector == null) {
                 return new List<AttributedElement>(sourceList);
             } else {
@@ -61,7 +59,7 @@ namespace Grammars {
             }
             string left = null;
             string right = null;
-            Match binaryOperatorMatch = Regex.Match(expression, @"^(<?left>.+)(<?operator>(\|\|)|(&&)|(\+)|(-)|(\*)|(/)|(==))(<?right>.+)$");
+            Match binaryOperatorMatch = Regex.Match(expression, @"^(?<left>.+)(?<operator>(\|\|)|(&&)|(\+)|(-)|(\*)|(/)|(==))(?<right>.+)$");
             if (binaryOperatorMatch.Success) {
                 left = binaryOperatorMatch.Groups["left"].Value.Trim();
                 right = binaryOperatorMatch.Groups["right"].Value.Trim();
@@ -111,12 +109,29 @@ namespace Grammars {
                                 substring = substring.Trim();
                                 return ParseMethodString(substring, out args);
                             } else {
-                                if (args == null) args = new string[0];
+                                string arg = expression.Substring(currentArgIndex, i - currentArgIndex).Trim();
+                                currentArgIndex = i + 1;
+                                if (args == null) {
+                                    if (arg == null || arg.Trim() == "") {
+                                        args = new string[0];
+                                    } else {
+                                        args = new string[] { arg };
+                                    }
+                                } else {
+                                    int amount = args.Length;
+                                    string[] tempArgs = new string[amount + 1];
+                                    for (int j = 0; j < amount; j++) {
+                                        tempArgs[j] = args[j];
+                                    }
+                                    tempArgs[amount] = arg;
+                                    args = tempArgs;
+                                }
                                 return methodName;
                             }
                         }
                     } else if (expression[i] == ',' && startIndices.Count == 1) {
-                        string arg = expression.Substring(currentArgIndex, i - currentArgIndex - 1).Trim();
+                        string arg = expression.Substring(currentArgIndex, i - currentArgIndex).Trim();
+                        currentArgIndex = i + 1;
                         if (args == null) {
                             args = new string[] { arg };
                         } else {
@@ -220,8 +235,11 @@ namespace Grammars {
                 caller = DynamicAttribute.FromName(methodName, element, attName);
                 defaultArgs = 2;
             }
-            if (caller == null) return null;
-            if (caller.Method.GetParameters().Length != args.Length + defaultArgs) return null;
+            if (caller == null) throw new FormatException("Method was not found: " + methodString);
+            if (caller.Method.GetParameters().Length != args.Length + defaultArgs) {
+                throw new FormatException("Wrong number of arguments was specified: " + methodString +
+                    ". Expected " + (caller.Method.GetParameters().Length - defaultArgs) + " arguments.");
+            }
             for (int i = 0; i < args.Length; i++) {
                 Type paramType = caller.Method.GetParameters()[i + defaultArgs].ParameterType;
                 string arg = args[i].Trim();

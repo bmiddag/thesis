@@ -3,19 +3,7 @@
   <Constraints>
     <!-- Constraint 1: At least 2 sidepaths (if >= 5 elements exist) -->
     <Constraint name="constraint1_sidepath">
-      <GrammarCondition name="Or">
-        <GrammarCondition name="CountElements">
-          <string></string>
-          <string>&lt;=</string>
-          <int>5</int>
-        </GrammarCondition>
-        <GrammarCondition name="SumAttribute">
-          <string></string>
-          <string>sidepath</string>
-          <string>&gt;=</string>
-          <double>0.7</double>
-        </GrammarCondition>
-      </GrammarCondition>
+      <GrammarCondition>CountElements(,"&lt;=",5) || SumAttribute(,"sidepath","&gt;=",0.7)</GrammarCondition>
       <Rules>
         <!-- Add sidepaths -->
         <Rule probability="0.2">

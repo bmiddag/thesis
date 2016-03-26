@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace Grammars {
@@ -36,6 +38,29 @@ namespace Grammars {
                 for (int i = 0; i < argCount; i++) {
                     parameters[i + 2] = arguments[i];
                 }
+                /*if (method.IsGenericMethodDefinition) {
+                    List<Type> methodTypeArguments = new List<Type>(method.GetGenericArguments().Where(t => t.IsGenericParameter));
+                    Dictionary<Type, Type> typeDict = new Dictionary<Type, Type>();
+                    for (int i = 0; i < argCount + 2; i++) {
+                        if (method.GetParameters()[i].ParameterType.IsGenericTypeDefinition && parameters[i] != null) {
+                            List<Type> genericTypeArgs = new List<Type>(method.GetParameters()[i].ParameterType.GetGenericArguments().Where(t => t.IsGenericParameter));
+                            List<Type> typeArgs = new List<Type>(parameters[i].GetType().GetGenericArguments().Where(t => t.IsGenericParameter));
+                            for (int j = 0; j < genericTypeArgs.Count; j++) {
+                                if (genericTypeArgs[j].IsGenericTypeDefinition && !typeArgs[j].IsGenericTypeDefinition) {
+                                    typeDict.Add(genericTypeArgs[j], typeArgs[j]);
+                                }
+                            }
+                        }
+                    }
+                    Type[] newMethodTypeArgs = new Type[methodTypeArguments.Count];
+                    for (int i = 0; i < methodTypeArguments.Count; i++) {
+                        if (typeDict.ContainsKey(methodTypeArguments[i])) {
+                            newMethodTypeArgs[i] = typeDict[methodTypeArguments[i]];
+                        } else return null;
+                    }
+                    MethodInfo newMethod = method.MakeGenericMethod(newMethodTypeArgs);
+                    if (newMethod != null && !newMethod.IsGenericMethodDefinition) method = newMethod;
+                }*/
                 string result = (string)method.Invoke(null, parameters);
                 return result;
             } else {
