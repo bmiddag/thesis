@@ -10,18 +10,18 @@ namespace Grammars.Graph {
         Graph query = null;
         bool findFirst = false;
         public bool FindFirst {
-            get {
-                return findFirst;
-            }
-            set {
-                findFirst = value;
-            }
+            get { return findFirst; }
+            set { findFirst = value; }
+        }
+
+        private Rule<Graph> rule = null;
+        public Rule<Graph> Rule {
+            get { return rule; }
+            set { rule = value; }
         }
 
         public Graph Source {
-            get {
-                return source;
-            }
+            get { return source; }
             set {
                 if (source != value) {
                     if (matches != null) {
@@ -38,6 +38,7 @@ namespace Grammars.Graph {
         public GraphTransformer() {
             selectedMatch = null;
             findFirst = false;
+            rule = null;
         }
 
 		public HashSet<Node> GetSelectedNodes() {
@@ -73,7 +74,7 @@ namespace Grammars.Graph {
             }
             foreach (Node startNode in source.GetNodes()) {
                 if (findFirst && matches.Count > 0) continue;
-                if (!startNode.MatchAttributes(queryNodes[0])) continue;
+                if (!startNode.MatchAttributes(queryNodes[0], rule)) continue;
                 if (startNode.GetEdges().Count < queryNodes[0].GetEdges().Count) continue;
                 // Is node already marked? (useful when using multiple graph transformers)
                 if (startNode.HasAttribute("_grammar_query_id")) continue;
@@ -124,7 +125,7 @@ namespace Grammars.Graph {
                 // Is node already marked? (useful when using multiple graph transformers)
                 if (node.HasAttribute("_grammar_query_id")) continue;
                 // Compare node at the other end
-                if (!node.MatchAttributes(queryNode)) continue; // Compare node attributes
+                if (!node.MatchAttributes(queryNode, rule)) continue; // Compare node attributes
                 if (node.GetEdges().Count < queryNode.GetEdges().Count) continue; // Compare edge count
                 // For all edges that node has to nodes already selected (including currentNode): compare edge
                 HashSet<Node> adjacentMarkedNodes = new HashSet<Node>(node.GetEdges().Keys.Intersect(selection.Keys));
@@ -193,12 +194,12 @@ namespace Grammars.Graph {
             }
         }
 
-        public void Select(RuleMatchSelector controlledSelection = null) {
+        public void Select() {
             if (matches == null) return;
             if (matches.Count > 0) {
                 int index = -1;
-                if (controlledSelection != null) {
-                    index = controlledSelection.Select(matches);
+                if (rule != null && rule.MatchSelector != null) {
+                    index = rule.MatchSelector.Select(matches);
                 }
                 if (index == -1) {
                     Random rnd = new Random();
@@ -265,11 +266,11 @@ namespace Grammars.Graph {
                             sourceEdge.Destroy();
                         } else {
                             // Copy difference in attributes between query & target to source edge.
-                            sourceEdge.SetAttributesUsingDifference(queryEdge, targetEdge);
+                            sourceEdge.SetAttributesUsingDifference(queryEdge, targetEdge, rule);
                         }
                     }
                     // Copy difference in attributes between query & target to source node.
-                    sourceNode.SetAttributesUsingDifference(queryNode, targetNode);
+                    sourceNode.SetAttributesUsingDifference(queryNode, targetNode, rule);
                 }
             }
             /* Step 5: add new nodes to graph */
@@ -277,7 +278,7 @@ namespace Grammars.Graph {
             foreach (Node targetNode in target.GetNodes()) {
                 if (!oldNodeIDs.Contains(targetNode.GetID())) {
                     Node sourceNode = new Node(source, source.GetNodes().Count);
-                    sourceNode.SetAttributesUsingDifference(null, targetNode); // Copies attributes & attribute classes
+                    sourceNode.SetAttributesUsingDifference(null, targetNode, rule); // Copies attributes & attribute classes
                     newNodes.Add(targetNode.GetID(), sourceNode);
                 }
             }
@@ -312,7 +313,7 @@ namespace Grammars.Graph {
                         if (sourceNode1 != null && sourceNode2 != null) break;
                     }
                     Edge edge = new Edge(source, sourceNode1, sourceNode2, directed);
-                    edge.SetAttributesUsingDifference(null, targetEdge);
+                    edge.SetAttributesUsingDifference(null, targetEdge, rule);
                 }
             }
 

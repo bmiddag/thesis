@@ -12,6 +12,14 @@
         }
 
         /// <summary>
+        /// The rule this structure transformer belongs to (null if it is used outside of a rule).
+        /// </summary>
+        Rule<T> Rule {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Matches parts of the source structure against the query. Stores a list of all matches found.
         /// </summary>
         /// <param name="query">A structure to find within the larger source structure</param>
@@ -20,10 +28,9 @@
 
         /// <summary>
         /// Selects one match from the list of matches and tags the selected elements appropriately.
-        /// Selection is random by default but can be overwritten with controlledSelection.
+        /// Selection is random by default but can be overwritten with a rule's controlledSelection.
         /// </summary>
-        /// <param name="controlledSelection">A custom selection handler, returning the index of the selected match</param>
-        void Select(RuleMatchSelector controlledSelection = null);
+        void Select();
 
         /// <summary>
         /// Transforms a substructure into another 

@@ -10,12 +10,14 @@ namespace Grammars.Tile {
         TileGrid query = null;
         bool findFirst = false;
         public bool FindFirst {
-            get {
-                return findFirst;
-            }
-            set {
-                findFirst = value;
-            }
+            get { return findFirst; }
+            set { findFirst = value; }
+        }
+
+        private Rule<TileGrid> rule = null;
+        public Rule<TileGrid> Rule {
+            get { return rule; }
+            set { rule = value; }
         }
         List<Pair> matches;
 
@@ -39,6 +41,7 @@ namespace Grammars.Tile {
         public TileGridTransformer() {
             selectedOffset = null;
             findFirst = false;
+            rule = null;
         }
 
 		public Pair GetSelectedOffset() {
@@ -71,7 +74,7 @@ namespace Grammars.Tile {
                             matched = false;
                             break;
                         } else if (sourceTile != null) {
-                            if (sourceTile.HasAttribute("_grammar_transformer_id") || (queryTile != null && !sourceTile.MatchAttributes(queryTile))) {
+                            if (sourceTile.HasAttribute("_grammar_transformer_id") || (queryTile != null && !sourceTile.MatchAttributes(queryTile, rule))) {
                                 matched = false;
                                 break;
                             }
@@ -92,12 +95,12 @@ namespace Grammars.Tile {
             } else return false;
         }
 
-        public void Select(RuleMatchSelector controlledSelection = null) {
+        public void Select() {
             if (matches == null) return;
             if (matches.Count > 0) {
                 int index = -1;
-                if (controlledSelection != null) {
-                    index = controlledSelection.Select(matches);
+                if (rule != null && rule.MatchSelector != null) {
+                    index = rule.MatchSelector.Select(matches);
                 }
                 if (index == -1) {
                     Random rnd = new Random();
@@ -135,7 +138,7 @@ namespace Grammars.Tile {
                     if(sourceTile != null) sourceTile.PostponeAttributeChanged(true);
                     if (targetTile != null) {
                         if (sourceTile == null) sourceTile = new Tile(source, sX + x, sY + y);
-                        sourceTile.SetAttributesUsingDifference(queryTile, targetTile);
+                        sourceTile.SetAttributesUsingDifference(queryTile, targetTile, rule);
                         sourceTile.RemoveAttribute("_grammar_transformer_id");
                     } else if(queryTile != null) { // i.e. if tile was explicitly deleted during transition from query --> target
                         source.SetTile(sX + x, sY + y, null);

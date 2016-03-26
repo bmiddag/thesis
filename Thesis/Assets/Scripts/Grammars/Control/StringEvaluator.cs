@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 using System.Linq.Expressions;
 
 namespace Grammars {
-    public static class OperationStringParser {
+    public static class StringEvaluator {
         public static List<AttributedElement> SelectElements(IElementContainer container, string selector) {
             List<AttributedElement> sourceList;
             string fromSelector = null;
@@ -179,8 +179,8 @@ namespace Grammars {
             } else if (methodCallerType == typeof(RuleMatchSelector)) {
                 caller = RuleMatchSelector.FromName(methodName, rule);
                 defaultArgs = 2;
-            } else if (methodCallerType == typeof(AttributeModifier)) {
-                caller = AttributeModifier.FromName(methodName, rule, element, attName);
+            } else if (methodCallerType == typeof(DynamicAttribute)) {
+                caller = DynamicAttribute.FromName(methodName, rule, element, attName);
                 defaultArgs = 3;
             }
             if (caller == null) return null;

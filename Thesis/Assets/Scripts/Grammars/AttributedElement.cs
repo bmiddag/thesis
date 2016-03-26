@@ -21,7 +21,37 @@ namespace Grammars {
 			return attributes.ContainsKey(key);
 		}
 
+        public bool MatchAttributes<T>(AttributedElement el, Rule<T> rule) where T : StructureModel {
+            if (el == null) return true;
+            bool match = true;
+            Dictionary<string, string> thisAtts = EvaluateDynamicAttributes(rule, true);
+            Dictionary<string, string> otherAtts = el.EvaluateDynamicAttributes(rule, true);
+            match = MatchAttributes(el);
+            SetAttributes(thisAtts, false);
+            el.SetAttributes(otherAtts, false);
+            return match;
+        }
+
+        public Dictionary<string, string> EvaluateDynamicAttributes<T>(Rule<T> rule, bool evaluateDouble=true) where T : StructureModel {
+            Dictionary<string, string> originalAttributes = new Dictionary<string, string>();
+            foreach (KeyValuePair<string, string> attribute in attributes) {
+                DynamicAttribute da = null;
+                if (attribute.Value.StartsWith("@@") && evaluateDouble) {
+                    da = (DynamicAttribute)StringEvaluator.ParseMethodCaller(attribute.Value.Substring(2), typeof(DynamicAttribute), null, rule, this, attribute.Key);
+                } else if (attribute.Value.StartsWith("@") && (attribute.Value.Length < 2 || attribute.Value[1] != '@')) {
+                    da = (DynamicAttribute)StringEvaluator.ParseMethodCaller(attribute.Value.Substring(1), typeof(DynamicAttribute), null, rule, this, attribute.Key);
+                }
+                if (da == null) continue;
+                string newVal = da.GetAttributeValue();
+                if (newVal == null) continue;
+                originalAttributes.Add(attribute.Key, attribute.Value);
+                attributes[attribute.Key] = newVal;
+            }
+            return originalAttributes;
+        }
+
         public bool MatchAttributes(AttributedElement el) {
+            if (el == null) return true;
             IDictionary<string, string> dict = el.GetAttributes();
             if (dict == null || dict.Keys.Count == 0) return true;
             bool exactMatch = el.HasAttribute("_grammar_exactmatch");
@@ -72,22 +102,22 @@ namespace Grammars {
 			return attributes;
 		}
 
-		public void SetAttribute(string key, string value) {
+		public void SetAttribute(string key, string value, bool notify=true) {
 			attributes[key] = value;
-            OnAttributeChanged(EventArgs.Empty);
+            if(notify) OnAttributeChanged(EventArgs.Empty);
         }
 
-        public void RemoveAttribute(string key) {
+        public void RemoveAttribute(string key, bool notify=true) {
             attributes.Remove(key);
-            OnAttributeChanged(EventArgs.Empty);
+            if(notify) OnAttributeChanged(EventArgs.Empty);
         }
 
-		public void SetAttributes(IDictionary<string, string> dict) {
+		public void SetAttributes(IDictionary<string, string> dict, bool notify=true) {
 			if (dict != null) {
 				foreach (KeyValuePair<string, string> entry in dict) {
 					attributes[entry.Key] = entry.Value;
 				}
-                OnAttributeChanged(EventArgs.Empty);
+                if(notify) OnAttributeChanged(EventArgs.Empty);
 			}
 		}
 
@@ -147,6 +177,13 @@ namespace Grammars {
                 remAtts = new HashSet<string>();
             }
             return remAtts;
+        }
+
+        public void SetAttributesUsingDifference<T>(AttributedElement source, AttributedElement target, Rule<T> rule) where T : StructureModel {
+            if (target == null) return;
+            Dictionary<string, string> targetAtts = target.EvaluateDynamicAttributes(rule, false);
+            SetAttributesUsingDifference(source, target);
+            target.SetAttributes(targetAtts, false);
         }
 
         /// <summary>

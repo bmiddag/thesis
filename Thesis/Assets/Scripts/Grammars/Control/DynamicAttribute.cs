@@ -2,7 +2,7 @@
 using System.Reflection;
 
 namespace Grammars {
-    public class AttributeModifier : MethodCaller {
+    public class DynamicAttribute : MethodCaller {
         private object rule;
         public object Rule {
             get { return rule; }
@@ -21,7 +21,7 @@ namespace Grammars {
             set { attName = value; }
         }
 
-        public AttributeModifier(MethodInfo method, object rule = null, AttributedElement element = null, string attName = null) : base(method) {
+        public DynamicAttribute(MethodInfo method, object rule = null, AttributedElement element = null, string attName = null) : base(method) {
             this.rule = rule;
             this.element = element;
             this.attName = attName;
@@ -46,12 +46,12 @@ namespace Grammars {
             }
         }
 
-        public static AttributeModifier FromName<T>(string name, Rule<T> rule, AttributedElement element, string attName) where T : StructureModel {
-            MethodInfo method = typeof(AttributeModifier).GetMethod(name);
+        public static DynamicAttribute FromName<T>(string name, Rule<T> rule, AttributedElement element, string attName) where T : StructureModel {
+            MethodInfo method = typeof(DynamicAttribute).GetMethod(name);
             if (method != null) method = method.MakeGenericMethod(typeof(T));
             // Check method signature. Has to be static if created from here.
             if (method != null && method.IsStatic && method.ReturnType == typeof(string) && method.GetParameters().Count() >= 3) {
-                return new AttributeModifier(method, rule, element, attName);
+                return new DynamicAttribute(method, rule, element, attName);
             } else return null;
         }
 
