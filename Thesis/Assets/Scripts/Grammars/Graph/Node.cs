@@ -96,8 +96,8 @@ namespace Grammars.Graph {
 			graph.RemoveNode(this);
 		}
 
-        public override string GetAttribute(string key) {
-            string result = base.GetAttribute(key);
+        public override string GetAttribute(string key, bool raw = false) {
+            string result = base.GetAttribute(key, raw);
             if (result == null && key != null && key.StartsWith("_structure_")) {
                 int count = 0;
                 switch (key) {

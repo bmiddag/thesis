@@ -46,8 +46,8 @@ namespace Grammars.Graph {
 			}
 		}
 
-        public override string GetAttribute(string key) {
-            string result = base.GetAttribute(key);
+        public override string GetAttribute(string key, bool raw = false) {
+            string result = base.GetAttribute(key, raw);
             if (result == null && key != null && key.StartsWith("_structure_")) {
                 switch (key) {
                     case "_structure_type":

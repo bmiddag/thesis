@@ -52,8 +52,14 @@ namespace Grammars {
             } else return null;
         }
 
-        // Example attribute modifiers are listed here
+        // Example/test attribute modifiers are listed here
+        public static string Multiply(AttributedElement element, string attName, double number1, double number2) {
+            return (number1 * number2).ToString();
+        }
 
+        public static string NumberOfAttributes(AttributedElement element, string attName) {
+            return (element.GetAttributes(raw: true).Count-1).ToString();
+        }
 
     }
 }

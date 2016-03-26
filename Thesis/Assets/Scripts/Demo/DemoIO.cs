@@ -37,9 +37,9 @@ namespace Demo {
             }
 
             // Save attributes
-            if (el.GetAttributes().Count > 0) {
+            if (el.GetAttributes(raw:true).Count > 0) {
                 writer.WriteStartElement("Attributes");
-                foreach (KeyValuePair<string, string> att in el.GetAttributes()) {
+                foreach (KeyValuePair<string, string> att in el.GetAttributes(raw:true)) {
                     writer.WriteStartElement("Attribute");
                     writer.WriteAttributeString("key", att.Key);
                     writer.WriteAttributeString("value", att.Value);
@@ -331,13 +331,20 @@ namespace Demo {
                         switch (reader.Name) {
                             case "RuleSelector":
                                 name = reader["name"];
-                                if (name == null) throw new System.FormatException("Deserialization failed");
-                                GrammarRuleSelector rSel = GrammarRuleSelector.FromName(name, grammar);
+                                GrammarRuleSelector rSel = null;
+                                if (name == null) {
+                                    reader.Read();
+                                    name = reader.Value;
+                                    if (name == null) throw new System.FormatException("Deserialization failed");
+                                    rSel = (GrammarRuleSelector)StringEvaluator.ParseMethodCaller(name, typeof(GrammarRuleSelector), grammar);
+                                } else {
+                                    rSel = GrammarRuleSelector.FromName(name, grammar);
+                                }
                                 if (rSel == null) throw new System.FormatException("Deserialization failed");
                                 if (currentConstraint != null) {
                                     currentConstraint.Selector = rSel;
                                 } else grammar.RuleSelector = rSel;
-                                currentMethodCaller.Push(rSel);
+                                if (!reader.IsEmptyElement) currentMethodCaller.Push(rSel);
                                 break;
                             case "Constraint":
                                 name = reader["name"];
@@ -356,8 +363,15 @@ namespace Demo {
                                 break;
                             case "GrammarCondition":
                                 name = reader["name"];
-                                if (name == null) throw new System.FormatException("Deserialization failed");
-                                GrammarCondition grCond = GrammarCondition.FromName(name, grammar);
+                                GrammarCondition grCond = null;
+                                if (name == null) {
+                                    reader.Read();
+                                    name = reader.Value;
+                                    if (name == null) throw new System.FormatException("Deserialization failed");
+                                    grCond = (GrammarCondition)StringEvaluator.ParseMethodCaller(name, typeof(GrammarCondition), grammar);
+                                } else {
+                                    grCond = GrammarCondition.FromName(name, grammar);
+                                }
                                 if (grCond == null) throw new System.FormatException("Deserialization failed");
                                 if (currentMethodCaller.Count > 0) {
                                     // ARGUMENT
@@ -369,12 +383,19 @@ namespace Demo {
                                     // STOP CONDITION
                                     grammar.AddStopCondition(grCond);
                                 }
-                                currentMethodCaller.Push(grCond);
+                                if (!reader.IsEmptyElement) currentMethodCaller.Push(grCond);
                                 break;
                             case "GrammarProbability":
                                 name = reader["name"];
-                                if (name == null) throw new System.FormatException("Deserialization failed");
-                                GrammarProbability grProb = GrammarProbability.FromName(name, grammar);
+                                GrammarProbability grProb;
+                                if (name == null) {
+                                    reader.Read();
+                                    name = reader.Value;
+                                    if (name == null) throw new System.FormatException("Deserialization failed");
+                                    grProb = (GrammarProbability)StringEvaluator.ParseMethodCaller(name, typeof(GrammarProbability), grammar);
+                                } else {
+                                    grProb = GrammarProbability.FromName(name, grammar);
+                                }
                                 if (grProb == null) throw new System.FormatException("Deserialization failed");
                                 if (currentMethodCaller.Count > 0) {
                                     // ARGUMENT
@@ -383,7 +404,7 @@ namespace Demo {
                                     // CONSTRAINT CONDITION
                                     currentConstraint.ProbabilityCalculator = grProb;
                                 }
-                                currentMethodCaller.Push(grProb);
+                                if (!reader.IsEmptyElement) currentMethodCaller.Push(grProb);
                                 break;
                             case "Rule":
                                 string probabilityStr = reader["probability"];
@@ -404,42 +425,64 @@ namespace Demo {
                                 }
                                 break;
                             case "RuleProbability":
-                                reader.Read();
-                                name = reader.Value;
-                                if (currentRule == null || name == null) throw new System.FormatException("Deserialization failed");
-                                RuleProbability rProb = RuleProbability.FromName(name, currentRule);
+                                name = reader["name"];
+                                RuleProbability rProb;
+                                if (name == null) {
+                                    reader.Read();
+                                    name = reader.Value;
+                                    if (currentRule == null || name == null) throw new System.FormatException("Deserialization failed");
+                                    rProb = (RuleProbability)StringEvaluator.ParseMethodCaller(name, typeof(RuleProbability), grammar, currentRule);
+                                } else {
+                                    if (currentRule == null) throw new System.FormatException("Deserialization failed");
+                                    rProb = RuleProbability.FromName(name, currentRule);
+                                }
                                 if (rProb == null) throw new System.FormatException("Deserialization failed");
                                 if (currentMethodCaller.Count == 0) {
                                     currentRule.DynamicProbability = rProb;
                                 } else {
                                     currentMethodCaller.Peek().AddArgument(rProb);
                                 }
-                                currentMethodCaller.Push(rProb);
+                                if(!reader.IsEmptyElement) currentMethodCaller.Push(rProb);
                                 break;
                             case "RuleMatchSelector":
-                                reader.Read();
-                                name = reader.Value;
-                                if (currentRule == null || name == null) throw new System.FormatException("Deserialization failed");
-                                RuleMatchSelector rMatchSel = RuleMatchSelector.FromName(name, currentRule);
+                                name = reader["name"];
+                                RuleMatchSelector rMatchSel;
+                                if (name == null) {
+                                    reader.Read();
+                                    name = reader.Value;
+                                    if (currentRule == null || name == null) throw new System.FormatException("Deserialization failed");
+                                    rMatchSel = (RuleMatchSelector)StringEvaluator.ParseMethodCaller(name, typeof(RuleMatchSelector), grammar, currentRule);
+                                } else {
+                                    if (currentRule == null) throw new System.FormatException("Deserialization failed");
+                                    rMatchSel = RuleMatchSelector.FromName(name, currentRule);
+                                }
+                                if(rMatchSel == null) throw new System.FormatException("Deserialization failed");
                                 if (currentMethodCaller.Count == 0) {
                                     currentRule.MatchSelector = rMatchSel;
                                 } else {
                                     currentMethodCaller.Peek().AddArgument(rMatchSel);
                                 }
-                                currentMethodCaller.Push(rMatchSel);
+                                if (!reader.IsEmptyElement) currentMethodCaller.Push(rMatchSel);
                                 break;
                             case "RuleCondition":
                                 name = reader["name"];
-                                if (name == null) throw new System.FormatException("Deserialization failed");
-                                if (currentRule == null) throw new System.FormatException("Deserialization failed");
-                                RuleCondition rCond = RuleCondition.FromName(name, currentRule);
+                                RuleCondition rCond;
+                                if (name == null) {
+                                    reader.Read();
+                                    name = reader.Value;
+                                    if (currentRule == null || name == null) throw new System.FormatException("Deserialization failed");
+                                    rCond = (RuleCondition)StringEvaluator.ParseMethodCaller(name, typeof(RuleCondition), grammar, currentRule);
+                                } else {
+                                    if (currentRule == null) throw new System.FormatException("Deserialization failed");
+                                    rCond = RuleCondition.FromName(name, currentRule);
+                                }
+                                if (rCond == null) throw new System.FormatException("Deserialization failed");
                                 if (currentMethodCaller.Count == 0) {
                                     if (currentRule != null) currentRule.Condition = rCond;
                                 } else {
                                     currentMethodCaller.Peek().AddArgument(rCond);
                                 }
-                                if (rCond == null) throw new System.FormatException("Deserialization failed");
-                                currentMethodCaller.Push(rCond);
+                                if (!reader.IsEmptyElement) currentMethodCaller.Push(rCond);
                                 break;
                             case "Query":
                                 reader.Read();

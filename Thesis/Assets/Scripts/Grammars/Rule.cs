@@ -91,13 +91,7 @@ namespace Grammars {
             InitStructureTransformer(source);
             bool found = transformer.Find(query);
             if (found) {
-                if (matchSelector != null) {
-                    object[] parameters = new object[1];
-                    parameters[0] = this;
-                    transformer.Select(matchSelector);
-                } else {
-                    transformer.Select();
-                }
+                transformer.Select();
                 hasSelected = true;
                 return true;
             } else return false;
@@ -128,6 +122,7 @@ namespace Grammars {
         protected void InitStructureTransformer(T source) {
             Transformer = grammar.Transformer;
             transformer.Source = source;
+            transformer.Rule = this;
         }
 
         public List<AttributedElement> GetElements(string specifier = null) {
