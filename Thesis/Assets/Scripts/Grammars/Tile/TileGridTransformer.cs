@@ -74,7 +74,7 @@ namespace Grammars.Tile {
                             matched = false;
                             break;
                         } else if (sourceTile != null) {
-                            if (sourceTile.HasAttribute("_grammar_transformer_id") || (queryTile != null && !sourceTile.MatchAttributes(queryTile, rule))) {
+                            if (sourceTile.HasAttribute("_grammar_transformer_id") || (queryTile != null && !sourceTile.MatchAttributes(queryTile))) {
                                 matched = false;
                                 break;
                             }
@@ -138,7 +138,7 @@ namespace Grammars.Tile {
                     if(sourceTile != null) sourceTile.PostponeAttributeChanged(true);
                     if (targetTile != null) {
                         if (sourceTile == null) sourceTile = new Tile(source, sX + x, sY + y);
-                        sourceTile.SetAttributesUsingDifference(queryTile, targetTile, rule);
+                        sourceTile.SetAttributesUsingDifference(queryTile, targetTile);
                         sourceTile.RemoveAttribute("_grammar_transformer_id");
                     } else if(queryTile != null) { // i.e. if tile was explicitly deleted during transition from query --> target
                         source.SetTile(sX + x, sY + y, null);

@@ -150,6 +150,43 @@ namespace Grammars {
             return (parentheses.Count == 0);
         }
 
+        /// <summary>
+        /// A "lite" version of ParseMethodCaller for dynamic attributes, when T is unknown and no grammar/rule is needed.
+        /// </summary>
+        /// <param name="methodString">a string specifying which method to call with which arguments</param>
+        /// <param name="element">the attributed element the attribute belongs to</param>
+        /// <param name="attName">the name of the attribute that is dynamic</param>
+        /// <returns>a dynamic attribute object matching the arguments</returns>
+        public static DynamicAttribute ParseDynamicAttribute(string methodString, AttributedElement element, string attName) {
+            string[] args = null;
+            string methodName = ParseMethodString(methodString, out args);
+            if (methodName == null || methodName.Trim() == "") return null;
+            DynamicAttribute caller = DynamicAttribute.FromName(methodName, element, attName);
+            int defaultArgs = 2;
+            if (caller == null) return null;
+            if (caller.Method.GetParameters().Length != args.Length + defaultArgs) return null;
+            for (int i = 0; i < args.Length; i++) {
+                Type paramType = caller.Method.GetParameters()[i + defaultArgs].ParameterType;
+                string arg = args[i].Trim();
+                if (typeof(DynamicAttribute).IsAssignableFrom(paramType)) {
+                    DynamicAttribute argCall = ParseDynamicAttribute(arg, element, attName);
+                    caller.AddArgument(argCall);
+                } else if (paramType == typeof(string)) {
+                    if (((arg.StartsWith("\"") && arg.EndsWith("\""))) || ((arg.StartsWith("'") && arg.EndsWith("'")))) {
+                        arg = arg.Substring(1, arg.Length - 2);
+                    }
+                    caller.AddArgument(arg);
+                } else if (paramType == typeof(int)) {
+                    int intArg = int.Parse(arg);
+                    caller.AddArgument(intArg);
+                } else if (paramType == typeof(double)) {
+                    double doubleArg = double.Parse(arg);
+                    caller.AddArgument(doubleArg);
+                }
+            }
+            return caller;
+        }
+
         public static MethodCaller ParseMethodCaller<T>(string methodString, Type methodCallerType, Grammar<T> grammar = null, Rule<T> rule = null,
             AttributedElement element = null, string attName = null) where T : StructureModel {
             if (!typeof(MethodCaller).IsAssignableFrom(methodCallerType)) return null;
@@ -180,8 +217,8 @@ namespace Grammars {
                 caller = RuleMatchSelector.FromName(methodName, rule);
                 defaultArgs = 2;
             } else if (methodCallerType == typeof(DynamicAttribute)) {
-                caller = DynamicAttribute.FromName(methodName, rule, element, attName);
-                defaultArgs = 3;
+                caller = DynamicAttribute.FromName(methodName, element, attName);
+                defaultArgs = 2;
             }
             if (caller == null) return null;
             if (caller.Method.GetParameters().Length != args.Length + defaultArgs) return null;
