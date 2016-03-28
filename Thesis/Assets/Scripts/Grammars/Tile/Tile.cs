@@ -8,6 +8,12 @@ namespace Grammars.Tile {
 		int x, y;
         bool destroyed = false;
 
+        public override StructureModel Structure {
+            get {
+                return grid;
+            }
+        }
+
         public Tile(TileGrid grid, int x, int y) : base() {
 			this.grid = grid;
             this.x = x;

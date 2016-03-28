@@ -12,6 +12,10 @@ namespace Grammars {
         public event EventHandler AttributeChanged;
         protected bool postponeEvents;
 
+        public abstract StructureModel Structure {
+            get;
+        }
+
         public AttributedElement() {
 			attributes = new Dictionary<string, string>();
             dynamicAttributes = new Dictionary<string, DynamicAttribute>();

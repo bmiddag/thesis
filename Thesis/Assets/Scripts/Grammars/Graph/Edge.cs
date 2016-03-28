@@ -8,6 +8,12 @@ namespace Grammars.Graph {
 		bool destroyed = false;
         bool directed = false;
 
+        public override StructureModel Structure {
+            get {
+                return graph;
+            }
+        }
+
         public Edge(Graph graph, Node node1, Node node2, bool directed = false) : base() {
 			this.graph = graph;
 			this.node1 = node1;

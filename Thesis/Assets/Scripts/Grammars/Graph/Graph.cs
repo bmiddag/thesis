@@ -8,7 +8,7 @@ namespace Grammars.Graph {
 		HashSet<Node> nodes;
 		HashSet<Edge> edges;
 
-		public Graph() : base() {
+        public Graph() : base() {
 			nodes = new HashSet<Node>();
 			edges = new HashSet<Edge>();
 		}

@@ -24,6 +24,12 @@ namespace Grammars.Graph {
             }
         }
 
+        public override StructureModel Structure {
+            get {
+                return graph;
+            }
+        }
+
         public Node(Graph graph, int id) : base() {
 			this.graph = graph;
 			edges = new Dictionary<Node, Edge>();

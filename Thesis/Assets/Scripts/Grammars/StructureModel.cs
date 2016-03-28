@@ -18,6 +18,12 @@ namespace Grammars {
             }
         }
 
+        public override StructureModel Structure {
+            get {
+                return this;
+            }
+        }
+
         public abstract List<AttributedElement> GetElements(string specifier = null);
 	}
 }

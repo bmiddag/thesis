@@ -410,6 +410,11 @@ namespace Demo {
                                 string probabilityStr = reader["probability"];
                                 activeStr = reader["active"];
                                 active = true;
+                                int priority = 0;
+                                string priorityStr = reader["priority"];
+                                if (priorityStr != null) {
+                                    int.TryParse(priorityStr, out priority);
+                                }
                                 if (activeStr != null) {
                                     if (!bool.TryParse(activeStr, out active)) {
                                         active = true;
@@ -417,7 +422,7 @@ namespace Demo {
                                 }
                                 double probability;
                                 if (probabilityStr == null || !double.TryParse(probabilityStr, out probability)) throw new System.FormatException("Deserialization failed");
-                                currentRule = new Rule<T>(grammar, probability, active);
+                                currentRule = new Rule<T>(grammar, probability, priority:priority, active:active);
                                 if (currentConstraint != null) {
                                     currentConstraint.AddRule(currentRule);
                                 } else {

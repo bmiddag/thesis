@@ -52,11 +52,18 @@ namespace Grammars {
             set { matchSelector = value; }
         }
 
-        bool hasSelected;
-        bool active;
+        protected bool hasSelected;
+        protected bool active;
 
-        public Rule(Grammar<T> grammar, double probability, bool active = true, T query = null, T target = null, RuleCondition condition = null,
-            RuleProbability dynamicProbability = null, RuleMatchSelector matchSelector = null) {
+        protected int priority = 0;
+        public int Priority {
+            get { return priority; }
+            set { priority = value; }
+        }
+        
+
+        public Rule(Grammar<T> grammar, double probability, int priority = 0, bool active = true, T query = null, T target = null,
+            RuleCondition condition = null, RuleProbability dynamicProbability = null, RuleMatchSelector matchSelector = null) {
             this.grammar = grammar;
             this.query = query;
             this.target = target;
