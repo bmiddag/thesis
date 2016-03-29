@@ -67,7 +67,7 @@ namespace Grammars {
                     ruleDict[rule.Priority].Add(rule);
                 }
             }
-            List<int> priorities = new List<int>(ruleDict.Keys.OrderByDescending(i => i));
+            List<int> priorities = ruleDict.Keys.OrderByDescending(i => i).ToList();
             foreach (int priority in priorities) {
                 List<Rule<T>> tempRules = ruleDict[priority];
                 List<double> probabilities = probDict[priority];

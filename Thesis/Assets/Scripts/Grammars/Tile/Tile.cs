@@ -8,7 +8,7 @@ namespace Grammars.Tile {
 		int x, y;
         bool destroyed = false;
 
-        public override StructureModel Structure {
+        public override IElementContainer Container {
             get {
                 return grid;
             }

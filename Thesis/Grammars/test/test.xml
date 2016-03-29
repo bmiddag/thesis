@@ -45,7 +45,7 @@
   </Rules>
   <StopConditions>
     <GrammarCondition name="SumAttribute">
-      <string>where [d(#sidepath) > 0.199]</string>
+      <string>where [d(#sidepath) &gt; 0.199]</string>
       <string>sidepath</string>
       <string>&gt;=</string>
       <double>0.6</double>

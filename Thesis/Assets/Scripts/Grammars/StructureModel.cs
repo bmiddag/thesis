@@ -18,7 +18,7 @@ namespace Grammars {
             }
         }
 
-        public override StructureModel Structure {
+        public override IElementContainer Container {
             get {
                 return this;
             }

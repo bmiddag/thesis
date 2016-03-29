@@ -8,7 +8,7 @@ namespace Grammars.Graph {
 		bool destroyed = false;
         bool directed = false;
 
-        public override StructureModel Structure {
+        public override IElementContainer Container {
             get {
                 return graph;
             }

@@ -24,7 +24,7 @@ namespace Grammars.Graph {
             }
         }
 
-        public override StructureModel Structure {
+        public override IElementContainer Container {
             get {
                 return graph;
             }

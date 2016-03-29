@@ -12,7 +12,7 @@ namespace Grammars {
         public event EventHandler AttributeChanged;
         protected bool postponeEvents;
 
-        public abstract StructureModel Structure {
+        public abstract IElementContainer Container {
             get;
         }
 
