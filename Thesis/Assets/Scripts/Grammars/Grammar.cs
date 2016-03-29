@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using Grammars.Events;
 
 namespace Grammars {
-    public class Grammar<T> : IElementContainer
+    public class Grammar<T> : IElementContainer, IGrammarEventHandler
         where T : StructureModel {
         protected T source;
         public T Source {
@@ -36,6 +37,11 @@ namespace Grammars {
                     transformerType = null;
                 }
             }
+        }
+
+        protected Task currentTask = null;
+        public Task CurrentTask {
+            get { return currentTask; }
         }
         
         /// <summary>
@@ -279,6 +285,14 @@ namespace Grammars {
             } else {
                 return new List<AttributedElement>();
             }
+        }
+
+        public void HandleGrammarEvent(Task task) {
+            throw new NotImplementedException();
+        }
+
+        public void SendGrammarEvent(Task task) {
+            throw new NotImplementedException();
         }
     }
 }
