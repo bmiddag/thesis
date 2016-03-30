@@ -19,7 +19,7 @@ namespace Grammars {
         }
 
         protected List<Rule<T>> rules;
-        Rule<T> selectedRule = null;
+        protected Rule<T> selectedRule = null;
 
         protected Dictionary<string, Constraint<T>> constraints;
 
@@ -55,8 +55,8 @@ namespace Grammars {
             }
         }
 
-        List<GrammarCondition> stopConditions;
-        GrammarRuleSelector ruleSelectionController = null;
+        protected List<GrammarCondition> stopConditions;
+        protected GrammarRuleSelector ruleSelectionController = null;
         public GrammarRuleSelector RuleSelector {
             get {
                 return ruleSelectionController;
@@ -69,7 +69,7 @@ namespace Grammars {
                 }
             }
         }
-        int iteration;
+        protected int iteration;
 
         /// <summary>
         /// If no rule was found during this iteration, this should be marked true.
@@ -189,7 +189,7 @@ namespace Grammars {
             }
         }
 
-        public void Update() {
+        public virtual void Update() {
             SelectRule(rules, ruleSelectionController, findAllRules);
             if (!noRuleFound && selectedRule != null) {
                 selectedRule.Apply(source);
@@ -267,7 +267,7 @@ namespace Grammars {
             return new Dictionary<string, Constraint<T>>(constraints);
         }
 
-        public List<AttributedElement> GetElements(string specifier = null) {
+        public virtual List<AttributedElement> GetElements(string specifier = null) {
             IElementContainer subcontainer = source;
             string passSpecifier = specifier;
             if (specifier != null && specifier.Contains(".")) {
@@ -287,11 +287,11 @@ namespace Grammars {
             }
         }
 
-        public void HandleGrammarEvent(Task task) {
+        public virtual void HandleGrammarEvent(Task task) {
             throw new NotImplementedException();
         }
 
-        public void SendGrammarEvent(Task task) {
+        public virtual void SendGrammarEvent(Task task) {
             throw new NotImplementedException();
         }
     }
