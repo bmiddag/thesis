@@ -8,9 +8,11 @@ using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using System.Collections;
 using Grammars.Tile;
+using Grammars.Events;
+using System.Threading;
 
 namespace Demo {
-    public class DemoController : MonoBehaviour {
+    public class DemoController : MonoBehaviour, IGrammarEventHandler {
         EventSystem system;
 
         public IStructureRenderer currentStructureRenderer;
@@ -30,7 +32,15 @@ namespace Demo {
 
         public AttributedElement currentElement;
 
+        Dictionary<string, IGrammarEventHandler> listeners = new Dictionary<string, IGrammarEventHandler>();
+
         IDictionary<string, AttributeClass> attributeClasses = new Dictionary<string, AttributeClass>(); // TODO: move to grammar
+
+        public string Name {
+            get { return "DemoController"; }
+
+            set {}
+        }
 
         // Use this for initialization
         void Start() {
@@ -49,6 +59,7 @@ namespace Demo {
             attributeClasses["blue_squares"].SetAttribute("_demo_color", "blue");
             attributeClasses["white_circles"].SetAttribute("_demo_shape", "circle");
             attributeClasses["white_circles"].SetAttribute("_demo_color", "white");*/
+
             StartCoroutine("LoadAttributeClasses");
         }
 
@@ -185,7 +196,10 @@ namespace Demo {
             if (typeof(T) != currentStructureRenderer.Source.GetType()) return;
             grammar.Source = (T)currentStructureRenderer.Source;
             currentStructureRenderer.Grammar = grammar;
+            grammar.AddListener(this);
+            this.AddListener(grammar);
             print("Grammar successfully set.");
+            SendGrammarEvent("start", targets: new string[] { grammar.Name });
         }
 
         public IEnumerator GrammarStep() {
@@ -227,6 +241,60 @@ namespace Demo {
             attributeClasses = serializer.DeserializeAttributeClasses();
             print("Attribute classes loaded!");
             yield return null;
+        }
+
+        void OnDestroy() {
+            if (currentStructureRenderer.Grammar != null) {
+                SendGrammarEvent("Stop", targets: new string[] { currentStructureRenderer.Grammar.Name });
+            }
+        }
+
+        public void HandleGrammarEvent(Task task) {
+            if (task == null) return;
+            print("[" + Name + "]" + " Received event: " + task.Action);
+        }
+
+        public virtual List<object> SendGrammarEvent(Task task) {
+            if (task == null) return null;
+            print("[" + Name + "]" + " Sending event: " + task.Action);
+            if (task.Targets.Count == 0) return null;
+            List<Thread> startedThreads = new List<Thread>();
+            foreach (IGrammarEventHandler target in task.Targets) {
+                Thread t = new Thread(() => target.HandleGrammarEvent(task));
+                startedThreads.Add(t);
+                t.Start();
+            }
+            if (!task.ReplyExpected) {
+                return null;
+            } else {
+                foreach (Thread thread in startedThreads) {
+                    thread.Join();
+                }
+                if (task.ReplyCompleted) {
+                    return task.Replies;
+                } else return null;
+            }
+        }
+
+        public List<object> SendGrammarEvent(string action, bool replyExpected = false,
+            IGrammarEventHandler source = null, string[] targets = null, object[] parameters = null) {
+            if (source == null) source = this;
+            Task task = new Task(action, source);
+            if (targets != null) {
+                task.ReplyExpected = replyExpected;
+                foreach (string tarStr in targets) {
+                    IGrammarEventHandler target = listeners[tarStr];
+                    if (target != null) {
+                        task.AddTarget(target);
+                    }
+                }
+            }
+            return SendGrammarEvent(task);
+        }
+
+        public void AddListener(IGrammarEventHandler handler) {
+            if (handler == null) return;
+            listeners.Add(handler.Name, handler);
         }
     }
 }

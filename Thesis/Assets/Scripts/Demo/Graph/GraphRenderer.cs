@@ -4,6 +4,7 @@ using Grammars.Graph;
 using Grammars;
 using System;
 using System.Collections;
+using Grammars.Events;
 
 namespace Demo {
 	public class GraphRenderer : MonoBehaviour, IStructureRenderer {
@@ -40,7 +41,7 @@ namespace Demo {
             }
         }
 
-        public object Grammar {
+        public IGrammarEventHandler Grammar {
             get {
                 return grammar;
             }

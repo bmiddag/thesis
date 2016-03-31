@@ -4,6 +4,7 @@ using Grammars.Tile;
 using Grammars;
 using System;
 using System.Collections;
+using Grammars.Events;
 
 namespace Demo {
 	public class TileGridRenderer : MonoBehaviour, IStructureRenderer {
@@ -29,7 +30,7 @@ namespace Demo {
             }
         }
 
-        public object Grammar {
+        public IGrammarEventHandler Grammar {
             get {
                 return grammar;
             }

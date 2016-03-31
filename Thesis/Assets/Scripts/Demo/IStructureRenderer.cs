@@ -1,4 +1,5 @@
 ﻿using Grammars;
+using Grammars.Events;
 using System.Collections;
 
 namespace Demo {
@@ -11,7 +12,7 @@ namespace Demo {
             get;
         }
 
-        object Grammar {
+        IGrammarEventHandler Grammar {
             get;
             set;
         }

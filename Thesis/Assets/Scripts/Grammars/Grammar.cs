@@ -118,6 +118,7 @@ namespace Grammars {
             iteration = 0;
             noRuleFound = false;
             listeners = new Dictionary<string, IGrammarEventHandler>();
+            taskQueue = new Queue<Task>();
             if (threaded) {
                 taskThread = new Thread(() => Loop(1000));
                 taskThread.Start();
@@ -236,7 +237,7 @@ namespace Grammars {
             if (taskQueue.Count > 0) {
                 currentTask = taskQueue.Peek();
             } else return;
-
+            if (source != null) UnityEngine.MonoBehaviour.print(source.GetElements().Count);
             // Select rule
             bool foundRule = SelectRule(rules, ruleSelectionController, findAllRules);
             if (foundRule && selectedRule != null) {
@@ -354,6 +355,7 @@ namespace Grammars {
 
         public virtual void HandleGrammarEvent(Task task) {
             if (task == null) return;
+            UnityEngine.MonoBehaviour.print("[" + name + "]" + " Received event: " + task.Action);
             if (task.ReplyExpected) {
                 switch (task.Action) {
                     case "GetElements":
@@ -388,10 +390,13 @@ namespace Grammars {
 
         public virtual List<object> SendGrammarEvent(Task task) {
             if (task == null) return null;
+            UnityEngine.MonoBehaviour.print("[" + name + "]" + " Sending event: " + task.Action);
             if (task.Targets.Count == 0) return null;
             List<Thread> startedThreads = new List<Thread>();
             foreach (IGrammarEventHandler target in task.Targets) {
-                startedThreads.Add(new Thread(() => target.HandleGrammarEvent(task)));
+                Thread t = new Thread(() => target.HandleGrammarEvent(task));
+                startedThreads.Add(t);
+                t.Start();
             }
             if (!task.ReplyExpected) {
                 return null;
