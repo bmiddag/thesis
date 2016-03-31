@@ -8,6 +8,10 @@ namespace Grammars {
     public class AttributeClass : AttributedElement {
         string name;
 
+        public override IElementContainer Container {
+            get { return null; }
+        }
+
         public AttributeClass(string name) : base() {
             this.name = name;
             if (name == null) this.name = "";

@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Graph>
+  <Nodes>
+    <Node id="0" hashCode="-115218944" active="True">
+      <AttributeClasses>
+        <AttributeClass name="start" />
+      </AttributeClasses>
+      <Attributes>
+        <Attribute key="_demo_shape" value="square" />
+        <Attribute key="_demo_color" value="green" />
+      </Attributes>
+    </Node>
+    <Node id="1" hashCode="1480781056" active="True">
+      <AttributeClasses>
+        <AttributeClass name="open" />
+      </AttributeClasses>
+      <Attributes>
+        <Attribute key="_demo_shape" value="circle" />
+        <Attribute key="_demo_color" value="black" />
+      </Attributes>
+    </Node>
+    <Node id="2" hashCode="-1378161408" active="True">
+      <AttributeClasses>
+        <AttributeClass name="end" />
+      </AttributeClasses>
+      <Attributes>
+        <Attribute key="_demo_shape" value="square" />
+        <Attribute key="_demo_color" value="blue" />
+      </Attributes>
+    </Node>
+  </Nodes>
+  <Edges>
+    <Edge node1="-115218944" node2="1480781056" directed="True" />
+    <Edge node1="1480781056" node2="-1378161408" directed="True" />
+  </Edges>
+</Graph>

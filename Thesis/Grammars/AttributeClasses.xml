@@ -18,4 +18,48 @@
       <Attribute key="_demo_color" value="white" />
     </Attributes>
   </AttClass>
+  
+  <!-- MISSION ATTRIBUTE CLASSES -->
+  <AttClass name="enemy">
+    <Attributes>
+      <Attribute key="_demo_shape" value="triangle" />
+      <Attribute key="_demo_color" value="red" />
+    </Attributes>
+  </AttClass>
+  <AttClass name="open">
+    <Attributes>
+      <Attribute key="_demo_shape" value="circle" />
+      <Attribute key="_demo_color" value="black" />
+    </Attributes>
+  </AttClass>
+  <AttClass name="treasure">
+    <Attributes>
+      <Attribute key="_demo_shape" value="circle" />
+      <Attribute key="_demo_color" value="green" />
+    </Attributes>
+  </AttClass>
+  <AttClass name="key">
+    <Attributes>
+      <Attribute key="_demo_shape" value="triangle" />
+      <Attribute key="_demo_color" value="yellow" />
+    </Attributes>
+  </AttClass>
+  <AttClass name="lock">
+    <Attributes>
+      <Attribute key="_demo_shape" value="triangle" />
+      <Attribute key="_demo_color" value="black" />
+    </Attributes>
+  </AttClass>
+  <AttClass name="start">
+    <Attributes>
+      <Attribute key="_demo_shape" value="square" />
+      <Attribute key="_demo_color" value="green" />
+    </Attributes>
+  </AttClass>
+  <AttClass name="end">
+    <Attributes>
+      <Attribute key="_demo_shape" value="square" />
+      <Attribute key="_demo_color" value="blue" />
+    </Attributes>
+  </AttClass>
 </AttributeClasses>

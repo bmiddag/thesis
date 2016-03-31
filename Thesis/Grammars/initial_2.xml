@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Graph>
+  <Nodes>
+    <Node id="0" hashCode="-207602304" active="True">
+      <AttributeClasses>
+        <AttributeClass name="start" />
+      </AttributeClasses>
+      <Attributes>
+        <Attribute key="_demo_shape" value="square" />
+        <Attribute key="_demo_color" value="green" />
+      </Attributes>
+    </Node>
+    <Node id="1" hashCode="-524403328" active="True">
+      <AttributeClasses>
+        <AttributeClass name="open" />
+      </AttributeClasses>
+      <Attributes>
+        <Attribute key="_demo_shape" value="circle" />
+        <Attribute key="_demo_color" value="black" />
+      </Attributes>
+    </Node>
+    <Node id="2" hashCode="-688716032" active="True">
+      <AttributeClasses>
+        <AttributeClass name="key" />
+      </AttributeClasses>
+      <Attributes>
+        <Attribute key="_demo_shape" value="triangle" />
+        <Attribute key="_demo_color" value="yellow" />
+      </Attributes>
+    </Node>
+    <Node id="3" hashCode="-957273216" active="True">
+      <AttributeClasses>
+        <AttributeClass name="open" />
+      </AttributeClasses>
+      <Attributes>
+        <Attribute key="_demo_shape" value="circle" />
+        <Attribute key="_demo_color" value="black" />
+      </Attributes>
+    </Node>
+    <Node id="4" hashCode="1550416896" active="True">
+      <AttributeClasses>
+        <AttributeClass name="lock" />
+      </AttributeClasses>
+      <Attributes>
+        <Attribute key="_demo_shape" value="triangle" />
+        <Attribute key="_demo_color" value="black" />
+      </Attributes>
+    </Node>
+  </Nodes>
+  <Edges>
+    <Edge node1="-207602304" node2="-524403328" directed="True" />
+    <Edge node1="-524403328" node2="-688716032" directed="True" />
+    <Edge node1="-688716032" node2="-957273216" directed="True" />
+    <Edge node1="-957273216" node2="1550416896" directed="True" />
+    <Edge node1="1550416896" node2="-207602304" directed="True" />
+  </Edges>
+</Graph>
