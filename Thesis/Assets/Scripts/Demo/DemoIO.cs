@@ -289,6 +289,7 @@ namespace Demo {
         public void ParseGrammar() {
             string grammarType = null;
             string findFirst = null;
+            string name = null;
             // Create an XML reader for this file.
             using (XmlReader reader = XmlReader.Create(filename)) {
                 while (reader.Read()) {
@@ -296,19 +297,20 @@ namespace Demo {
                         if (reader.Name == "Grammar") {
                             grammarType = reader["type"];
                             findFirst = reader["findFirst"];
-                            if (grammarType == null) throw new System.FormatException("Deserialization failed");
+                            name = reader["name"];
+                            if (grammarType == null || name == null) throw new System.FormatException("Deserialization failed");
                             break;
                         }
                     }
                 }
                 switch (grammarType.ToLowerInvariant()) {
                     case "graph":
-                        Grammar<Graph> graphGrammar = new Grammar<Graph>(typeof(GraphTransformer), null, findFirst=="true");
+                        Grammar<Graph> graphGrammar = new Grammar<Graph>(name, typeof(GraphTransformer), null, findFirst=="true");
                         _ParseGrammar(reader, graphGrammar);
                         controller.SetGrammar(graphGrammar);
                         break;
                     case "tilegrid":
-                        Grammar<TileGrid> tileGrammar = new Grammar<TileGrid>(typeof(TileGridTransformer), null, findFirst=="true");
+                        Grammar<TileGrid> tileGrammar = new Grammar<TileGrid>(name, typeof(TileGridTransformer), null, findFirst=="true");
                         _ParseGrammar(reader, tileGrammar);
                         controller.SetGrammar(tileGrammar);
                         break;

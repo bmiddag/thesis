@@ -1,9 +1,16 @@
-﻿namespace Grammars.Events {
-    // A delegate type for hooking up change notifications.
-    public delegate void GrammarEventHandler(Task task);
+﻿using System.Collections.Generic;
 
+namespace Grammars.Events {
 	public interface IGrammarEventHandler {
+        string Name {
+            get;
+            set;
+        }
         void HandleGrammarEvent(Task task);
-        void SendGrammarEvent(Task task);
-	}
+        List<object> SendGrammarEvent(Task task);
+        List<object> SendGrammarEvent(string action, bool replyExpected = false,
+            IGrammarEventHandler source = null, string[] targets = null, object[] parameters = null);
+        void AddListener(IGrammarEventHandler handler);
+
+    }
 }

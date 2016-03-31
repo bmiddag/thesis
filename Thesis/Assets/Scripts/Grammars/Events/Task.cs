@@ -9,7 +9,16 @@ namespace Grammars.Events {
             get { return new List<IGrammarEventHandler>(targets); }
             set { targets = value; }
         }
-        
+        public void AddTarget(IGrammarEventHandler target) {
+            targets.Add(target);
+        }
+        public void RemoveTarget(IGrammarEventHandler target) {
+            targets.Remove(target);
+        }
+        public void ClearTargets() {
+            targets.Clear();
+        }
+
         protected IGrammarEventHandler source;
         public IGrammarEventHandler Source {
             get { return source; }
@@ -20,6 +29,31 @@ namespace Grammars.Events {
         public string Action {
             get { return action; }
             set { action = value; }
+        }
+
+        protected bool replyExpected;
+        public bool ReplyExpected {
+            get { return replyExpected; }
+            set { replyExpected = value; }
+        }
+        
+        public bool ReplyCompleted {
+            get { return replies.Count >= targets.Count; }
+        }
+
+        protected List<object> replies;
+        public List<object> Replies {
+            get { return new List<object>(replies); }
+            set { replies = value; }
+        }
+        public void AddReply(object reply) {
+            replies.Add(reply);
+        }
+        public void RemoveReply(object reply) {
+            replies.Remove(reply);
+        }
+        public void ClearReplies() {
+            replies.Clear();
         }
 
         protected List<object> parameters;
@@ -41,11 +75,14 @@ namespace Grammars.Events {
             targets = new List<IGrammarEventHandler>();
             this.action = action;
             this.source = source;
+            replyExpected = false;
+            replies = new List<object>();
 		}
 
         // Task has no attributed elements, but should be used with grammars anyway
         public override List<AttributedElement> GetElements(string specifier = null) {
             List<AttributedElement> attrList = new List<AttributedElement>();
+            attrList.Add(this);
             return attrList;
         }
     }

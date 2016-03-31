@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Grammar type="graph" findFirst="true">
+<Grammar name="mission" type="graph" findFirst="true">
   <Constraints>
     <!-- Constraint 1: At least 2 sidepaths (if >= 5 elements exist) -->
     <Constraint name="constraint1_sidepath">
