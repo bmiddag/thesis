@@ -63,6 +63,7 @@ namespace Grammars {
                 lock(taskQueue) {
                     if (!taskQueue.Contains(value) && value != null) {
                         taskQueue.Enqueue(value);
+                        Monitor.Pulse(taskQueue);
                     }
                 }
             }
@@ -362,6 +363,11 @@ namespace Grammars {
                             task.AddReply(GetElements());
                         }
                         break;
+                    default:
+                        break;
+                }
+            } else {
+                switch (task.Action) {
                     case "Stop":
                         if (task.Targets.Contains(this)) {
                             lock (taskQueue) {
@@ -370,11 +376,6 @@ namespace Grammars {
                             }
                         }
                         break;
-                    default:
-                        break;
-                }
-            } else {
-                switch (task.Action) {
                     default:
                         lock(taskQueue) {
                             taskQueue.Enqueue(task);
