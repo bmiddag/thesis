@@ -85,5 +85,9 @@ namespace Grammars.Events {
             attrList.Add(this);
             return attrList;
         }
+
+        public override AttributedElement GetElement(string identifier) {
+            return this;
+        }
     }
 }

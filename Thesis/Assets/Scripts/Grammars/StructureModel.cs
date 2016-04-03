@@ -25,5 +25,6 @@ namespace Grammars {
         }
 
         public abstract List<AttributedElement> GetElements(string specifier = null);
+        public abstract AttributedElement GetElement(string identifier);
 	}
 }

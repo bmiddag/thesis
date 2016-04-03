@@ -82,5 +82,27 @@ namespace Grammars.Graph {
                 OnStructureChanged(EventArgs.Empty);
             }
 		}
+
+        public override AttributedElement GetElement(string identifier) {
+            if (identifier == null) return null; ;
+            if (identifier.Contains("-")) {
+                int id1, id2;
+                string[] splitID = identifier.Split('-');
+                if (int.TryParse(splitID[0], out id1) && int.TryParse(splitID[1], out id2)) {
+                    Node node1 = GetNodeByID(id1);
+                    Node node2 = GetNodeByID(id2);
+                    if (node1 == null || node2 == null) return null;
+                    IEnumerable<Edge> matches = edges.Where(e => (e.GetNode1() == node1 && e.GetNode2() == node2) || (e.GetNode1() == node2 && e.GetNode2() == node1));
+                    if (matches == null || matches.Count() == 0) return null;
+                    return matches.First();
+                }
+            } else {
+                int id;
+                if (int.TryParse(identifier, out id)) {
+                    return GetNodeByID(id);
+                }
+            }
+            return null;
+        }
     }
 }

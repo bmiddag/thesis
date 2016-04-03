@@ -8,6 +8,7 @@ namespace Grammars {
 	public abstract class AttributedElement {
 		protected IDictionary<string, string> attributes;
         protected IDictionary<string, DynamicAttribute> dynamicAttributes;
+        protected IDictionary<string, object> objectAttributes;
         protected HashSet<AttributeClass> classes;
         public event EventHandler AttributeChanged;
         protected bool postponeEvents;
@@ -19,6 +20,7 @@ namespace Grammars {
         public AttributedElement() {
 			attributes = new Dictionary<string, string>();
             dynamicAttributes = new Dictionary<string, DynamicAttribute>();
+            objectAttributes = new Dictionary<string, object>();
             classes = new HashSet<AttributeClass>();
             postponeEvents = false;
 		}
@@ -92,8 +94,11 @@ namespace Grammars {
 		}
 
 		public void SetAttribute(string key, string value, bool notify=true, bool copy=false) {
-            if (dynamicAttributes.ContainsKey(key)) {
-                dynamicAttributes.Remove(key);
+            if (dynamicAttributes.ContainsKey(key)) dynamicAttributes.Remove(key);
+            if (objectAttributes.ContainsKey(key)) objectAttributes.Remove(key);
+            if (value == null) {
+                attributes.Remove(key);
+                return;
             }
             if (value.StartsWith("@_") || value.StartsWith("@+")) {
                 // @ = Dynamic, _ = copies are not dynamic, + = copies are dynamic
@@ -106,6 +111,25 @@ namespace Grammars {
             }
 			attributes[key] = value;
             if(notify) OnAttributeChanged(EventArgs.Empty);
+        }
+
+        public object GetObjectAttribute(string key) {
+            if (objectAttributes.ContainsKey(key)) {
+                return key;
+            } else return null;
+        }
+
+        public void SetObjectAttribute(string key, object value, bool notify = true) {
+            if (value != null && key != null) {
+                string stringVal = "$obj$" + value.ToString();
+                attributes[key] = stringVal;
+                objectAttributes[key] = value;
+                if (notify) OnAttributeChanged(EventArgs.Empty);
+            }
+        }
+
+        public Dictionary<string, object> GetObjectAttributes() {
+            return new Dictionary<string, object>(objectAttributes);
         }
 
         /// <summary>
@@ -213,6 +237,14 @@ namespace Grammars {
                 IDictionary<string, string> newAtts = target.GetNewAttributes(source, raw:true);
                 HashSet<string> remAtts = target.GetRemovedAttributes(source);
 
+                // object attributes
+                Dictionary<string, object> newObjAtts = target.GetObjectAttributes();
+                if (source != null) {
+                    foreach (string key in source.GetObjectAttributes().Keys) {
+                        newObjAtts.Remove(key);
+                    }
+                }
+
                 // Remove, then add classes
                 classes.ExceptWith(remCls);
                 classes.UnionWith(newCls);
@@ -221,7 +253,15 @@ namespace Grammars {
                 foreach (string key in remAtts) {
                     attributes.Remove(key);
                 }
-                SetAttributes(newAtts, notify:false, copy:true);
+
+                if (target.Container == Container) {
+                    SetAttributes(newAtts, notify: false, copy: false);
+                    foreach (KeyValuePair<string, object> obj in newObjAtts) {
+                        SetObjectAttribute(obj.Key, obj.Value, notify: false);
+                    }
+                } else {
+                    SetAttributes(newAtts, notify: false, copy: true);
+                }
             }
             if(notify) OnAttributeChanged(EventArgs.Empty);
         }
