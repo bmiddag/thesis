@@ -18,6 +18,12 @@
     </Constraint>
   </Constraints>
   <Rules>
+    <Initial probability="0.1">
+      <Target>blue0</Target>
+    </Initial>
+    <Initial probability="0.1">
+      <Target>blue0_to_yellow1</Target>
+    </Initial>
     <Rule probability="0.1">
       <Query>blue0</Query>
       <Target>blue0_to_yellow1</Target>

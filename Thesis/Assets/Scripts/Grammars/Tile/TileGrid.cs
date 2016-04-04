@@ -68,6 +68,18 @@ namespace Grammars.Tile {
             return attrList;
         }
 
+        public override AttributedElement GetElement(string identifier) {
+            if (identifier == null) return null; ;
+            if (identifier.Contains("#")) {
+                int x, y;
+                string[] splitID = identifier.Split('#');
+                if (int.TryParse(splitID[0], out x) && int.TryParse(splitID[1], out y)) {
+                    return GetTile(x, y);
+                }
+            }
+            return null;
+        }
+
         // ************************** GRID MANAGEMENT ************************** \\
         // The following code only adds and removes tiles to/from the grid
         // Element creation should be handled outside of this class.
@@ -86,18 +98,6 @@ namespace Grammars.Tile {
             if (x < 0 || x >= grid.GetLength(0)) return null;
             if (y < 0 || y >= grid.GetLength(1)) return null;
             return grid[x, y];
-        }
-
-        public override AttributedElement GetElement(string identifier) {
-            if (identifier == null) return null; ;
-            if (identifier.Contains("#")) {
-                int x, y;
-                string[] splitID = identifier.Split('#');
-                if (int.TryParse(splitID[0], out x) && int.TryParse(splitID[1], out y)) {
-                    return GetTile(x, y);
-                }
-            }
-            return null;
         }
     }
 }

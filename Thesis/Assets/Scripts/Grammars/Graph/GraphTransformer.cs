@@ -59,8 +59,16 @@ namespace Grammars.Graph {
         public bool Find(Graph query) {
             /* Step 1: select ( ignore attributes starting with "_grammar_" but use those for additional conditions
                        e.g. Negative conditions like Adams p13). */
+            if (query == null || query.GetNodes().Count == 0) {
+                if (source != null && source.GetNodes().Count == 0) {
+                    this.query = query;
+                    matches = new List<Dictionary<Node, Node>>();
+                    selectedMatch = null;
+                    return true;
+                }
+                return false;
+            }
             if (source == null || source.GetNodes().Count == 0) return false;
-            if (query == null || query.GetNodes().Count == 0) return false;
 
             selectedMatch = null;
             matches = new List<Dictionary<Node, Node>>();
@@ -207,13 +215,15 @@ namespace Grammars.Graph {
                 }
                 selectedMatch = matches.ElementAt(index);
             } else {
-                selectedMatch = null;
+                if ((query == null || query.GetNodes().Count == 0) && (source != null && source.GetNodes().Count == 0)) {
+                    selectedMatch = new Dictionary<Node, Node>();
+                } else selectedMatch = null;
             }
         }
 
         public void Transform(Graph target) {
             // Preliminary checks
-            if (query == null || target == null) return;
+            if (target == null) return;
             if (selectedMatch == null) return;
             
             // Temporarily turn off events

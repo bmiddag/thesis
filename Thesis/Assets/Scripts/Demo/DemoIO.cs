@@ -408,6 +408,7 @@ namespace Demo {
                                 }
                                 if (!reader.IsEmptyElement) currentMethodCaller.Push(grProb);
                                 break;
+                            case "Initial":
                             case "Rule":
                                 string probabilityStr = reader["probability"];
                                 activeStr = reader["active"];
@@ -549,6 +550,7 @@ namespace Demo {
                             case "Constraint":
                                 currentConstraint = null;
                                 break;
+                            case "Initial":
                             case "Rule":
                                 currentRule = null;
                                 break;

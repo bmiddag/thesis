@@ -49,6 +49,16 @@ namespace Grammars.Tile {
 		}
 
         public bool Find(TileGrid query) {
+            if (query == null || query.GetElements().Count == 0) {
+                if (source != null && source.GetElements().Count == 0) {
+                    if (query != null && (query.GetGridSize().x > source.GetGridSize().x || query.GetGridSize().y > source.GetGridSize().y)) return false;
+                    this.query = query;
+                    matches = new List<Pair>();
+                    selectedOffset = null;
+                    return true;
+                }
+                return false;
+            }
             if (source == null || query == null) return false;
             if (query.GetGridSize().x > source.GetGridSize().x || query.GetGridSize().y > source.GetGridSize().y) return false;
             this.query = query;
@@ -115,16 +125,18 @@ namespace Grammars.Tile {
                     }
                 }*/
             } else {
-                selectedOffset = null;
+                if ((query == null || query.GetElements().Count == 0) && (source != null && source.GetElements().Count == 0)) {
+                    selectedOffset = new Pair(0, 0);
+                } else selectedOffset = null;
             }
         }
 
         public void Transform(TileGrid target) {
-            if (source == null || query == null || target == null || selectedOffset == null) return;
-            if (!target.GetGridSize().Equals(query.GetGridSize())) return;
+            if (source == null || target == null || selectedOffset == null) return;
+            if (query != null && (!target.GetGridSize().Equals(query.GetGridSize()))) return;
 
-            int w = query.GetGridSize().x;
-            int h = query.GetGridSize().y;
+            int w = target.GetGridSize().x;
+            int h = target.GetGridSize().y;
 
             int sX = selectedOffset.x;
             int sY = selectedOffset.y;
@@ -132,7 +144,7 @@ namespace Grammars.Tile {
             for (int x = 0; x < w; x++) {
                 for (int y = 0; y < h; y++) {
                     Tile sourceTile = source.GetTile(sX + x, sY + y);
-                    Tile queryTile = query.GetTile(x, y);
+                    Tile queryTile = query == null ? null : query.GetTile(x, y);
                     Tile targetTile = target.GetTile(x, y);
 
                     if(sourceTile != null) sourceTile.PostponeAttributeChanged(true);

@@ -22,6 +22,7 @@ namespace Demo {
         public CameraControl cameraControl;
 
         bool snapToMouse = false;
+        public bool optimizeLayout = true;
 
         bool updateRenderer = false; // If true, node/edge renderers will be updated during the next call of Update(). Prevents chaining of renderer updates.
 
@@ -133,6 +134,11 @@ namespace Demo {
                 if (updateRenderer) {
                     updateRenderer = false;
                     SyncGraphStructure();                    
+                }
+
+                // Optimize layout
+                if (Input.GetKeyDown(KeyCode.K) && !controller.paused) {
+                    optimizeLayout = !optimizeLayout;
                 }
 
                 // Pan
@@ -249,6 +255,16 @@ namespace Demo {
             obj.SetNode(node);
             nodeRenderers[node] = obj;
             obj.transform.SetParent(transform);
+        }
+
+        public NodeRenderer GetNodeRenderer(Node node) {
+            if (nodeRenderers.ContainsKey(node)) {
+                return nodeRenderers[node];
+            } else return null;
+        }
+
+        public IEnumerable<NodeRenderer> GetNodeRenderers() {
+            return nodeRenderers.Values;
         }
 
         public void RemoveNodeRenderer(Node node) {

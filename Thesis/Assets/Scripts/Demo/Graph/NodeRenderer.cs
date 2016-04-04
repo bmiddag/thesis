@@ -11,7 +11,8 @@ namespace Demo {
 		SpriteRenderer spriteRender;
         Text text;
         public GraphRenderer graphRenderer;
-        
+
+        public Vector3 newPosition;
         Vector3 dragCenter;
         bool dragging = false;
 
@@ -29,6 +30,7 @@ namespace Demo {
             CircleCollider2D circleCol = gameObject.AddComponent<CircleCollider2D>();
             circleCol.radius = 29;
             circleCol.offset = Vector2.zero;
+            newPosition = gameObject.transform.position;
 		}
 
 		// Update is called once per frame
@@ -45,13 +47,48 @@ namespace Demo {
 
                     if(newPos.x != gameObject.transform.position.x || newPos.y != gameObject.transform.position.y) {
                         gameObject.transform.position = new Vector3(newPos.x, newPos.y);
-                        foreach (KeyValuePair<Node, Edge> entry in node.GetEdges()) {
-                            graphRenderer.UpdateEdge(entry.Value);
+                        newPosition = gameObject.transform.position;
+                        UpdateEdgePositions();
+                    }
+                } else if (!graphRenderer.draggingNode && graphRenderer.optimizeLayout) {
+                    IEnumerable<NodeRenderer> otherNodeRens = graphRenderer.GetNodeRenderers();
+                    foreach (NodeRenderer nr2 in otherNodeRens) {
+                        if (this == nr2) continue;
+                        Vector3 v1 = newPosition;
+                        Vector3 v2 = nr2.newPosition;
+                        newPosition = new Vector3(v1.x + UnityEngine.Random.Range(-0.1F, 0.1F), v1.y + UnityEngine.Random.Range(-0.1F, 0.1F), v1.z);
+                        v1 = newPosition;
+                        if (node.GetEdges().ContainsKey(nr2.node)) {
+                            if (Vector3.Distance(v1, v2) > 200) {
+                                newPosition = Vector3.MoveTowards(v1, v2, 4);
+                                nr2.newPosition = Vector3.MoveTowards(v2, v1, 4);
+                            } else if (Vector3.Distance(v1, v2) < 150) {
+                                newPosition = Vector3.MoveTowards(v1, v2, -2);
+                                nr2.newPosition = Vector3.MoveTowards(v2, v1, -2);
+                            }
+                        } else {
+                            if (Vector3.Distance(v1, v2) < 300) {
+                                newPosition = Vector3.MoveTowards(v1, v2, -2);
+                                nr2.newPosition = Vector3.MoveTowards(v2, v1, -2);
+                            }
                         }
                     }
+                    if (!dragging && Vector3.Distance(gameObject.transform.position, newPosition) > 0.5) {
+                        gameObject.transform.position = newPosition;
+                        UpdateEdgePositions();
+                    }
+                    newPosition = gameObject.transform.position;
                 }
             }
 		}
+
+        public void UpdateEdgePositions() {
+            if (node != null) {
+                foreach (KeyValuePair<Node, Edge> entry in node.GetEdges()) {
+                    graphRenderer.UpdateEdge(entry.Value);
+                }
+            }
+        }
 
 		public void SetNode(Node node) {
             if (this.node != null) {
