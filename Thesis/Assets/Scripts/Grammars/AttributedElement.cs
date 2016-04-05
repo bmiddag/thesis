@@ -201,6 +201,42 @@ namespace Grammars {
             } else {
                 newAtts = GetAttributes(raw);
             }
+            // Copy attributes
+            foreach (KeyValuePair<string, string> entry in newAtts) {
+                if (entry.Key.StartsWith("_grammar_copy")) {
+                    StructureModel copyFrom = (StructureModel)Container;
+                    string identifier = entry.Value;
+                    string match = null;
+                    if (el != null && el.Container != null && identifier.StartsWith("(src)")) {
+                        copyFrom = (StructureModel)(el.Container);
+                        identifier = identifier.Substring(5);
+                    }
+                    if (identifier.StartsWith("(m:")) { // Copied attributes must contain following substring
+                        identifier = identifier.Substring(3);
+                        int length = identifier.IndexOf(")");
+                        if (length > 0) {
+                            match = identifier.Substring(0, length);
+                            identifier = identifier.Substring(length+1);
+                        }
+                    }
+                    AttributedElement copyEl = copyFrom.GetElement(identifier);
+                    if (copyEl != null) {
+                        IDictionary<string, string> copiedAtts = copyEl.GetNewAttributes(this, raw: raw);
+                        if (copiedAtts != null) {
+                            foreach (KeyValuePair<string, string> copiedEntry in copiedAtts) {
+                                if (match == null || copiedEntry.Key.Contains(match)) {
+                                    newAtts.Add(copiedEntry);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (!newAtts.ContainsKey("_grammar_keep")) {
+                foreach (KeyValuePair<string, string> entry in newAtts) {
+                    if (entry.Key.StartsWith("_grammar_")) newAtts.Remove(entry.Key);
+                }
+            }
             return newAtts;
         }
 
