@@ -77,8 +77,8 @@ namespace Demo {
 
         public TileGrid DeserializeGrid() {
             // Create an XML reader for this file.
-            AttributedElement currentElement = null;
             TileGrid grid = null;
+            AttributedElement currentElement = null;
             using (XmlReader reader = XmlReader.Create(filename)) {
                 while (reader.Read()) {
                     switch(reader.NodeType) {
@@ -160,8 +160,8 @@ namespace Demo {
 
         public Graph DeserializeGraph() {
             // Create an XML reader for this file.
-            AttributedElement currentElement = null;
             Graph graph = new Graph();
+            AttributedElement currentElement = graph;
             Dictionary<int, Node> hashDict = new Dictionary<int, Node>();
             using (XmlReader reader = XmlReader.Create(filename)) {
                 while (reader.Read()) {

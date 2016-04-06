@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Util;
+﻿using System.Collections.Generic;
 
 namespace Grammars.Tile {
     public class Tile : AttributedElement {
@@ -26,8 +24,8 @@ namespace Grammars.Tile {
             this.y = y;
         }
 
-        public Pair GetIndices() {
-            return new Pair(x, y);
+        public TilePos GetIndices() {
+            return new TilePos(x, y);
         }
 
 		public IDictionary<string, Tile> GetNeighbors() {

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Util;
 
 namespace Grammars.Tile {
     public class TileGrid : StructureModel {
@@ -10,8 +9,8 @@ namespace Grammars.Tile {
             grid = new Tile[width, height];
 		}
 
-        public Pair GetGridSize() {
-            return new Pair(grid.GetLength(0), grid.GetLength(1));
+        public TilePos GetGridSize() {
+            return new TilePos(grid.GetLength(0), grid.GetLength(1));
         }
 
         public bool SetGridSize(int width, int height, int xOffset, int yOffset) {
@@ -70,9 +69,9 @@ namespace Grammars.Tile {
 
         public override AttributedElement GetElement(string identifier) {
             if (identifier == null) return null; ;
-            if (identifier.Contains("#")) {
+            if (identifier.Contains("_")) {
                 int x, y;
-                string[] splitID = identifier.Split('#');
+                string[] splitID = identifier.Split('_');
                 if (int.TryParse(splitID[0], out x) && int.TryParse(splitID[1], out y)) {
                     return GetTile(x, y);
                 }
