@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Grammars.Tile {
+﻿namespace Grammars.Tile {
     public class TilePos {
         public int x { get; private set; }
         public int y { get; private set; }

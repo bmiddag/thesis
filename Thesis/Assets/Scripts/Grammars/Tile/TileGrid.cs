@@ -52,6 +52,7 @@ namespace Grammars.Tile {
         public TileGrid GetView(int x, int y, int w, int h) {
             TileGrid view = new TileGrid(w, h);
             view.CopyGrid(this, x, y);
+            view.SetAttributesUsingDifference(null, this);
             return view;
         }
 

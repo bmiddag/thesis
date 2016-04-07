@@ -41,6 +41,14 @@ namespace Grammars.Tile {
             return neighbors;
 		}
 
+        public bool IsAdjacent(Tile t) {
+            Tile l = grid.GetTile(x - 1, y); if (t == l) return true;
+            Tile r = grid.GetTile(x + 1, y); if (t == r) return true;
+            Tile u = grid.GetTile(x, y - 1); if (t == u) return true;
+            Tile d = grid.GetTile(x, y + 1); if (t == d) return true;
+            return false;
+        }
+
 		public void Destroy(bool gridReplaced = false) {
             if (!destroyed) {
                 destroyed = true;
