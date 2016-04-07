@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Util;
 
 namespace Grammars.Events {
-	public class TaskTransformer : IStructureTransformer<Task> {
+    public class TaskTransformer : IStructureTransformer<Task> {
         Task source = null;
         Task query = null;
         bool findFirst = false;

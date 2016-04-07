@@ -9,6 +9,7 @@ namespace Grammars {
 		protected IDictionary<string, string> attributes;
         protected IDictionary<string, DynamicAttribute> dynamicAttributes;
         protected IDictionary<string, object> objectAttributes;
+        protected IDictionary<string, List<AttributedElement>> links;
         protected HashSet<AttributeClass> classes;
         public event EventHandler AttributeChanged;
         protected bool postponeEvents;
@@ -22,6 +23,7 @@ namespace Grammars {
             dynamicAttributes = new Dictionary<string, DynamicAttribute>();
             objectAttributes = new Dictionary<string, object>();
             classes = new HashSet<AttributeClass>();
+            links = new Dictionary<string, List<AttributedElement>>();
             postponeEvents = false;
 		}
 
@@ -82,6 +84,41 @@ namespace Grammars {
                 return attributes[key];
             } else return null;
 		}
+
+        public IDictionary<string, List<AttributedElement>> GetLinks() {
+            return new Dictionary<string, List<AttributedElement>>(links);
+        }
+
+        public bool HasLink(string type) {
+            return links.ContainsKey(type) && links[type] != null && links[type].Count > 0;
+        }
+
+        public List<AttributedElement> GetLinkedElements(string type) {
+            if (HasLink(type)) {
+                return new List<AttributedElement>(links[type]);
+            } else {
+                return new List<AttributedElement>();
+            }
+        }
+
+        public void AddLink(string type, AttributedElement el) {
+            if (links.ContainsKey(type) && links[type] != null) {
+                if(!links[type].Contains(el)) links[type].Add(el);
+            } else {
+                links[type] = new List<AttributedElement>();
+                links[type].Add(el);
+            }
+        }
+
+        public void RemoveLink(string type, AttributedElement el) {
+            if (links.ContainsKey(type) && links[type] != null && links[type].Contains(el)) {
+                links[type].Remove(el);
+            }
+        }
+
+        public bool IsLinked(string type, AttributedElement el) {
+            return (links.ContainsKey(type) && links[type] != null && links[type].Contains(el));
+        }
 
 		public IDictionary<string, string> GetAttributes(bool raw=false) {
             Dictionary<string, string> dict = new Dictionary<string, string>(attributes);
