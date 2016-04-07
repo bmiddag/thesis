@@ -14,9 +14,7 @@ namespace Grammars {
         public event EventHandler AttributeChanged;
         protected bool postponeEvents;
 
-        public abstract IElementContainer Container {
-            get;
-        }
+        public abstract IElementContainer Container { get; }
 
         public AttributedElement() {
 			attributes = new Dictionary<string, string>();
@@ -82,6 +80,22 @@ namespace Grammars {
                 return dynamicAttributes[key].GetAttributeValue();
             } else if (attributes.ContainsKey(key)) {
                 return attributes[key];
+            } else if (key.StartsWith("_link_")) {
+                string rest = key.Substring(6);
+                if (rest.Contains(".")) {
+                    string postPoint = rest.Substring(rest.IndexOf('.') + 1);
+                    string prePoint = rest.Substring(0, rest.IndexOf('.'));
+                    if (links.ContainsKey(prePoint) && links[prePoint] != null && links[prePoint].Count > 0) {
+                        foreach (AttributedElement el in links[prePoint]) {
+                            string linkAttribute = el.GetAttribute(postPoint);
+                            if (linkAttribute != null) return linkAttribute;
+                        }
+                    }
+                    return null;
+                } else {
+                    if (links.ContainsKey(rest) && links[rest] != null && links[rest].Count > 0) return "true";
+                    return "false";
+                }
             } else return null;
 		}
 
@@ -368,12 +382,8 @@ namespace Grammars {
         }
 
         public string this[string att] {
-            get {
-                return GetAttribute(att);
-            }
-            set {
-                SetAttribute(att, value);
-            }
+            get { return GetAttribute(att); }
+            set { SetAttribute(att, value); }
         }
 	}
 }
