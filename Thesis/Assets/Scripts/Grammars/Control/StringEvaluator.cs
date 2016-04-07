@@ -34,10 +34,14 @@ namespace Grammars {
             if (whereSelector == null) {
                 return new List<AttributedElement>(sourceList);
             } else {
-                // This uses Dynamic LINQ: http://weblogs.asp.net/scottgu/dynamic-linq-part-1-using-the-linq-dynamic-query-library
-                IQueryable<AttributedElement> filtered = sourceList.AsQueryable().Where(ParseExpression(whereSelector));
-                return new List<AttributedElement>(filtered);
+                return SelectElementsFromList(sourceList, whereSelector);
             }
+        }
+
+        public static List<AttributedElement> SelectElementsFromList(List<AttributedElement> sourceList, string selector) {
+            // This uses Dynamic LINQ: http://weblogs.asp.net/scottgu/dynamic-linq-part-1-using-the-linq-dynamic-query-library
+            IQueryable<AttributedElement> filtered = sourceList.AsQueryable().Where(ParseExpression(selector));
+            return new List<AttributedElement>(filtered);
         }
 
         private static string ParseExpression(string expression) {
