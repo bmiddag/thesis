@@ -65,6 +65,19 @@ namespace Grammars.Graph {
             return result;
         }
 
+        public override object GetObjectAttribute(string key) {
+            object result = base.GetObjectAttribute(key);
+            if (result == null && key != null && key.StartsWith("_structure_")) {
+                switch (key) {
+                    case "_structure_node1":
+                        result = node1; break;
+                    case "_structure_node2":
+                        result = node2; break;
+                }
+            }
+            return result;
+        }
+
         // ************************** EQUALITY TESTING ************************** \\
         public override bool Equals(object obj) {
 			if (obj == null) {

@@ -30,16 +30,42 @@ namespace Grammars.Graph {
 
         public override List<AttributedElement> GetElements(string specifier = null) {
             List<AttributedElement> attrList = new List<AttributedElement>();
-            if (specifier == "edges" || specifier == "all") {
-                foreach (Edge edge in edges) {
-                    attrList.Add(edge);
+            string subcontainerStr = specifier;
+            string passSpecifier = null;
+            if (specifier != null && specifier.Contains(".")) {
+                subcontainerStr = specifier.Substring(0, specifier.IndexOf("."));
+                passSpecifier = specifier.Substring(specifier.IndexOf(".") + 1);
+            }
+            AttributedElement el = GetElement(subcontainerStr);
+            if (el != null) {
+                if (passSpecifier != null) {
+                    return el.GetElements(passSpecifier);
+                } else {
+                    attrList.Add(el);
+                    return attrList;
                 }
             }
-            if (specifier != "edges") {
-                // Assume nodes should be included.
-                foreach (Node node in nodes) {
-                    attrList.Add(node);
-                }
+            switch (specifier) {
+                case "all":
+                    foreach (Edge edge in edges) {
+                        attrList.Add(edge);
+                    }
+                    foreach (Node node in nodes) {
+                        attrList.Add(node);
+                    }
+                    break;
+                case "nodes":
+                    foreach (Node node in nodes) {
+                        attrList.Add(node);
+                    }
+                    break;
+                case "edges":
+                    foreach (Edge edge in edges) {
+                        attrList.Add(edge);
+                    }
+                    break;
+                default:
+                    return base.GetElements(specifier);
             }
             return attrList;
         }
@@ -83,10 +109,10 @@ namespace Grammars.Graph {
 		}
 
         public override AttributedElement GetElement(string identifier) {
-            if (identifier == null) return null; ;
-            if (identifier.Contains("-")) {
+            if (identifier == null) return null;
+            if (identifier.Contains("_")) {
                 int id1, id2;
-                string[] splitID = identifier.Split('-');
+                string[] splitID = identifier.Split('_');
                 if (int.TryParse(splitID[0], out id1) && int.TryParse(splitID[1], out id2)) {
                     Node node1 = GetNodeByID(id1);
                     Node node2 = GetNodeByID(id2);

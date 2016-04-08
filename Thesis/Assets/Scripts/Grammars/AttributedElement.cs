@@ -5,7 +5,7 @@ namespace Grammars {
     /// <summary>
     /// Abstract class for any element with attributes (metadata).
     /// </summary>
-	public abstract class AttributedElement {
+	public abstract class AttributedElement : IElementContainer {
 		protected IDictionary<string, string> attributes;
         protected IDictionary<string, DynamicAttribute> dynamicAttributes;
         protected IDictionary<string, object> objectAttributes;
@@ -29,7 +29,7 @@ namespace Grammars {
 			return attributes.ContainsKey(key);
 		}
 
-        public bool MatchAttributes(AttributedElement el, bool raw=false) {
+        public bool MatchAttributes(AttributedElement el, Dictionary<string, IElementContainer> otherContainers=null, bool raw = false) {
             if (el == null) return true;
             ICollection<string> otherKeys = el.GetAttributes(true).Keys;
             if (otherKeys == null || otherKeys.Count == 0) return true;
@@ -75,27 +75,41 @@ namespace Grammars {
             return GetAttribute(key, false);
         }
 
-        public virtual string GetAttribute(string key, bool raw) {
-            if (dynamicAttributes.ContainsKey(key) && !raw) {
-                return dynamicAttributes[key].GetAttributeValue();
-            } else if (attributes.ContainsKey(key)) {
-                return attributes[key];
-            } else if (key.StartsWith("_link_")) {
-                string rest = key.Substring(6);
-                if (rest.Contains(".")) {
-                    string postPoint = rest.Substring(rest.IndexOf('.') + 1);
-                    string prePoint = rest.Substring(0, rest.IndexOf('.'));
-                    if (links.ContainsKey(prePoint) && links[prePoint] != null && links[prePoint].Count > 0) {
-                        foreach (AttributedElement el in links[prePoint]) {
-                            string linkAttribute = el.GetAttribute(postPoint);
-                            if (linkAttribute != null) return linkAttribute;
+        public string ParseRaw(string rawAttribute) {
+            if (rawAttribute.StartsWith("from$")) {
+                string elStr = rawAttribute.Substring(5);
+                if (elStr.Contains("$")) {
+                    // Return that element's attribute
+                    string attStr = elStr.Substring(elStr.LastIndexOf("$") + 1);
+                    elStr = elStr.Substring(0, elStr.LastIndexOf("$"));
+                    List<AttributedElement> els = GetElements(elStr);
+                    if (els.Count > 0) {
+                        foreach (AttributedElement el in els) {
+                            string att = el.GetAttribute(attStr);
+                            if (att != null) return att;
                         }
                     }
                     return null;
                 } else {
-                    if (links.ContainsKey(rest) && links[rest] != null && links[rest].Count > 0) return "true";
-                    return "false";
+                    // Return whether that element exists
+                    List<AttributedElement> els = GetElements(elStr);
+                    return (els.Count > 0).ToString();
                 }
+            } else return rawAttribute;
+        }
+
+        public virtual string GetAttribute(string key, bool raw) {
+            if (dynamicAttributes.ContainsKey(key) && !raw) {
+                return ParseRaw(dynamicAttributes[key].GetAttributeValue());
+            } else if (attributes.ContainsKey(key)) {
+                if (!raw) return ParseRaw(attributes[key]);
+                return attributes[key];
+            } else if (key.StartsWith("from$")) {
+                return ParseRaw(key);
+            } else if (key.StartsWith("_link_")) {
+                string rest = key.Substring(6);
+                if (links.ContainsKey(rest) && links[rest] != null && links[rest].Count > 0) return "true";
+                return "false";
             } else return null;
 		}
 
@@ -164,7 +178,11 @@ namespace Grammars {
             if(notify) OnAttributeChanged(EventArgs.Empty);
         }
 
-        public object GetObjectAttribute(string key) {
+        public bool HasObjectAttribute(string key) {
+            return (objectAttributes.ContainsKey(key));
+        }
+
+        public virtual object GetObjectAttribute(string key) {
             if (objectAttributes.ContainsKey(key)) {
                 return key;
             } else return null;
@@ -378,6 +396,52 @@ namespace Grammars {
         protected void OnAttributeChanged(EventArgs e) {
             if (AttributeChanged != null && !postponeEvents) {
                 AttributeChanged(this, EventArgs.Empty);
+            }
+        }
+
+        public virtual List<AttributedElement> GetElements(string specifier = null) {
+            IElementContainer subcontainer = null;
+            string passSpecifier = specifier;
+            if (specifier != null && specifier.Contains(".")) {
+                string subcontainerStr = specifier.Substring(0, specifier.IndexOf("."));
+                if (subcontainerStr.StartsWith("link_")) {
+                    string linkSpecifier = subcontainerStr.Substring(5);
+                    if (links.ContainsKey(linkSpecifier) && links[linkSpecifier] != null && links[linkSpecifier].Count > 0) {
+                        subcontainer = links[linkSpecifier][0];
+                    }
+                } else if (GetObjectAttribute(specifier) != null && typeof(IElementContainer).IsAssignableFrom(GetObjectAttribute(specifier).GetType())) {
+                    subcontainer = (IElementContainer)GetObjectAttribute(specifier);
+                }
+                if (subcontainer == null) {
+                    switch (subcontainerStr) {
+                        case "container":
+                            subcontainer = Container; break;
+                    }
+                }
+                passSpecifier = specifier.Substring(specifier.IndexOf(".") + 1);
+                // Add other possibilities?
+            }
+            if (subcontainer != null) {
+                return subcontainer.GetElements(passSpecifier);
+            } else {
+                List<AttributedElement> attrList = new List<AttributedElement>();
+                if (specifier == "links") {
+                    foreach (List<AttributedElement> list in links.Values) {
+                        foreach (AttributedElement el in list) {
+                            attrList.Add(el);
+                        }
+                    }
+                } else if (specifier.StartsWith("links_")) {
+                    string linkSpecifier = specifier.Substring(6);
+                    if (links.ContainsKey(linkSpecifier) && links[linkSpecifier] != null && links[linkSpecifier].Count > 0) {
+                        foreach (AttributedElement el in links[linkSpecifier]) {
+                            attrList.Add(el);
+                        }
+                    }
+                } else if (GetObjectAttribute(specifier) != null && typeof(AttributedElement).IsAssignableFrom(GetObjectAttribute(specifier).GetType())) {
+                    attrList.Add((AttributedElement)GetObjectAttribute(specifier));
+                } else attrList.Add(this);
+                return attrList;
             }
         }
 

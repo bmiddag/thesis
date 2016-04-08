@@ -339,6 +339,8 @@ namespace Grammars {
                     } else return null;
                 }
                 switch (subcontainerStr) {
+                    case "task":
+                        subcontainer = CurrentTask; break;
                     case "source":
                     default:
                         subcontainer = Source; break;
@@ -359,8 +361,8 @@ namespace Grammars {
             if (task.ReplyExpected) {
                 switch (task.Action) {
                     case "GetElements":
-                        if (task.Parameters.Count > 0 && task.Parameters[0].GetType() == typeof(string)) {
-                            task.AddReply(GetElements((string)task.Parameters[0]));
+                        if (task.HasAttribute("specifier")) {
+                            task.AddReply(GetElements(task["specifier"]));
                         } else {
                             task.AddReply(GetElements());
                         }

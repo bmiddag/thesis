@@ -54,7 +54,7 @@ namespace Grammars.Events {
             replies.Clear();
         }
 
-        protected List<object> parameters;
+        /*protected List<object> parameters;
         public List<object> Parameters {
             get { return new List<object>(parameters); }
             set { parameters = value; }
@@ -67,7 +67,7 @@ namespace Grammars.Events {
         }
         public void ClearParameters() {
             parameters.Clear();
-        }
+        }*/
 
         public Task(string action = null, IGrammarEventHandler source = null) : base() {
             targets = new List<IGrammarEventHandler>();
@@ -76,13 +76,6 @@ namespace Grammars.Events {
             replyExpected = false;
             replies = new List<object>();
 		}
-
-        // Task has no attributed elements, but should be used with grammars anyway
-        public override List<AttributedElement> GetElements(string specifier = null) {
-            List<AttributedElement> attrList = new List<AttributedElement>();
-            attrList.Add(this);
-            return attrList;
-        }
 
         public override AttributedElement GetElement(string identifier) {
             return this;

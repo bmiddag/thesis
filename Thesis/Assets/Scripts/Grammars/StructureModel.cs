@@ -19,12 +19,9 @@ namespace Grammars {
         }
 
         public override IElementContainer Container {
-            get {
-                return this;
-            }
+            get { return this; }
         }
 
-        public abstract List<AttributedElement> GetElements(string specifier = null);
         public abstract AttributedElement GetElement(string identifier);
 	}
 }

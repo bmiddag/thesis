@@ -67,20 +67,41 @@ namespace Grammars.Tile {
                         result = x.ToString(); break;
                     case "_structure_y":
                         result = y.ToString(); break;
-                    case "_structure_neighbors":
+                    case "_structure_neighbors_count":
                         result = GetNeighbors().Count.ToString(); break;
-                    case "_structure_neighbour_up":
+                    case "_structure_has_neighbour_up":
                         Tile u = grid.GetTile(x, y - 1);
                         result = (u != null).ToString(); break;
-                    case "_structure_neighbour_down":
+                    case "_structure_has_neighbour_down":
                         Tile d = grid.GetTile(x, y + 1);
                         result = (d != null).ToString(); break;
-                    case "_structure_neighbour_left":
+                    case "_structure_has_neighbour_left":
                         Tile l = grid.GetTile(x - 1, y);
                         result = (l != null).ToString(); break;
-                    case "_structure_neighbour_right":
+                    case "_structure_has_neighbour_right":
                         Tile r = grid.GetTile(x + 1, y);
                         result = (r != null).ToString(); break;
+                }
+            }
+            return result;
+        }
+
+        public override object GetObjectAttribute(string key) {
+            object result = base.GetObjectAttribute(key);
+            if (result == null && key != null && key.StartsWith("_structure_")) {
+                switch (key) {
+                    case "_structure_neighbour_up":
+                        Tile u = grid.GetTile(x, y - 1);
+                        result = u; break;
+                    case "_structure_neighbour_down":
+                        Tile d = grid.GetTile(x, y + 1);
+                        result = d; break;
+                    case "_structure_neighbour_left":
+                        Tile l = grid.GetTile(x - 1, y);
+                        result = l; break;
+                    case "_structure_neighbour_right":
+                        Tile r = grid.GetTile(x + 1, y);
+                        result = r; break;
                 }
             }
             return result;

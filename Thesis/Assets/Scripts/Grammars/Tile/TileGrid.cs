@@ -58,12 +58,33 @@ namespace Grammars.Tile {
 
         public override List<AttributedElement> GetElements(string specifier = null) {
             List<AttributedElement> attrList = new List<AttributedElement>();
-            int w = grid.GetLength(0);
-            int h = grid.GetLength(1);
-            for (int x = 0; x < w; x++) {
-                for (int y = 0; y < h; y++) {
-                    if (grid[x, y] != null) attrList.Add(grid[x, y]);
+            string subcontainerStr = specifier;
+            string passSpecifier = null;
+            if (specifier != null && specifier.Contains(".")) {
+                subcontainerStr = specifier.Substring(0, specifier.IndexOf("."));
+                passSpecifier = specifier.Substring(specifier.IndexOf(".") + 1);
+            }
+            AttributedElement el = GetElement(subcontainerStr);
+            if (el != null) {
+                if (passSpecifier != null) {
+                    return el.GetElements(passSpecifier);
+                } else {
+                    attrList.Add(el);
+                    return attrList;
                 }
+            }
+            switch (specifier) {
+                case "tiles":
+                    int w = grid.GetLength(0);
+                    int h = grid.GetLength(1);
+                    for (int x = 0; x < w; x++) {
+                        for (int y = 0; y < h; y++) {
+                            if (grid[x, y] != null) attrList.Add(grid[x, y]);
+                        }
+                    }
+                    break;
+                default:
+                    return base.GetElements(specifier);
             }
             return attrList;
         }

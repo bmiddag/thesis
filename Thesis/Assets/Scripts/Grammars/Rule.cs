@@ -142,6 +142,8 @@ namespace Grammars {
                         subcontainer = query; break;
                     case "target":
                         subcontainer = target; break;
+                    case "task":
+                        subcontainer = grammar.CurrentTask; break;
                     case "source":
                     case "grammar":
                     default:

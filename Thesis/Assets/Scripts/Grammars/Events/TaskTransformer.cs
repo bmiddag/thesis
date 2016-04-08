@@ -64,7 +64,8 @@ namespace Grammars.Events {
             if (query != null || query.Source != null) {
                 if (query.Source != source.Source) return false;
             }
-            if (query != null && query.Parameters.Count > 0) {
+            if (!source.MatchAttributes(query)) return false;
+            /*if (query != null && query.Parameters.Count > 0) {
                 List<object> sourceParams = source.Parameters;
                 List<object> queryParams = query.Parameters;
                 if (queryParams.Count > sourceParams.Count) return false;
@@ -75,7 +76,7 @@ namespace Grammars.Events {
                         return false;
                     }
                 }
-            }
+            }*/
             Match match = Regex.Match(source.Action, pattern);
             bool found = false;
             while (match.Success) {
@@ -119,7 +120,8 @@ namespace Grammars.Events {
                 source.Action = newTask;
             }
             source.Targets = target.Targets;
-            if (target.Parameters.Count > 0) {
+            source.SetAttributesUsingDifference(query, target);
+            /*if (target.Parameters.Count > 0) {
                 List<object> sourceParams = source.Parameters;
                 List<object> targetParams = target.Parameters;
                 if (query != null) {
@@ -130,7 +132,7 @@ namespace Grammars.Events {
                     targetParams.AddRange(sourceParams);
                     source.Parameters = targetParams;
                 }
-            }
+            }*/
         }
     }
 }
