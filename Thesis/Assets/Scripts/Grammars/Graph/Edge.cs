@@ -54,11 +54,11 @@ namespace Grammars.Graph {
 
         public override string GetAttribute(string key, bool raw = false) {
             string result = base.GetAttribute(key, raw);
-            if (result == null && key != null && key.StartsWith("_structure_")) {
+            if (result == null && key != null) {
                 switch (key) {
-                    case "_structure_type":
+                    case "_type":
                         result = "edge"; break;
-                    case "_structure_directed":
+                    case "_directed":
                         result = directed.ToString(); break;
                 }
             }
@@ -67,11 +67,11 @@ namespace Grammars.Graph {
 
         public override object GetObjectAttribute(string key) {
             object result = base.GetObjectAttribute(key);
-            if (result == null && key != null && key.StartsWith("_structure_")) {
+            if (result == null && key != null) {
                 switch (key) {
-                    case "_structure_node1":
+                    case "_node1":
                         result = node1; break;
-                    case "_structure_node2":
+                    case "_node2":
                         result = node2; break;
                 }
             }

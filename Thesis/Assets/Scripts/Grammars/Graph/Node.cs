@@ -103,23 +103,23 @@ namespace Grammars.Graph {
 
         public override string GetAttribute(string key, bool raw = false) {
             string result = base.GetAttribute(key, raw);
-            if (result == null && key != null && key.StartsWith("_structure_")) {
+            if (result == null && key != null) {
                 int count = 0;
                 switch (key) {
-                    case "_structure_type":
+                    case "_type":
                         result = "node"; break;
-                    case "_structure_id":
+                    case "_id":
                         result = id.ToString(); break;
-                    case "_structure_edges":
+                    case "_edges":
                         result = edges.Count.ToString(); break;
-                    case "_structure_edges_incoming":
+                    case "_edges_incoming":
                         foreach (Edge edge in edges.Values) {
                             if (!edge.IsDirected() || edge.GetNode2() == this) {
                                 count++;
                             }
                         }
                         result = count.ToString(); break;
-                    case "_structure_edges_outgoing":
+                    case "_edges_outgoing":
                         foreach (Edge edge in edges.Values) {
                             if (!edge.IsDirected() || edge.GetNode1() == this) {
                                 count++;

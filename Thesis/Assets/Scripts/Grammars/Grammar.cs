@@ -4,7 +4,7 @@ using Grammars.Events;
 using System.Threading;
 
 namespace Grammars {
-    public class Grammar<T> : IElementContainer, IGrammarEventHandler
+    public class Grammar<T> : AttributedElement, IGrammarEventHandler
         where T : StructureModel {
         protected Dictionary<string, IGrammarEventHandler> listeners;
 
@@ -23,9 +23,7 @@ namespace Grammars {
 
         protected T source;
         public virtual T Source {
-            get {
-                return source;
-            }
+            get { return source; }
             set {
                 if (source != value) {
                     source = value;
@@ -75,17 +73,13 @@ namespace Grammars {
         /// </summary>
         protected bool findAllRules;
         public bool FindAllRules {
-            get {
-                return findAllRules;
-            }
+            get { return findAllRules; }
         }
 
         protected List<GrammarCondition> stopConditions;
         protected GrammarRuleSelector ruleSelectionController = null;
         public GrammarRuleSelector RuleSelector {
-            get {
-                return ruleSelectionController;
-            }
+            get { return ruleSelectionController; }
             set {
                 if (value != ruleSelectionController) {
                     iteration = 0;
@@ -101,9 +95,11 @@ namespace Grammars {
         /// </summary>
         protected bool noRuleFound;
         public bool NoRuleFound {
-            get {
-                return noRuleFound;
-            }
+            get { return noRuleFound; }
+        }
+
+        public override IElementContainer Container {
+            get { return this; }
         }
 
         public Grammar(string name, Type transformerType = null, GrammarRuleSelector ruleSelectionController = null,
@@ -323,7 +319,22 @@ namespace Grammars {
             return new Dictionary<string, Constraint<T>>(constraints);
         }
 
-        public virtual List<AttributedElement> GetElements(string specifier = null) {
+        public override string GetAttribute(string key, bool raw = false) {
+            string result = base.GetAttribute(key, raw);
+            if (result == null && key != null) {
+                switch (key) {
+                    case "_iteration":
+                        result = iteration.ToString(); break;
+                    case "_name":
+                        result = name; break;
+                    case "_rules_count":
+                        result = rules.Count.ToString(); break;
+                }
+            }
+            return result;
+        }
+
+        public override List<AttributedElement> GetElements(string specifier = null) {
             IElementContainer subcontainer = Source;
             string passSpecifier = specifier;
             if (specifier != null && specifier.Contains(".")) {

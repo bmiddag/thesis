@@ -59,26 +59,26 @@ namespace Grammars.Tile {
 
         public override string GetAttribute(string key, bool raw = false) {
             string result = base.GetAttribute(key, raw);
-            if (result == null && key != null && key.StartsWith("_structure_")) {
+            if (result == null && key != null) {
                 switch (key) {
-                    case "_structure_type":
+                    case "_type":
                         result = "tile"; break;
-                    case "_structure_x":
+                    case "_x":
                         result = x.ToString(); break;
-                    case "_structure_y":
+                    case "_y":
                         result = y.ToString(); break;
-                    case "_structure_neighbors_count":
+                    case "_count":
                         result = GetNeighbors().Count.ToString(); break;
-                    case "_structure_has_neighbour_up":
+                    case "_has_neighbour_up":
                         Tile u = grid.GetTile(x, y - 1);
                         result = (u != null).ToString(); break;
-                    case "_structure_has_neighbour_down":
+                    case "_has_neighbour_down":
                         Tile d = grid.GetTile(x, y + 1);
                         result = (d != null).ToString(); break;
-                    case "_structure_has_neighbour_left":
+                    case "_has_neighbour_left":
                         Tile l = grid.GetTile(x - 1, y);
                         result = (l != null).ToString(); break;
-                    case "_structure_has_neighbour_right":
+                    case "_has_neighbour_right":
                         Tile r = grid.GetTile(x + 1, y);
                         result = (r != null).ToString(); break;
                 }
@@ -88,18 +88,18 @@ namespace Grammars.Tile {
 
         public override object GetObjectAttribute(string key) {
             object result = base.GetObjectAttribute(key);
-            if (result == null && key != null && key.StartsWith("_structure_")) {
+            if (result == null && key != null) {
                 switch (key) {
-                    case "_structure_neighbour_up":
+                    case "_neighbour_up":
                         Tile u = grid.GetTile(x, y - 1);
                         result = u; break;
-                    case "_structure_neighbour_down":
+                    case "_neighbour_down":
                         Tile d = grid.GetTile(x, y + 1);
                         result = d; break;
-                    case "_structure_neighbour_left":
+                    case "_neighbour_left":
                         Tile l = grid.GetTile(x - 1, y);
                         result = l; break;
-                    case "_structure_neighbour_right":
+                    case "_neighbour_right":
                         Tile r = grid.GetTile(x + 1, y);
                         result = r; break;
                 }
