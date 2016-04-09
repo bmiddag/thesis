@@ -105,7 +105,7 @@ namespace Grammars {
         /// <param name="aggOperation">The aggregate operation to perform (e.g. COUNT, SUM, AVG, etc.)</param>
         /// <returns></returns>
         public static double AggregateOperation<T>(Grammar<T> grammar, string selector, string attrName, string aggOperation) where T : StructureModel {
-            List<AttributedElement> elements = StringEvaluator.SelectElements(grammar, selector);
+            List<AttributedElement> elements = StringEvaluator.SelectElements(grammar.Source, selector);
             double result;
             if (attrName == null || attrName.Trim() == "") {
                 result = elements.Count;

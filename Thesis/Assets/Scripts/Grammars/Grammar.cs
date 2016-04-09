@@ -234,9 +234,8 @@ namespace Grammars {
                 currentTask = taskQueue.Peek();
             } else return;
 
-            UnityEngine.MonoBehaviour.print(source.GetElements().Count);
-            UnityEngine.MonoBehaviour.print(source == null);
-            if (source != null) UnityEngine.MonoBehaviour.print(source.GetElements().Count);
+            UnityEngine.MonoBehaviour.print("[" + Name + "]: Starting update");
+            if (source != null) UnityEngine.MonoBehaviour.print("[" + Name + "]: Source count: " + source.GetElements().Count);
             // Select rule
             bool foundRule = SelectRule(new List<Rule<T>>(rules.Values), ruleSelectionController, findAllRules);
             if (foundRule && selectedRule != null) {
@@ -348,10 +347,10 @@ namespace Grammars {
         public override List<AttributedElement> GetElements(string specifier = null) {
             IElementContainer subcontainer = null;
             string passSpecifier = specifier;
-            if (specifier == null || specifier.Trim() == "") {
+            /*if (specifier == null || specifier.Trim() == "") {
                 subcontainer = Source;
                 passSpecifier = null;
-            }
+            }*/
             if (specifier != null && specifier.Contains(".")) {
                 string subcontainerStr = specifier.Substring(0,specifier.IndexOf("."));
                 if (listeners.ContainsKey(subcontainerStr)) {

@@ -76,7 +76,7 @@ namespace Grammars.Graph {
 		}
 
 		public IDictionary<Node, Edge> GetEdges() {
-			return edges;
+			return new Dictionary<Node, Edge>(edges);
 		}
 
         public int GetID() {

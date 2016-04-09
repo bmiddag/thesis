@@ -13,11 +13,11 @@ namespace Grammars.Graph {
 		}
 
 		public HashSet<Node> GetNodes() {
-			return nodes;
+			return new HashSet<Node>(nodes);
 		}
 
 		public HashSet<Edge> GetEdges() {
-			return edges;
+			return new HashSet<Edge>(edges);
 		}
 
         public Node GetNodeByID(int id) {

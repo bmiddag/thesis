@@ -79,7 +79,7 @@ namespace Grammars {
         /// <param name="number">The number to compare the element count to.</param>
         /// <returns></returns>
         public static bool AggregateOperation<T>(Grammar<T> grammar, string selector, string attrName, string aggOperation, string cmpOperation, double number) where T : StructureModel {
-            List<AttributedElement> elements = StringEvaluator.SelectElements(grammar, selector);
+            List<AttributedElement> elements = StringEvaluator.SelectElements(grammar.Source, selector);
             double result;
             if (attrName == null || attrName.Trim() == "") {
                 result = elements.Count;
@@ -90,7 +90,7 @@ namespace Grammars {
         }
 
         public static bool CountElements<T>(Grammar<T> grammar, string selector, string cmpOperation, double number) where T : StructureModel {
-            List<AttributedElement> elements = StringEvaluator.SelectElements(grammar, selector);
+            List<AttributedElement> elements = StringEvaluator.SelectElements(grammar.Source, selector);
             return StringEvaluator.Compare(cmpOperation, elements.Count, number);
         }
 

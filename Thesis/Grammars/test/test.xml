@@ -54,12 +54,12 @@
       <string>where [d(#sidepath) &gt; 0.199]</string>
       <string>sidepath</string>
       <string>&gt;=</string>
-      <double>0.6</double>
+      <double>1.6</double>
     </GrammarCondition>
     <GrammarCondition name="CountElements">
       <string>from [edges] where [#_demo_color = "red"]</string>
       <string>&gt;=</string>
-      <double>2</double>
+      <double>8</double>
     </GrammarCondition>
   </StopConditions>
 </Grammar>

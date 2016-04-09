@@ -7,6 +7,7 @@
       <Attributes>
         <Attribute key="_demo_color" value="red" />
         <Attribute key="sidepath" value="0.2" />
+		<Attribute key="iteration" value="from$grammar$_iteration" />
       </Attributes>
     </Node>
   </Nodes>

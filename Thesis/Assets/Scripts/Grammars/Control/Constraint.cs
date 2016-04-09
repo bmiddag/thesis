@@ -132,10 +132,10 @@ namespace Grammars {
         public override List<AttributedElement> GetElements(string specifier = null) {
             IElementContainer subcontainer = null;
             string passSpecifier = specifier;
-            if (specifier == null || specifier.Trim() == "") {
+            /*if (specifier == null || specifier.Trim() == "") {
                 subcontainer = grammar;
                 passSpecifier = null;
-            }
+            }*/
             if (specifier != null && specifier.Contains(".")) {
                 string subcontainerStr = specifier.Substring(0, specifier.IndexOf("."));
                 switch (subcontainerStr) {

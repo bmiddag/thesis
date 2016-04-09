@@ -83,6 +83,7 @@ namespace Grammars {
                     // Return that element's attribute
                     string attStr = elStr.Substring(elStr.LastIndexOf("$") + 1);
                     elStr = elStr.Substring(0, elStr.LastIndexOf("$"));
+
                     List<AttributedElement> els = GetElements(elStr);
                     if (els.Count > 0) {
                         foreach (AttributedElement el in els) {
@@ -105,8 +106,6 @@ namespace Grammars {
             } else if (attributes.ContainsKey(key)) {
                 if (!raw) return ParseRaw(attributes[key]);
                 return attributes[key];
-            } else if (key.StartsWith("from$")) {
-                return ParseRaw(key);
             } else if (key.StartsWith("_link_")) {
                 string rest = key.Substring(6);
                 if (links.ContainsKey(rest) && links[rest] != null && links[rest].Count > 0) return "true";
@@ -174,7 +173,12 @@ namespace Grammars {
                     dynamicAttributes.Add(key, da);
                 }
             }
-			attributes[key] = value;
+            if (value.StartsWith("from$") && copy) {
+                string newVal = ParseRaw(value);
+                if (newVal != null) attributes[key] = newVal;
+            } else {
+                attributes[key] = value;
+            }
             if(notify) OnAttributeChanged(EventArgs.Empty);
         }
 
@@ -184,7 +188,7 @@ namespace Grammars {
 
         public virtual object GetObjectAttribute(string key) {
             if (objectAttributes.ContainsKey(key)) {
-                return key;
+                return objectAttributes[key];
             } else return null;
         }
 
