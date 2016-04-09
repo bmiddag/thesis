@@ -161,7 +161,6 @@ namespace Grammars {
 
 		public void SetAttribute(string key, string value, bool notify=true, bool copy=false) {
             if (dynamicAttributes.ContainsKey(key)) dynamicAttributes.Remove(key);
-            if (objectAttributes.ContainsKey(key)) objectAttributes.Remove(key);
             if (value == null) {
                 attributes.Remove(key);
                 return;
@@ -191,9 +190,14 @@ namespace Grammars {
 
         public void SetObjectAttribute(string key, object value, bool notify = true) {
             if (value != null && key != null) {
-                string stringVal = "$obj$" + value.ToString();
-                attributes[key] = stringVal;
                 objectAttributes[key] = value;
+                if (notify) OnAttributeChanged(EventArgs.Empty);
+            }
+        }
+
+        public void RemoveObjectAttribute(string key, bool notify = true) {
+            if (key != null && objectAttributes.ContainsKey(key)) {
+                objectAttributes.Remove(key);
                 if (notify) OnAttributeChanged(EventArgs.Empty);
             }
         }
@@ -273,28 +277,31 @@ namespace Grammars {
             }
             // Copy attributes
             foreach (KeyValuePair<string, string> entry in newAtts) {
-                if (entry.Key.StartsWith("_grammar_copy")) {
-                    StructureModel copyFrom = (StructureModel)Container;
-                    string identifier = entry.Value;
-                    string match = null;
-                    if (el != null && el.Container != null && identifier.StartsWith("(src)")) {
-                        copyFrom = (StructureModel)(el.Container);
-                        identifier = identifier.Substring(5);
-                    }
-                    if (identifier.StartsWith("(m:")) { // Copied attributes must contain following substring
-                        identifier = identifier.Substring(3);
-                        int length = identifier.IndexOf(")");
-                        if (length > 0) {
-                            match = identifier.Substring(0, length);
-                            identifier = identifier.Substring(length+1);
+                if (entry.Key.StartsWith("copy$")) {
+                    string elStr = entry.Key.Substring(5);
+                    string attStr = null;
+                    AttributedElement copyStart = el != null ? el : this;
+                    AttributedElement copyEl = null;
+                    while (elStr.Contains("$")) {
+                        if (elStr.StartsWith("target$") || elStr.StartsWith("source$")) {
+                            // Additional match
+                            if (elStr.StartsWith("target$")) copyStart = this;
+                            if (elStr.StartsWith("source$") && el != null) copyStart = el;
+                            elStr = elStr.Substring(0, elStr.IndexOf("$"));
+                        } else {
+                            // Additional match
+                            attStr = elStr.Substring(elStr.IndexOf("$") + 1);
+                            elStr = elStr.Substring(0, elStr.IndexOf("$"));
+                            break;
                         }
                     }
-                    AttributedElement copyEl = copyFrom.GetElement(identifier);
+                    List<AttributedElement> els = copyStart.GetElements(elStr);
+                    if (els.Count > 0) copyEl = els[0];
                     if (copyEl != null) {
                         IDictionary<string, string> copiedAtts = copyEl.GetNewAttributes(this, raw: raw);
                         if (copiedAtts != null) {
                             foreach (KeyValuePair<string, string> copiedEntry in copiedAtts) {
-                                if (match == null || copiedEntry.Key.Contains(match)) {
+                                if (attStr == null || copiedEntry.Key.Contains(attStr)) {
                                     newAtts.Add(copiedEntry);
                                 }
                             }
@@ -304,7 +311,7 @@ namespace Grammars {
             }
             if (!newAtts.ContainsKey("_grammar_keep")) {
                 foreach (KeyValuePair<string, string> entry in newAtts) {
-                    if (entry.Key.StartsWith("_grammar_")) newAtts.Remove(entry.Key);
+                    if (entry.Key.StartsWith("_grammar_") || entry.Key.StartsWith("copy$")) newAtts.Remove(entry.Key);
                 }
             }
             return newAtts;

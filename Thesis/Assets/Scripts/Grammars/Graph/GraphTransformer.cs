@@ -82,7 +82,7 @@ namespace Grammars.Graph {
             }
             foreach (Node startNode in source.GetNodes()) {
                 if (findFirst && matches.Count > 0) continue;
-                if (!startNode.MatchAttributes(queryNodes[0])) continue;
+                if (!MatchAttributes(startNode, queryNodes[0])) continue;
                 if (startNode.GetEdges().Count < queryNodes[0].GetEdges().Count) continue;
                 // Is node already marked? (useful when using multiple graph transformers)
                 if (startNode.HasAttribute("_grammar_query_id")) continue;
@@ -133,7 +133,7 @@ namespace Grammars.Graph {
                 // Is node already marked? (useful when using multiple graph transformers)
                 if (node.HasAttribute("_grammar_query_id")) continue;
                 // Compare node at the other end
-                if (!node.MatchAttributes(queryNode)) continue; // Compare node attributes
+                if (!MatchAttributes(node, queryNode)) continue; // Compare node attributes
                 if (node.GetEdges().Count < queryNode.GetEdges().Count) continue; // Compare edge count
                 // For all edges that node has to nodes already selected (including currentNode): compare edge
                 HashSet<Node> adjacentMarkedNodes = new HashSet<Node>(node.GetEdges().Keys.Intersect(selection.Keys));
@@ -276,11 +276,11 @@ namespace Grammars.Graph {
                             sourceEdge.Destroy();
                         } else {
                             // Copy difference in attributes between query & target to source edge.
-                            sourceEdge.SetAttributesUsingDifference(queryEdge, targetEdge);
+                            SetAttributesUsingDifference(sourceEdge, queryEdge, targetEdge);
                         }
                     }
                     // Copy difference in attributes between query & target to source node.
-                    sourceNode.SetAttributesUsingDifference(queryNode, targetNode);
+                    SetAttributesUsingDifference(sourceNode, queryNode, targetNode);
                 }
             }
             /* Step 5: add new nodes to graph */
@@ -288,7 +288,7 @@ namespace Grammars.Graph {
             foreach (Node targetNode in target.GetNodes()) {
                 if (!oldNodeIDs.Contains(targetNode.GetID())) {
                     Node sourceNode = new Node(source, source.GetNodes().Count);
-                    sourceNode.SetAttributesUsingDifference(null, targetNode); // Copies attributes & attribute classes
+                    SetAttributesUsingDifference(sourceNode, null, targetNode); // Copies attributes & attribute classes
                     newNodes.Add(targetNode.GetID(), sourceNode);
                 }
             }
@@ -323,7 +323,7 @@ namespace Grammars.Graph {
                         if (sourceNode1 != null && sourceNode2 != null) break;
                     }
                     Edge edge = new Edge(source, sourceNode1, sourceNode2, directed);
-                    edge.SetAttributesUsingDifference(null, targetEdge);
+                    SetAttributesUsingDifference(edge, null, targetEdge);
                 }
             }
 
@@ -364,6 +364,29 @@ namespace Grammars.Graph {
             Step 6: add edges for new nodes
             Step 7: remove "_grammar_" attributes
             */
+        }
+
+        protected bool MatchAttributes(AttributedElement source, AttributedElement query) {
+            if (source == null || query == null) return false;
+            if (rule != null) {
+                source.SetObjectAttribute("grammar", rule.Grammar, notify: false);
+                source.SetObjectAttribute("rule", rule, notify: false);
+                bool match = source.MatchAttributes(query);
+                source.RemoveObjectAttribute("grammar", notify: false);
+                source.RemoveObjectAttribute("rule", notify: false);
+                return match;
+            } else return source.MatchAttributes(query);
+        }
+
+        protected void SetAttributesUsingDifference(AttributedElement source, AttributedElement query, AttributedElement target) {
+            if (source == null || target == null) return;
+            if (rule != null) {
+                source.SetObjectAttribute("grammar", rule.Grammar, notify: false);
+                source.SetObjectAttribute("rule", rule, notify: false);
+                source.SetAttributesUsingDifference(query, target, notify: false);
+                source.RemoveObjectAttribute("grammar", notify: false);
+                source.RemoveObjectAttribute("rule", notify: false);
+            } else source.SetAttributesUsingDifference(query, target, notify: false);
         }
 
         public void Destroy() {
