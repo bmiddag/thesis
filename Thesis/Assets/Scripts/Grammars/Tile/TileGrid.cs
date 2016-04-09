@@ -74,6 +74,8 @@ namespace Grammars.Tile {
                 }
             }
             switch (specifier) {
+                case "default":
+                case null:
                 case "tiles":
                     int w = grid.GetLength(0);
                     int h = grid.GetLength(1);

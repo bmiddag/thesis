@@ -3,11 +3,9 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using Grammars.Graph;
 using Grammars;
-using System;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using System.Collections;
-using Grammars.Tile;
 using Grammars.Events;
 using System.Threading;
 
@@ -277,7 +275,8 @@ namespace Demo {
         }
 
         public List<object> SendGrammarEvent(string action, bool replyExpected = false,
-            IGrammarEventHandler source = null, string[] targets = null, object[] parameters = null) {
+            IGrammarEventHandler source = null, string[] targets = null,
+            Dictionary<string, string> stringParameters = null, Dictionary<string, object> objectParameters = null) {
             if (source == null) source = this;
             Task task = new Task(action, source);
             if (targets != null) {
@@ -287,6 +286,16 @@ namespace Demo {
                     if (target != null) {
                         task.AddTarget(target);
                     }
+                }
+            }
+            if (stringParameters != null) {
+                foreach (KeyValuePair<string, string> pair in stringParameters) {
+                    task.SetAttribute(pair.Key, pair.Value);
+                }
+            }
+            if (objectParameters != null) {
+                foreach (KeyValuePair<string, object> pair in objectParameters) {
+                    task.SetObjectAttribute(pair.Key, pair.Value);
                 }
             }
             return SendGrammarEvent(task);

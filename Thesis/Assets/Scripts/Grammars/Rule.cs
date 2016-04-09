@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 namespace Grammars {
-    public class Rule<T> : IElementContainer
+    public class Rule<T> : AttributedElement
         where T : StructureModel {
         protected Grammar<T> grammar;
         public Grammar<T> Grammar {
@@ -60,11 +60,21 @@ namespace Grammars {
             get { return priority; }
             set { priority = value; }
         }
-        
 
-        public Rule(Grammar<T> grammar, double probability, int priority = 0, bool active = true, T query = null, T target = null,
+        protected string name;
+        public string Name {
+            get { return name; }
+            set { name = value; }
+        }
+
+        public override IElementContainer Container {
+            get { return Grammar; }
+        }
+
+        public Rule(Grammar<T> grammar, string name, double probability, int priority = 0, bool active = true, T query = null, T target = null,
             RuleCondition condition = null, RuleProbability dynamicProbability = null, RuleMatchSelector matchSelector = null) {
             this.grammar = grammar;
+            this.name = name;
             this.query = query;
             this.target = target;
             this.probability = probability;
@@ -132,9 +142,34 @@ namespace Grammars {
             transformer.Rule = this;
         }
 
-        public List<AttributedElement> GetElements(string specifier = null) {
-            IElementContainer subcontainer = grammar;
+        public override string GetAttribute(string key, bool raw = false) {
+            string result = base.GetAttribute(key, raw);
+            if (result == null && key != null) {
+                switch (key) {
+                    case "_probability":
+                        result = GetProbability(false).ToString(); break;
+                    case "_probability_dynamic":
+                        result = GetProbability(true).ToString(); break;
+                    case "_priority":
+                        result = priority.ToString(); break;
+                    case "_initial":
+                        result = (query == null).ToString(); break;
+                    case "_active":
+                        result = active.ToString(); break;
+                    case "_name":
+                        result = Name; break;
+                }
+            }
+            return result;
+        }
+
+        public override List<AttributedElement> GetElements(string specifier = null) {
+            IElementContainer subcontainer = null;
             string passSpecifier = specifier;
+            if (specifier == null || specifier.Trim() == "") {
+                subcontainer = grammar;
+                passSpecifier = null;
+            }
             if (specifier != null && specifier.Contains(".")) {
                 string subcontainerStr = specifier.Substring(0, specifier.IndexOf("."));
                 switch (subcontainerStr) {
@@ -146,7 +181,6 @@ namespace Grammars {
                         subcontainer = grammar.CurrentTask; break;
                     case "source":
                     case "grammar":
-                    default:
                         subcontainer = grammar; break;
                 }
                 passSpecifier = specifier.Substring(specifier.IndexOf(".") + 1);
@@ -155,7 +189,7 @@ namespace Grammars {
             if (subcontainer != null) {
                 return subcontainer.GetElements(passSpecifier);
             } else {
-                return new List<AttributedElement>();
+                return base.GetElements(specifier);
             }
         }
     }

@@ -45,24 +45,19 @@ namespace Grammars.Graph {
                     return attrList;
                 }
             }
+            if (specifier == null || specifier.Trim() == "") specifier = "nodes";
             switch (specifier) {
                 case "all":
-                    foreach (Edge edge in edges) {
-                        attrList.Add(edge);
-                    }
-                    foreach (Node node in nodes) {
-                        attrList.Add(node);
-                    }
-                    break;
-                case "nodes":
-                    foreach (Node node in nodes) {
-                        attrList.Add(node);
-                    }
+                    foreach (Edge edge in edges) { attrList.Add(edge); }
+                    foreach (Node node in nodes) { attrList.Add(node); }
                     break;
                 case "edges":
-                    foreach (Edge edge in edges) {
-                        attrList.Add(edge);
-                    }
+                    foreach (Edge edge in edges) { attrList.Add(edge); }
+                    break;
+                case "nodes":
+                case "default":
+                case null:
+                    foreach (Node node in nodes) { attrList.Add(node); }
                     break;
                 default:
                     return base.GetElements(specifier);

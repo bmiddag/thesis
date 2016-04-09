@@ -32,7 +32,7 @@ namespace Grammars {
             }
         }
 
-        protected List<Rule<T>> rules;
+        protected Dictionary<string, Rule<T>> rules;
         protected Rule<T> selectedRule = null;
 
         protected Dictionary<string, Constraint<T>> constraints;
@@ -110,7 +110,7 @@ namespace Grammars {
             this.findAllRules = findAllRules;
             stopConditions = new List<GrammarCondition>();
             constraints = new Dictionary<string, Constraint<T>>();
-            rules = new List<Rule<T>>();
+            rules = new Dictionary<string, Rule<T>>();
             iteration = 0;
             noRuleFound = false;
             listeners = new Dictionary<string, IGrammarEventHandler>();
@@ -233,9 +233,12 @@ namespace Grammars {
             if (taskQueue.Count > 0) {
                 currentTask = taskQueue.Peek();
             } else return;
+
+            UnityEngine.MonoBehaviour.print(source.GetElements().Count);
+            UnityEngine.MonoBehaviour.print(source == null);
             if (source != null) UnityEngine.MonoBehaviour.print(source.GetElements().Count);
             // Select rule
-            bool foundRule = SelectRule(rules, ruleSelectionController, findAllRules);
+            bool foundRule = SelectRule(new List<Rule<T>>(rules.Values), ruleSelectionController, findAllRules);
             if (foundRule && selectedRule != null) {
                 selectedRule.Apply(Source);
             }
@@ -246,7 +249,7 @@ namespace Grammars {
             List<Constraint<T>> checkedConstraints = new List<Constraint<T>>();
             //Random random = new Random();
             while (selectedConstraint != null) {
-                bool foundConstraint = SelectRule(selectedConstraint.GetRules(), selectedConstraint.Selector, selectedConstraint.FindFirst);
+                bool foundConstraint = SelectRule(new List<Rule<T>>(selectedConstraint.GetRules().Values), selectedConstraint.Selector, selectedConstraint.FindFirst);
                 foundAny = foundAny || foundConstraint;
                 if (foundConstraint && selectedRule != null) {
                     UnityEngine.MonoBehaviour.print("Rule found");
@@ -266,22 +269,24 @@ namespace Grammars {
             if (stop) {
                 // Transfer control to inter-grammar system
                 Task completedTask = taskQueue.Dequeue();
+                Dictionary<string, object> parameters = new Dictionary<string, object>();
+                parameters.Add("specifier", completedTask);
                 SendGrammarEvent("TaskCompleted",
                         replyExpected: false,
                         targets: new string[] { completedTask.Source.Name },
-                        parameters: new object[] { completedTask });
+                        objectParameters: parameters);
                 //UnityEngine.MonoBehaviour.print("STOP!");
             }
             iteration++;
         }
 
         public void AddRule(Rule<T> rule) {
-            rules.Add(rule);
+            rules.Add(rule.Name, rule);
         }
 
         public void RemoveRule(Rule<T> rule) {
-            if (rules.Contains(rule)) {
-                rules.Remove(rule);
+            if (rules.ContainsKey(rule.Name)) {
+                rules.Remove(rule.Name);
             }
         }
 
@@ -295,8 +300,14 @@ namespace Grammars {
             }
         }
 
-        public List<Rule<T>> GetRules() {
-            return new List<Rule<T>>(rules); // Return a copy of the rule list
+        public Dictionary<string, Rule<T>> GetRules() {
+            return new Dictionary<string, Rule<T>>(rules); // Return a copy of the rule list
+        }
+
+        public Rule<T> GetRule(string key) {
+            if (rules.ContainsKey(key)) {
+                return rules[key];
+            } else return null;
         }
 
         public void AddConstraint(string name, Constraint<T> constraint) {
@@ -335,26 +346,34 @@ namespace Grammars {
         }
 
         public override List<AttributedElement> GetElements(string specifier = null) {
-            IElementContainer subcontainer = Source;
+            IElementContainer subcontainer = null;
             string passSpecifier = specifier;
+            if (specifier == null || specifier.Trim() == "") {
+                subcontainer = Source;
+                passSpecifier = null;
+            }
             if (specifier != null && specifier.Contains(".")) {
                 string subcontainerStr = specifier.Substring(0,specifier.IndexOf("."));
                 if (listeners.ContainsKey(subcontainerStr)) {
                     passSpecifier = specifier.Substring(specifier.IndexOf(".") + 1);
+                    Dictionary<string, string> parameters = new Dictionary<string, string>();
+                    parameters.Add("specifier", passSpecifier);
                     List<object> replies = SendGrammarEvent("GetElements",
                         replyExpected: true,
                         targets: new string[] { subcontainerStr },
-                        parameters: new object[] { passSpecifier });
+                        stringParameters: parameters);
                     if (replies != null && replies.Count > 0) {
                         return (List<AttributedElement>)replies[0];
                     } else return null;
-                }
-                switch (subcontainerStr) {
-                    case "task":
-                        subcontainer = CurrentTask; break;
-                    case "source":
-                    default:
-                        subcontainer = Source; break;
+                } else if (rules.ContainsKey("rule_" + subcontainerStr)) {
+                    subcontainer = rules["rule_" + subcontainerStr];
+                } else {
+                    switch (subcontainerStr) {
+                        case "task":
+                            subcontainer = CurrentTask; break;
+                        case "source":
+                            subcontainer = Source; break;
+                    }
                 }
                 passSpecifier = specifier.Substring(specifier.IndexOf(".") + 1);
                 // Add other possibilities?
@@ -362,7 +381,13 @@ namespace Grammars {
             if (subcontainer != null) {
                 return subcontainer.GetElements(passSpecifier);
             } else {
-                return new List<AttributedElement>();
+                List<AttributedElement> attrList = new List<AttributedElement>();
+                if (rules.ContainsKey("rule_" + specifier)) {
+                    attrList.Add(rules["rule_" + specifier]);
+                } else {
+                    return base.GetElements(specifier);
+                }
+                return attrList;
             }
         }
 
@@ -424,7 +449,8 @@ namespace Grammars {
         }
 
         public List<object> SendGrammarEvent(string action, bool replyExpected = false,
-            IGrammarEventHandler source = null, string[] targets = null, object[] parameters = null) {
+            IGrammarEventHandler source = null, string[] targets = null,
+            Dictionary<string, string> stringParameters = null, Dictionary<string, object> objectParameters = null) {
             if (source == null) source = this;
             Task task = new Task(action, source);
             if (targets != null) {
@@ -434,6 +460,16 @@ namespace Grammars {
                     if (target != null) {
                         task.AddTarget(target);
                     }
+                }
+            }
+            if (stringParameters != null) {
+                foreach (KeyValuePair<string, string> pair in stringParameters) {
+                    task.SetAttribute(pair.Key, pair.Value);
+                }
+            }
+            if (objectParameters != null) {
+                foreach (KeyValuePair<string, object> pair in objectParameters) {
+                    task.SetObjectAttribute(pair.Key, pair.Value);
                 }
             }
             return SendGrammarEvent(task);

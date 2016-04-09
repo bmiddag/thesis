@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 
 namespace Grammars {
-    public class Constraint<T> where T : StructureModel {
+    public class Constraint<T> : AttributedElement
+        where T : StructureModel {
         protected Grammar<T> grammar;
         protected GrammarCondition condition;
         public GrammarCondition Condition {
@@ -25,7 +26,7 @@ namespace Grammars {
             get { return valid; }
         }
 
-        protected List<Rule<T>> rules;
+        protected Dictionary<string, Rule<T>> rules;
         protected bool active;
         public bool Active {
             get { return active; }
@@ -44,18 +45,16 @@ namespace Grammars {
                 if (selector == null) return grammar.RuleSelector;
                 return selector;
             }
-            set {
-                selector = value;
-            }
+            set { selector = value; }
         }
         protected bool findFirst = false;
         public bool FindFirst {
-            get {
-                return findFirst;
-            }
-            set {
-                findFirst = value;
-            }
+            get { return findFirst; }
+            set { findFirst = value; }
+        }
+
+        public override IElementContainer Container {
+            get { return grammar; }
         }
 
         public Constraint(Grammar<T> grammar, string name, bool active=true) {
@@ -63,7 +62,7 @@ namespace Grammars {
             grammar.AddConstraint(name, this);
             condition = null;
             probabilityCalculator = null;
-            rules = new List<Rule<T>>();
+            rules = new Dictionary<string, Rule<T>>();
             this.active = active;
             this.name = name;
             probability = 1;
@@ -71,17 +70,23 @@ namespace Grammars {
         }
 
         public void AddRule(Rule<T> rule) {
-            rules.Add(rule);
+            rules.Add(rule.Name, rule);
         }
 
         public void RemoveRule(Rule<T> rule) {
-            if (rules.Contains(rule)) {
-                rules.Remove(rule);
+            if (rules.ContainsKey(rule.Name)) {
+                rules.Remove(rule.Name);
             }
         }
 
-        public List<Rule<T>> GetRules() {
-            return new List<Rule<T>>(rules); // Return a copy of the rule list
+        public Dictionary<string, Rule<T>> GetRules() {
+            return new Dictionary<string, Rule<T>>(rules); // Return a copy of the rule list
+        }
+
+        public Rule<T> GetRule(string key) {
+            if (rules.ContainsKey(key)) {
+                return rules[key];
+            } else return null;
         }
 
         /// <summary>
@@ -104,5 +109,51 @@ namespace Grammars {
                 return probability;
             } else return 0;
         }
+
+        public override string GetAttribute(string key, bool raw = false) {
+            string result = base.GetAttribute(key, raw);
+            if (result == null && key != null) {
+                switch (key) {
+                    case "_probability":
+                        result = GetProbability(false).ToString(); break;
+                    case "_probability_dynamic":
+                        result = GetProbability(true).ToString(); break;
+                    case "_valid":
+                        result = Valid.ToString(); break;
+                    case "_active":
+                        result = active.ToString(); break;
+                    case "_name":
+                        result = Name; break;
+                }
+            }
+            return result;
+        }
+
+        public override List<AttributedElement> GetElements(string specifier = null) {
+            IElementContainer subcontainer = null;
+            string passSpecifier = specifier;
+            if (specifier == null || specifier.Trim() == "") {
+                subcontainer = grammar;
+                passSpecifier = null;
+            }
+            if (specifier != null && specifier.Contains(".")) {
+                string subcontainerStr = specifier.Substring(0, specifier.IndexOf("."));
+                switch (subcontainerStr) {
+                    case "task":
+                        subcontainer = grammar.CurrentTask; break;
+                    case "source":
+                    case "grammar":
+                        subcontainer = grammar; break;
+                }
+                passSpecifier = specifier.Substring(specifier.IndexOf(".") + 1);
+                // Add other possibilities?
+            }
+            if (subcontainer != null) {
+                return subcontainer.GetElements(passSpecifier);
+            } else {
+                return base.GetElements(specifier);
+            }
+        }
+
     }
 }

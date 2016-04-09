@@ -1,6 +1,7 @@
 ﻿using Grammars;
 using Grammars.Graph;
 using Grammars.Tile;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -412,6 +413,18 @@ namespace Demo {
                             case "Rule":
                                 string probabilityStr = reader["probability"];
                                 activeStr = reader["active"];
+                                name = reader["name"];
+                                while (name == null) {
+                                    Random rand = new Random();
+                                    name = rand.Next(int.MaxValue).ToString();
+                                    Rule<T> existingRule = null;
+                                    if (currentConstraint != null) {
+                                        existingRule = currentConstraint.GetRule(name);
+                                    } else {
+                                        existingRule = grammar.GetRule(name);
+                                    }
+                                    if (existingRule != null) name = null;
+                                }
                                 active = true;
                                 int priority = 0;
                                 string priorityStr = reader["priority"];
@@ -424,8 +437,8 @@ namespace Demo {
                                     }
                                 }
                                 double probability;
-                                if (probabilityStr == null || !double.TryParse(probabilityStr, out probability)) throw new System.FormatException("Deserialization failed");
-                                currentRule = new Rule<T>(grammar, probability, priority:priority, active:active);
+                                if (name == null || probabilityStr == null || !double.TryParse(probabilityStr, out probability)) throw new System.FormatException("Deserialization failed");
+                                currentRule = new Rule<T>(grammar, name, probability, priority:priority, active:active);
                                 if (currentConstraint != null) {
                                     currentConstraint.AddRule(currentRule);
                                 } else {

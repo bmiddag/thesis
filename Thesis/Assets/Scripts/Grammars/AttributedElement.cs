@@ -439,14 +439,14 @@ namespace Grammars {
                             attrList.Add(el);
                         }
                     }
-                } else if (specifier.StartsWith("links_")) {
+                } else if (specifier != null && specifier.StartsWith("links_")) {
                     string linkSpecifier = specifier.Substring(6);
                     if (links.ContainsKey(linkSpecifier) && links[linkSpecifier] != null && links[linkSpecifier].Count > 0) {
                         foreach (AttributedElement el in links[linkSpecifier]) {
                             attrList.Add(el);
                         }
                     }
-                } else if (GetObjectAttribute(specifier) != null && typeof(AttributedElement).IsAssignableFrom(GetObjectAttribute(specifier).GetType())) {
+                } else if (specifier != null && GetObjectAttribute(specifier) != null && typeof(AttributedElement).IsAssignableFrom(GetObjectAttribute(specifier).GetType())) {
                     attrList.Add((AttributedElement)GetObjectAttribute(specifier));
                 } else attrList.Add(this);
                 return attrList;

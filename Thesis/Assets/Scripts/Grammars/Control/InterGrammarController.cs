@@ -51,7 +51,7 @@ namespace Grammars.Control {
             }
 
             // Select rule
-            bool foundRule = SelectRule(rules, ruleSelectionController, findAllRules);
+            bool foundRule = SelectRule(new List<Rule<Task>>(rules.Values), ruleSelectionController, findAllRules);
             if (foundRule && selectedRule != null) {
                 selectedRule.Apply(Source);
             }
@@ -62,7 +62,7 @@ namespace Grammars.Control {
             List<Constraint<Task>> checkedConstraints = new List<Constraint<Task>>();
             //Random random = new Random();
             while (selectedConstraint != null) {
-                bool foundConstraint = SelectRule(selectedConstraint.GetRules(), selectedConstraint.Selector, selectedConstraint.FindFirst);
+                bool foundConstraint = SelectRule(new List<Rule<Task>>(selectedConstraint.GetRules().Values), selectedConstraint.Selector, selectedConstraint.FindFirst);
                 foundAny = foundAny || foundConstraint;
                 if (foundConstraint && selectedRule != null) {
                     selectedRule.Apply(Source);
