@@ -138,12 +138,16 @@ namespace Grammars {
             }*/
             if (specifier != null && specifier.Contains(".")) {
                 string subcontainerStr = specifier.Substring(0, specifier.IndexOf("."));
-                switch (subcontainerStr) {
-                    case "task":
-                        subcontainer = grammar.CurrentTask; break;
-                    case "source":
-                    case "grammar":
-                        subcontainer = grammar; break;
+                if (rules.ContainsKey(subcontainerStr)) {
+                    subcontainer = rules[subcontainerStr];
+                } else {
+                    switch (subcontainerStr) {
+                        case "task":
+                            subcontainer = grammar.CurrentTask; break;
+                        case "source":
+                        case "grammar":
+                            subcontainer = grammar; break;
+                    }
                 }
                 passSpecifier = specifier.Substring(specifier.IndexOf(".") + 1);
                 // Add other possibilities?

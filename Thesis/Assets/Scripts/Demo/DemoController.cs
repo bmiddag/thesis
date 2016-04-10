@@ -301,9 +301,10 @@ namespace Demo {
             return SendGrammarEvent(task);
         }
 
-        public void AddListener(IGrammarEventHandler handler) {
+        public void AddListener(IGrammarEventHandler handler, string name = null) {
             if (handler == null) return;
-            listeners.Add(handler.Name, handler);
+            if (name == null) name = handler.Name;
+            listeners.Add(name, handler);
         }
     }
 }

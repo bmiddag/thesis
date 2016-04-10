@@ -96,13 +96,17 @@ namespace Grammars.Control {
             if (GetTaskProcessor(task.Action) != null) {
                 GetTaskProcessor(task.Action).Process(task);
             } else if (task.ReplyExpected) {
+                List<AttributedElement> els;
                 switch (task.Action) {
                     case "GetElements":
-                        if (task.HasAttribute("specifier")) {
-                            task.AddReply(GetElements(task["specifier"]));
-                        } else {
-                            task.AddReply(GetElements());
-                        }
+                        els = GetElements(task.GetAttribute("specifier")); // doesn't matter if specifier = null :)
+                        task.AddReply(els);
+                        break;
+                    case "GetStructure":
+                        els = GetElements(task.GetAttribute("specifier"));
+                        if (els != null && els.Count > 0 && els[0] != null && typeof(StructureModel).IsAssignableFrom(els[0].GetType())) {
+                            task.AddReply(els[0]);
+                        } else task.AddReply(null);
                         break;
                     default:
                         break;

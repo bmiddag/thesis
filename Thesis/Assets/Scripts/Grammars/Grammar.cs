@@ -367,8 +367,8 @@ namespace Grammars {
                     if (replies != null && replies.Count > 0) {
                         return (List<AttributedElement>)replies[0];
                     } else return null;
-                } else if (rules.ContainsKey("rule_" + subcontainerStr)) {
-                    subcontainer = rules["rule_" + subcontainerStr];
+                } else if (rules.ContainsKey(subcontainerStr)) {
+                    subcontainer = rules[subcontainerStr];
                 } else {
                     switch (subcontainerStr) {
                         case "task":
@@ -387,6 +387,12 @@ namespace Grammars {
                 if (rules.ContainsKey("rule_" + specifier)) {
                     attrList.Add(rules["rule_" + specifier]);
                 } else {
+                    switch (specifier) {
+                        case "task":
+                            if(CurrentTask != null) return CurrentTask.GetElements(); break;
+                        case "source":
+                            if(Source != null) return Source.GetElements(); break;
+                    }
                     return base.GetElements(specifier);
                 }
                 return attrList;
@@ -399,13 +405,17 @@ namespace Grammars {
             if (GetTaskProcessor(task.Action) != null) {
                 GetTaskProcessor(task.Action).Process(task);
             } else if(task.ReplyExpected) {
+                List<AttributedElement> els;
                 switch (task.Action) {
                     case "GetElements":
-                        if (task.HasAttribute("specifier")) {
-                            task.AddReply(GetElements(task["specifier"]));
-                        } else {
-                            task.AddReply(GetElements());
-                        }
+                        els = GetElements(task.GetAttribute("specifier")); // doesn't matter if specifier = null :)
+                        task.AddReply(els);
+                        break;
+                    case "GetStructure":
+                        els = GetElements(task.GetAttribute("specifier"));
+                        if (els != null && els.Count > 0 && els[0] != null && typeof(StructureModel).IsAssignableFrom(els[0].GetType())) {
+                            task.AddReply(els[0]);
+                        } else task.AddReply(null);
                         break;
                     default:
                         break;
@@ -479,9 +489,10 @@ namespace Grammars {
             return SendGrammarEvent(task);
         }
 
-        public void AddListener(IGrammarEventHandler handler) {
+        public void AddListener(IGrammarEventHandler handler, string name = null) {
             if (handler == null) return;
-            listeners.Add(handler.Name, handler);
+            if (name == null) name = handler.Name;
+            listeners.Add(name, handler);
         }
 
         public void AddTaskProcessor(string eventName, TaskProcessor tProc) {

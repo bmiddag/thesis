@@ -23,7 +23,19 @@ namespace Grammars {
 
         protected T source;
         public virtual T Source {
-            get { return source; }
+            get {
+                if (source == null) {
+                    if (listeners.ContainsKey("origin")) {
+                        List<object> replies = SendGrammarEvent("GetStructure",
+                            replyExpected: true,
+                            source: this,
+                            targets: new string[] { "origin" });
+                        if (replies != null && replies.Count > 0 && replies[0] != null && typeof(T).IsAssignableFrom(replies[0].GetType())) {
+                            source = (T)replies[0];
+                        }
+                    }
+                }
+                return source; }
             set { source = value; }
         }
 
@@ -50,6 +62,8 @@ namespace Grammars {
         public Traverser(string name, Type transformerType = null) {
             this.name = name;
             this.transformerType = transformerType;
+            currentElement = null;
+            source = null;
             listeners = new Dictionary<string, IGrammarEventHandler>();
         }
 
@@ -191,9 +205,10 @@ namespace Grammars {
             return SendGrammarEvent(task);
         }
 
-        public void AddListener(IGrammarEventHandler handler) {
+        public void AddListener(IGrammarEventHandler handler, string name = null) {
             if (handler == null) return;
-            listeners.Add(handler.Name, handler);
+            if (name == null) name = handler.Name;
+            listeners.Add(name, handler);
         }
 
         public void AddTaskProcessor(string eventName, TaskProcessor tProc) {

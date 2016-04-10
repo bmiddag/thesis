@@ -11,7 +11,7 @@ namespace Grammars.Events {
         List<object> SendGrammarEvent(string action, bool replyExpected = false,
             IGrammarEventHandler source = null, string[] targets = null,
             Dictionary<string, string> stringParameters = null, Dictionary<string, object> objectParameters = null);
-        void AddListener(IGrammarEventHandler handler);
+        void AddListener(IGrammarEventHandler handler, string name = null);
 
     }
 }

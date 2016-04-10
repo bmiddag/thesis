@@ -41,6 +41,8 @@ namespace Grammars {
         
         public static void GraphTraverser_NextElement(IGrammarEventHandler container, Task task) {
             Traverser<Graph> traverser = (Traverser<Graph>)container;
+            Graph source = traverser.Source;
+            AttributedElement currentElement = traverser.CurrentElement;
         }
     }
 }
