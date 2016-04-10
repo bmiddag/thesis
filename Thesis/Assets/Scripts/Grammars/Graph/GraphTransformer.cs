@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Grammars.Graph {
+namespace Grammars.Graphs {
 	public class GraphTransformer : IStructureTransformer<Graph> {
         Graph source = null;
         List<Dictionary<Node, Node>> matches;

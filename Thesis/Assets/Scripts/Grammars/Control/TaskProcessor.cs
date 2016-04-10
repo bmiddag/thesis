@@ -1,4 +1,5 @@
 ﻿using Grammars.Events;
+using Grammars.Graphs;
 using System.Linq;
 using System.Reflection;
 
@@ -36,6 +37,10 @@ namespace Grammars {
             } else return null;
         }
 
-        // Example task processor methods are listed here
+        // Example task processor methods are listed below
+        
+        public static void GraphTraverser_NextElement(IGrammarEventHandler container, Task task) {
+            Traverser<Graph> traverser = (Traverser<Graph>)container;
+        }
     }
 }

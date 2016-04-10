@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using Grammars.Graph;
+using Grammars.Graphs;
 using Grammars;
 using System;
 using System.Collections;

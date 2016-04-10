@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Grammars.Graph {
+namespace Grammars.Graphs {
     public class Node : AttributedElement {
 		Graph graph;
 		IDictionary<Node, Edge> edges;

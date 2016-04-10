@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using Grammars.Tile;
+using Grammars.Tiles;
 using Grammars;
 using System;
 using System.Collections;

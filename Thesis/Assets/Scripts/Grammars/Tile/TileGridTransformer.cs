@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Grammars.Tile {
+namespace Grammars.Tiles {
 	public class TileGridTransformer : IStructureTransformer<TileGrid> {
         TileGrid source = null;
         TilePos selectedOffset;

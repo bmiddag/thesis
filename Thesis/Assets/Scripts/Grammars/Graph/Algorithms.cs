@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Grammars.Graph {
+namespace Grammars.Graphs {
     public class Algorithms {
         public static int Distance(Node start, Node end, int maxLen = 0, string nodeCondition = null) {
             List<Node> shortestPath = ShortestPath(start, end, maxLen, nodeCondition);

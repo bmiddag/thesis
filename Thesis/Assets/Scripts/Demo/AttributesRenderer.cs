@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using Grammars;
-using Grammars.Graph;
+using Grammars.Graphs;
 using System.Collections.Generic;
 
 namespace Demo {

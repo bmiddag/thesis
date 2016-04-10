@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Grammars.Tile {
+namespace Grammars.Tiles {
     public class TileGrid : StructureModel {
         Tile[,] grid;
 

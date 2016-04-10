@@ -1,6 +1,6 @@
 ﻿using Grammars;
-using Grammars.Graph;
-using Grammars.Tile;
+using Grammars.Graphs;
+using Grammars.Tiles;
 using System;
 using System.Collections;
 using System.Collections.Generic;

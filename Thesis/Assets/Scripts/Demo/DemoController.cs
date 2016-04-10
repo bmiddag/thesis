@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
-using Grammars.Graph;
+using Grammars.Graphs;
 using Grammars;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;

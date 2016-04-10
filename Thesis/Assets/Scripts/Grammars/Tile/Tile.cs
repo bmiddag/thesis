@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Grammars.Tile {
+namespace Grammars.Tiles {
     public class Tile : AttributedElement {
         TileGrid grid;
 		int x, y;

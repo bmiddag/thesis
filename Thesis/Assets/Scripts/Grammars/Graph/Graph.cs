@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Grammars.Graph {
+namespace Grammars.Graphs {
     public class Graph : StructureModel {
 		HashSet<Node> nodes;
 		HashSet<Edge> edges;

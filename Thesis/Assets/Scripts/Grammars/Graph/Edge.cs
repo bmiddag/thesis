@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Grammars.Graph {
+namespace Grammars.Graphs {
     public class Edge : AttributedElement {
 		Graph graph;
 		Node node1;

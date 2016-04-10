@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System;
-using Grammars.Tile;
+using Grammars.Tiles;
 using Grammars;
 
 namespace Demo {

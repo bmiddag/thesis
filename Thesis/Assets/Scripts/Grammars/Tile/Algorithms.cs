@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Grammars.Tile {
+namespace Grammars.Tiles {
     public class Algorithms {
         public static int Distance(Tile t1, Tile t2) {
             if (t1 == null || t2 == null) return -1;

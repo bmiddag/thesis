@@ -7,8 +7,13 @@ namespace Grammars {
     public class Traverser<T> : AttributedElement, IGrammarEventHandler
         where T : StructureModel {
         protected Dictionary<string, IGrammarEventHandler> listeners;
-        
         protected Dictionary<string, TaskProcessor> taskProcessors;
+
+        protected AttributedElement currentElement;
+        public AttributedElement CurrentElement {
+            get { return currentElement; }
+            set { currentElement = value; }
+        }
 
         protected string name;
         public string Name {
@@ -49,7 +54,7 @@ namespace Grammars {
         }
 
         public virtual void ExecuteTask(Task task) {
-            // bla
+            // TODO: put something here...
         }
 
         public override string GetAttribute(string key, bool raw = false) {
@@ -92,6 +97,11 @@ namespace Grammars {
             if (subcontainer != null) {
                 return subcontainer.GetElements(passSpecifier);
             } else {
+                List<AttributedElement> attrList = new List<AttributedElement>();
+                if (specifier == "current") {
+                    attrList.Add(CurrentElement);
+                    return attrList;
+                }
                 return base.GetElements(specifier);
             }
         }
@@ -110,8 +120,23 @@ namespace Grammars {
                             task.AddReply(GetElements());
                         }
                         break;
+                    case "GetCurrentElement":
+                        task.AddReply(CurrentElement);
+                        break;
                     default:
                         ExecuteTask(task);
+                        break;
+                }
+            } else {
+                switch (task.Action) {
+                    case "SetCurrentElement":
+                        if (task.HasObjectAttribute("element")) {
+                            AttributedElement el = (AttributedElement)task.GetObjectAttribute("element");
+                            CurrentElement = el;
+                        } else if (task.HasAttribute("element")) {
+                            AttributedElement el = source.GetElement("element");
+                            CurrentElement = el;
+                        }
                         break;
                 }
             }
