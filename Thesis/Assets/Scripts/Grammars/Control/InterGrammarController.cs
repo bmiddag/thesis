@@ -93,7 +93,9 @@ namespace Grammars.Control {
 
         public override void HandleGrammarEvent(Task task) {
             if (task == null) return;
-            if (task.ReplyExpected) {
+            if (GetTaskProcessor(task.Action) != null) {
+                GetTaskProcessor(task.Action).Process(task);
+            } else if (task.ReplyExpected) {
                 switch (task.Action) {
                     case "GetElements":
                         if (task.HasAttribute("specifier")) {

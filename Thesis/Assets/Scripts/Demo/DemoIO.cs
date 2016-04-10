@@ -505,6 +505,30 @@ namespace Demo {
                                 }
                                 if (!reader.IsEmptyElement) currentMethodCaller.Push(rCond);
                                 break;
+                            case "TaskProcessor":
+                                string ev = reader["event"];
+                                name = reader["name"];
+                                TaskProcessor tProc;
+                                if (name == null) {
+                                    reader.Read();
+                                    name = reader.Value;
+                                    if (name == null) throw new System.FormatException("Deserialization failed");
+                                    tProc = (TaskProcessor)StringEvaluator.ParseMethodCaller(name, typeof(TaskProcessor), grammar, container: grammar);
+                                } else {
+                                    if (currentRule == null) throw new System.FormatException("Deserialization failed");
+                                    tProc = TaskProcessor.FromName(name, container: grammar);
+                                }
+                                if (tProc == null) throw new System.FormatException("Deserialization failed");
+                                if (ev == null) {
+                                    ev = tProc.Method.Name;
+                                }
+                                if (currentMethodCaller.Count == 0) {
+                                    grammar.AddTaskProcessor(ev, tProc);
+                                } else {
+                                    currentMethodCaller.Peek().AddArgument(tProc);
+                                }
+                                if (!reader.IsEmptyElement) currentMethodCaller.Push(tProc);
+                                break;
                             case "Query":
                                 reader.Read();
                                 name = reader.Value;

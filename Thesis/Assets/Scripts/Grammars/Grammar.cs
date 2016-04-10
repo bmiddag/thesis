@@ -66,6 +66,8 @@ namespace Grammars {
                 }
             }
         }
+
+        protected Dictionary<string, TaskProcessor> taskProcessors;
         
         /// <summary>
         /// If all rules sould execute Find (e.g. before checking probabilities), this should be true.
@@ -115,6 +117,7 @@ namespace Grammars {
             noRuleFound = false;
             listeners = new Dictionary<string, IGrammarEventHandler>();
             taskQueue = new Queue<Task>();
+            taskProcessors = new Dictionary<string, TaskProcessor>();
             if (threaded) {
                 taskThread = new Thread(() => Loop(1000));
                 taskThread.Start();
@@ -393,7 +396,9 @@ namespace Grammars {
         public virtual void HandleGrammarEvent(Task task) {
             if (task == null) return;
             UnityEngine.MonoBehaviour.print("[" + name + "]" + " Received event: " + task.Action);
-            if (task.ReplyExpected) {
+            if (GetTaskProcessor(task.Action) != null) {
+                GetTaskProcessor(task.Action).Process(task);
+            } else if(task.ReplyExpected) {
                 switch (task.Action) {
                     case "GetElements":
                         if (task.HasAttribute("specifier")) {
@@ -477,6 +482,22 @@ namespace Grammars {
         public void AddListener(IGrammarEventHandler handler) {
             if (handler == null) return;
             listeners.Add(handler.Name, handler);
+        }
+
+        public void AddTaskProcessor(string eventName, TaskProcessor tProc) {
+            taskProcessors.Add(eventName, tProc);
+        }
+
+        public void RemoveTaskProcessor(string eventName) {
+            if (taskProcessors.ContainsKey(eventName)) {
+                taskProcessors.Remove(eventName);
+            }
+        }
+
+        public TaskProcessor GetTaskProcessor(string eventName) {
+            if (taskProcessors.ContainsKey(eventName)) {
+                return taskProcessors[eventName];
+            } else return null;
         }
     }
 }

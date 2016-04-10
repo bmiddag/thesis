@@ -6,6 +6,7 @@ using System.Linq.Dynamic;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Linq.Expressions;
+using Grammars.Events;
 
 namespace Grammars {
     public static class StringEvaluator {
@@ -207,7 +208,7 @@ namespace Grammars {
         }
 
         public static MethodCaller ParseMethodCaller<T>(string methodString, Type methodCallerType, Grammar<T> grammar = null, Rule<T> rule = null,
-            AttributedElement element = null, string attName = null) where T : StructureModel {
+            AttributedElement element = null, string attName = null, IGrammarEventHandler container = null) where T : StructureModel {
             if (!typeof(MethodCaller).IsAssignableFrom(methodCallerType)) return null;
             string[] args = null;
             string methodName = ParseMethodString(methodString, out args);
@@ -238,6 +239,9 @@ namespace Grammars {
             } else if (methodCallerType == typeof(DynamicAttribute)) {
                 caller = DynamicAttribute.FromName(methodName, element, attName);
                 defaultArgs = 2;
+            } else if (methodCallerType == typeof(TaskProcessor)) {
+                caller = TaskProcessor.FromName(methodName, container);
+                defaultArgs = 2;
             }
             if (caller == null) throw new FormatException("Method was not found: " + methodString);
             if (caller.Method.GetParameters().Length != args.Length + defaultArgs) {
@@ -248,7 +252,7 @@ namespace Grammars {
                 Type paramType = caller.Method.GetParameters()[i + defaultArgs].ParameterType;
                 string arg = args[i].Trim();
                 if (typeof(MethodCaller).IsAssignableFrom(paramType)) {
-                    MethodCaller argCall = ParseMethodCaller(arg, paramType, grammar, rule, element, attName);
+                    MethodCaller argCall = ParseMethodCaller(arg, paramType, grammar, rule, element, attName, container);
                     caller.AddArgument(argCall);
                 } else if (paramType == typeof(string)) {
                     if (((arg.StartsWith("\"") && arg.EndsWith("\""))) || ((arg.StartsWith("'") && arg.EndsWith("'")))) {
