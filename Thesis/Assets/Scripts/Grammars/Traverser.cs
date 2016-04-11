@@ -80,7 +80,8 @@ namespace Grammars {
                 source: this,
                 targets: new string[] { "origin" },
                 objectParameters: parameters);
-            if (replies == null && replies.Count == 0) {
+            if (replies == null || replies.Count == 0) {
+                // Error
                 return;
             }
         }
@@ -97,7 +98,7 @@ namespace Grammars {
                         replyExpected: true,
                         source: this,
                         targets: new string[] { "origin" });
-                    if (replies == null && replies.Count == 0) {
+                    if (replies == null || replies.Count == 0) {
                         return;
                     }
                     possibleStarts = source.GetElements();
