@@ -41,8 +41,6 @@ namespace Grammars.Control {
         }
 
         public override void Update() {
-            UnityEngine.MonoBehaviour.print(currentTask);
-
             if (IsTaskThread()) {
                 // Update task
                 if (taskQueue.Count > 0) {
@@ -50,6 +48,16 @@ namespace Grammars.Control {
                 } else return;
             }
 
+            Task t = Source;
+            if (t == null) return;
+            if (t.Action != null && t.Action.Contains(".")) {
+                string subcontainerStr = t.Action.Substring(0, t.Action.IndexOf("."));
+                if (listeners.ContainsKey(subcontainerStr)) {
+                    t.RemoveTarget(this);
+                    t.AddTarget(listeners[subcontainerStr]);
+                    t.Action = t.Action.Substring(t.Action.IndexOf(".") + 1);
+                }
+            }
             // Select rule
             bool foundRule = SelectRule(new List<Rule<Task>>(rules.Values), ruleSelectionController, findAllRules);
             if (foundRule && selectedRule != null) {
@@ -109,6 +117,8 @@ namespace Grammars.Control {
                         } else task.AddReply(null);
                         break;
                     default:
+                        Source = task;
+                        Update();
                         break;
                 }
             } else {
