@@ -9,6 +9,7 @@ namespace Grammars {
         where T : StructureModel {
         protected Dictionary<string, IGrammarEventHandler> listeners;
         protected Dictionary<string, TaskProcessor> taskProcessors;
+        protected Dictionary<string, T> queries;
 
         protected AttributedElement currentElement;
         public AttributedElement CurrentElement {
@@ -66,6 +67,7 @@ namespace Grammars {
             currentElement = null;
             source = null;
             listeners = new Dictionary<string, IGrammarEventHandler>();
+            queries = new Dictionary<string, T>();
         }
 
         public virtual void GenerateMore() {
@@ -119,7 +121,23 @@ namespace Grammars {
         }
 
         public virtual void ExecuteTask(Task task) {
-            // TODO: put something here...
+            if (task == null) return;
+            switch (task.Action) {
+                case "Next":
+                case "NextFrom":
+                    if (GetTaskProcessor("Next") != null) {
+                        GetTaskProcessor("Next").Process(task);
+                    }
+                    break;
+                case "Checkmatch":
+                case "Match":
+                case "Find":
+                    if (task.HasAttribute("query") && GetQuery(task["query"]) != null) {
+                        object matches = Find(GetQuery(task["query"]));
+                        task.AddReply(matches);
+                    }
+                    break;
+            }
         }
 
         public override string GetAttribute(string key, bool raw = false) {
@@ -185,15 +203,6 @@ namespace Grammars {
                             task.AddReply(GetElements());
                         }
                         break;
-                    case "GetCurrentElement":
-                        task.AddReply(CurrentElement);
-                        break;
-                    default:
-                        ExecuteTask(task);
-                        break;
-                }
-            } else {
-                switch (task.Action) {
                     case "SetCurrentElement":
                         if (task.HasObjectAttribute("element")) {
                             AttributedElement el = (AttributedElement)task.GetObjectAttribute("element");
@@ -202,6 +211,13 @@ namespace Grammars {
                             AttributedElement el = source.GetElement("element");
                             CurrentElement = el;
                         }
+                        task.AddReply(CurrentElement);
+                        break;
+                    case "GetCurrentElement":
+                        task.AddReply(CurrentElement);
+                        break;
+                    default:
+                        ExecuteTask(task);
                         break;
                 }
             }
@@ -270,6 +286,22 @@ namespace Grammars {
             if (taskProcessors.ContainsKey(eventName)) {
                 taskProcessors.Remove(eventName);
             }
+        }
+
+        public void AddQuery(string qName, T query) {
+            queries.Add(qName, query);
+        }
+
+        public void RemoveQuery(string qName) {
+            if (queries.ContainsKey(qName)) {
+                queries.Remove(qName);
+            }
+        }
+
+        public T GetQuery(string qName) {
+            if (queries.ContainsKey(qName)) {
+                return queries[qName];
+            } else return null;
         }
 
         public TaskProcessor GetTaskProcessor(string eventName) {

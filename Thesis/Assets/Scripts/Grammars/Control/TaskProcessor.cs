@@ -46,7 +46,24 @@ namespace Grammars {
             AttributedElement currentElement = null;
             Traverser<TileGrid> traverser = (Traverser<TileGrid>)container;
             TileGrid source = traverser.Source;
+
+            AttributedElement startEl = null;
+            if (task.HasObjectAttribute("start")) {
+                startEl = (AttributedElement)task.GetObjectAttribute("start");
+            } else if (task.HasAttribute("start")) {
+                startEl = source.GetElement(task.GetAttribute("start"));
+            }
+
             if (source != null) {
+                if (startEl != null) {
+                    if (startEl.Container == traverser.Source) {
+                        traverser.CurrentElement = startEl;
+                    } else if (startEl.HasLink(linkName)) {
+                        List<AttributedElement> possibleStarts = startEl.GetLinkedElements(linkName);
+                        Random rand = new Random();
+                        traverser.CurrentElement = possibleStarts[rand.Next(0, possibleStarts.Count)];
+                    }
+                }
                 currentElement = traverser.CurrentElement;
                 if (currentElement == null) {
                     traverser.SetFirstElement();
@@ -101,7 +118,24 @@ namespace Grammars {
             AttributedElement currentElement = null;
             Traverser<Graph> traverser = (Traverser<Graph>)container;
             Graph source = traverser.Source;
+
+            AttributedElement startEl = null;
+            if (task.HasObjectAttribute("start")) {
+                startEl = (AttributedElement)task.GetObjectAttribute("start");
+            } else if (task.HasAttribute("start")) {
+                startEl = source.GetElement(task.GetAttribute("start"));
+            }
+
             if (source != null) {
+                if (startEl != null) {
+                    if (startEl.Container == traverser.Source) {
+                        traverser.CurrentElement = startEl;
+                    } else if (startEl.HasLink(linkName)) {
+                        List<AttributedElement> possibleStarts = startEl.GetLinkedElements(linkName);
+                        Random rand = new Random();
+                        traverser.CurrentElement = possibleStarts[rand.Next(0, possibleStarts.Count)];
+                    }
+                }
                 currentElement = traverser.CurrentElement;
                 if (currentElement == null) {
                     traverser.SetFirstElement();
