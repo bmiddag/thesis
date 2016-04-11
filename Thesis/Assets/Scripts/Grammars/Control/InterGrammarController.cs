@@ -127,14 +127,14 @@ namespace Grammars.Control {
                         if (task.Targets.Contains(this)) {
                             lock (taskQueue) {
                                 threadStop = true;
-                                Monitor.Pulse(taskQueue);
+                                Monitor.PulseAll(taskQueue);
                             }
                         }
                         break;
                     default:
                         lock (taskQueue) {
                             taskQueue.Enqueue(task);
-                            Monitor.Pulse(taskQueue);
+                            Monitor.PulseAll(taskQueue);
                         }
                         break;
                 }

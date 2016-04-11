@@ -61,7 +61,7 @@ namespace Grammars {
                 lock(taskQueue) {
                     if (!taskQueue.Contains(value) && value != null) {
                         taskQueue.Enqueue(value);
-                        Monitor.Pulse(taskQueue);
+                        Monitor.PulseAll(taskQueue);
                     }
                 }
             }
@@ -271,6 +271,7 @@ namespace Grammars {
             if (stop) {
                 // Transfer control to inter-grammar system
                 Task completedTask = taskQueue.Dequeue();
+                completedTask.SetAttribute("completed", "true");
                 Dictionary<string, object> parameters = new Dictionary<string, object>();
                 parameters.Add("specifier", completedTask);
                 SendGrammarEvent("TaskCompleted",
@@ -417,6 +418,14 @@ namespace Grammars {
                             task.AddReply(els[0]);
                         } else task.AddReply(null);
                         break;
+                    case "GenerateNext":
+                        lock (taskQueue) {
+                            taskQueue.Enqueue(task);
+                            Monitor.PulseAll(taskQueue);
+                            while (!task.HasAttribute("completed")) Monitor.Wait(taskQueue);
+                        }
+                        task.AddReply("completed");
+                        break;
                     default:
                         break;
                 }
@@ -426,14 +435,14 @@ namespace Grammars {
                         if (task.Targets.Contains(this)) {
                             lock (taskQueue) {
                                 threadStop = true;
-                                Monitor.Pulse(taskQueue);
+                                Monitor.PulseAll(taskQueue);
                             }
                         }
                         break;
                     default:
                         lock(taskQueue) {
                             taskQueue.Enqueue(task);
-                            Monitor.Pulse(taskQueue);
+                            Monitor.PulseAll(taskQueue);
                         }
                         break;
                 }
