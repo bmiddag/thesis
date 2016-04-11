@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Grammars.Events;
 using System.Threading;
+using System.Linq;
 
 namespace Grammars {
     public class Traverser<T> : AttributedElement, IGrammarEventHandler
@@ -65,6 +66,47 @@ namespace Grammars {
             currentElement = null;
             source = null;
             listeners = new Dictionary<string, IGrammarEventHandler>();
+        }
+
+        public virtual void GenerateMore() {
+            // Send an event to generate more
+            Dictionary<string, object> parameters = new Dictionary<string, object>();
+            parameters.Add("currentElement", CurrentElement);
+
+            List<object> replies = SendGrammarEvent("GenerateNext",
+                replyExpected: true,
+                source: this,
+                targets: new string[] { "origin" },
+                objectParameters: parameters);
+            if (replies == null && replies.Count == 0) {
+                return;
+            }
+        }
+
+        public virtual void SetFirstElement() {
+            if (currentElement == null) {
+                List<AttributedElement> possibleStarts = source.GetElements();
+                if (possibleStarts != null && possibleStarts.Count > 0) {
+                    IEnumerable<AttributedElement> markedStarts = possibleStarts.Where(e => e.HasAttribute("start"));
+                    if (markedStarts != null && markedStarts.Count() > 0) possibleStarts = markedStarts.ToList();
+                } else {
+                    // Send an event to generate
+                    List<object> replies = SendGrammarEvent("GenerateNext",
+                        replyExpected: true,
+                        source: this,
+                        targets: new string[] { "origin" });
+                    if (replies == null && replies.Count == 0) {
+                        return;
+                    }
+                    possibleStarts = source.GetElements();
+                    if (possibleStarts != null && possibleStarts.Count > 0) {
+                        IEnumerable<AttributedElement> markedStarts = possibleStarts.Where(e => e.HasAttribute("start"));
+                        if (markedStarts != null && markedStarts.Count() > 0) possibleStarts = markedStarts.ToList();
+                    } else return;
+                }
+                Random rand = new Random();
+                CurrentElement = possibleStarts[rand.Next(0,possibleStarts.Count)];
+            }
         }
 
         public virtual void ExecuteTask(Task task) {

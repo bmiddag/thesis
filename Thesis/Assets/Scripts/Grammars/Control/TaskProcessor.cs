@@ -1,5 +1,8 @@
 ﻿using Grammars.Events;
 using Grammars.Graphs;
+using Grammars.Tiles;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -37,12 +40,119 @@ namespace Grammars {
             } else return null;
         }
 
-        // Example task processor methods are listed below
-        
-        public static void GraphTraverser_NextElement(IGrammarEventHandler container, Task task) {
+        // Example task processor methods are below
+        public static void TileTraverser_NextElement(IGrammarEventHandler container, Task task, string linkName) {
+            if (task == null) return;
+            AttributedElement currentElement = null;
+            Traverser<TileGrid> traverser = (Traverser<TileGrid>)container;
+            TileGrid source = traverser.Source;
+            if (source != null) {
+                currentElement = traverser.CurrentElement;
+                if (currentElement == null) {
+                    traverser.SetFirstElement();
+                    currentElement = traverser.CurrentElement;
+                }
+                if (currentElement != null) {
+                    if (currentElement.HasAttribute("placeholder")) {
+                        traverser.GenerateMore();
+                        currentElement = traverser.CurrentElement;
+                    }
+                    if (currentElement == null || currentElement.HasAttribute("placeholder")) {
+                        TileTraverser_NextElement(container, task, linkName);
+                        return;
+                    } else {
+                        // Go one step further
+                        // We assume current element is a tile
+                        Tile currentTile = (Tile)currentElement;
+                        IDictionary<string, Tile> neighbors = currentTile.GetNeighbors();
+                        List<AttributedElement> targets = new List<AttributedElement>();
+                        foreach (KeyValuePair<string, Tile> pair in neighbors) {
+                            if (task.HasAttribute("neighborSelector")) {
+                                string sel = task.GetAttribute("neighborselector");
+                                if (sel != null && !sel.Contains(pair.Key)) continue;
+                            }
+                            if (!pair.Value.HasLink(linkName) || pair.Value.HasAttribute("placeholder")) targets.Add(pair.Value);
+                        }
+                        if (task.HasAttribute("tileSelector")) {
+                            List<AttributedElement> nextEls = StringEvaluator.SelectElementsFromList(targets, task["tileSelector"]);
+                            if (nextEls.Count > 0) targets = nextEls;
+                        }
+                        if (targets.Count == 0) {
+                            traverser.GenerateMore();
+                            TileTraverser_NextElement(container, task, linkName);
+                            return;
+                        } else {
+                            Random rand = new Random();
+                            currentElement = targets[rand.Next(0, targets.Count)];
+                            traverser.CurrentElement = currentElement;
+                            if (currentElement == null || currentElement.HasAttribute("placeholder")) {
+                                TileTraverser_NextElement(container, task, linkName);
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+            task.AddReply(currentElement);
+        }
+
+        public static void GraphTraverser_NextElement(IGrammarEventHandler container, Task task, string linkName) {
+            if (task == null) return;
+            AttributedElement currentElement = null;
             Traverser<Graph> traverser = (Traverser<Graph>)container;
             Graph source = traverser.Source;
-            AttributedElement currentElement = traverser.CurrentElement;
+            if (source != null) {
+                currentElement = traverser.CurrentElement;
+                if (currentElement == null) {
+                    traverser.SetFirstElement();
+                    currentElement = traverser.CurrentElement;
+                }
+                if (currentElement != null) {
+                    if (currentElement.HasAttribute("placeholder")) {
+                        traverser.GenerateMore();
+                        currentElement = traverser.CurrentElement;
+                    }
+                    if (currentElement == null || currentElement.HasAttribute("placeholder")) {
+                        GraphTraverser_NextElement(container, task, linkName);
+                        return;
+                    } else {
+                        // Go one step further
+                        // We assume current element is a node
+                        Node currentNode = (Node)currentElement;
+                        IDictionary<Node, Edge> edges = currentNode.GetEdges();
+                        List<AttributedElement> targets = new List<AttributedElement>();
+                        foreach (KeyValuePair<Node, Edge> pair in edges) {
+                            if ((pair.Value.IsDirected() && currentElement == pair.Value.GetNode1()) || !pair.Value.IsDirected()) {
+                                if (task.HasAttribute("edgeSelector")) {
+                                    List<AttributedElement> edgeEls = new List<AttributedElement>();
+                                    edgeEls.Add(pair.Value);
+                                    edgeEls = StringEvaluator.SelectElementsFromList(edgeEls, task["edgeSelector"]);
+                                    if (edgeEls.Count == 0) continue;
+                                }
+                                if (!pair.Key.HasLink(linkName) || pair.Key.HasAttribute("placeholder")) targets.Add(pair.Key);
+                            }
+                        }
+                        if (task.HasAttribute("nodeSelector")) {
+                            List<AttributedElement> nextEls = StringEvaluator.SelectElementsFromList(targets, task["nodeSelector"]);
+                            if (nextEls.Count > 0) targets = nextEls;
+                        }
+                        if (targets.Count == 0) {
+                            traverser.GenerateMore();
+                            GraphTraverser_NextElement(container, task, linkName);
+                            return;
+                        } else {
+                            Random rand = new Random();
+                            currentElement = targets[rand.Next(0, targets.Count)];
+                            traverser.CurrentElement = currentElement;
+                            if (currentElement == null || currentElement.HasAttribute("placeholder")) {
+                                GraphTraverser_NextElement(container, task, linkName);
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+            task.AddReply(currentElement);
         }
     }
 }
