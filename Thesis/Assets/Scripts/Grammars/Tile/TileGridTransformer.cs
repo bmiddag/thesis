@@ -37,10 +37,21 @@ namespace Grammars.Tiles {
             }
         }
 
+        public object SelectedMatch {
+            get { return selectedOffset; }
+        }
+
+        protected Traverser<TileGrid> traverser = null;
+        public Traverser<TileGrid> Traverser {
+            get { return traverser; }
+            set { traverser = value; }
+        }
+
         public TileGridTransformer() {
             selectedOffset = null;
             findFirst = false;
             rule = null;
+            traverser = null;
         }
 
 		public TilePos GetSelectedOffset() {
@@ -119,6 +130,7 @@ namespace Grammars.Tiles {
                 for (int sX = minSX; sX < maxSX; sX++) {
                     for (int sY = minSY; sY < maxSY; sY++) {
                         bool matched = true;
+                        bool traverserMatched = (Traverser != null && Traverser.CurrentElement != null) ? false : true;
                         foreach (TilePos queryPos in queryTiles) {
                             Tile queryTile = query.GetTile(queryPos.x, queryPos.y);
                             Tile sourceTile = null;
@@ -137,7 +149,9 @@ namespace Grammars.Tiles {
                                     break;
                                 }
                             }
+                            if (!traverserMatched && queryTile.HasAttribute("_grammar_current") && sourceTile == Traverser.CurrentElement) traverserMatched = true;
                         }
+                        if (!traverserMatched) matched = false;
                         if (matched) {
                             TilePos match = new TilePos(sX, sY, rotation: curRot);
                             matches.Add(match);

@@ -12,9 +12,19 @@
         }
 
         /// <summary>
+        /// A generic object representation of the selected match.
+        /// </summary>
+        object SelectedMatch { get; }
+
+        /// <summary>
         /// The rule this structure transformer belongs to (null if it is used outside of a rule).
         /// </summary>
         Rule<T> Rule {
+            get;
+            set;
+        }
+
+        Traverser<T> Traverser {
             get;
             set;
         }

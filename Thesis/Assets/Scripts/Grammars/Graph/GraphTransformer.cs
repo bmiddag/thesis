@@ -35,10 +35,21 @@ namespace Grammars.Graphs {
             }
         }
 
+        public object SelectedMatch {
+            get { return selectedMatch; }
+        }
+
+        protected Traverser<Graph> traverser = null;
+        public Traverser<Graph> Traverser {
+            get { return traverser; }
+            set { traverser = value; }
+        }
+
         public GraphTransformer() {
             selectedMatch = null;
             findFirst = false;
             rule = null;
+            traverser = null;
         }
 
 		public HashSet<Node> GetSelectedNodes() {
@@ -73,7 +84,12 @@ namespace Grammars.Graphs {
             selectedMatch = null;
             matches = new List<Dictionary<Node, Node>>();
             this.query = query;
-            List<Node> queryNodes = query.GetNodes().OrderByDescending(n => n.GetAttributes().Count).ToList(); // start with most specific node
+            List<Node> queryNodes = null;
+            if (Traverser != null) {
+                queryNodes = query.GetNodes().OrderByDescending(n => n.HasAttribute("_grammar_current") ? int.MaxValue : n.GetAttributes().Count).ToList(); // start with most specific node
+            } else {
+                queryNodes = query.GetNodes().OrderByDescending(n => n.GetAttributes().Count).ToList(); // start with most specific node
+            }
             Dictionary<Node, Node> selection = new Dictionary<Node, Node>(); // source, query
 
             // Temporarily turn off events
@@ -83,6 +99,7 @@ namespace Grammars.Graphs {
             foreach (Node startNode in source.GetNodes()) {
                 if (findFirst && matches.Count > 0) continue;
                 if (!MatchAttributes(startNode, queryNodes[0])) continue;
+                if (Traverser != null && Traverser.CurrentElement != null && queryNodes[0].HasAttribute("_grammar_current") && startNode != Traverser.CurrentElement) continue;
                 if (startNode.GetEdges().Count < queryNodes[0].GetEdges().Count) continue;
                 // Is node already marked? (useful when using multiple graph transformers)
                 if (startNode.HasAttribute("_grammar_query_id")) continue;

@@ -39,11 +39,22 @@ namespace Grammars.Events {
             }
         }
 
+        public object SelectedMatch {
+            get { return selectedMatch; }
+        }
+
+        protected Traverser<Task> traverser = null;
+        public Traverser<Task> Traverser {
+            get { return traverser; }
+            set { traverser = value; }
+        }
+
         public TaskTransformer() {
             selectedMatch = null;
             matches = null;
             findFirst = false;
             rule = null;
+            traverser = null;
         }
 
         public void Destroy() {

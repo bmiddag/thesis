@@ -109,6 +109,15 @@ namespace Grammars {
             }
         }
 
+        protected object Find(T query) {
+            IStructureTransformer<T> transformer = Transformer;
+            bool found = transformer.Find(query);
+            if (found) {
+                transformer.Select();
+                return transformer.SelectedMatch;
+            } else return null;
+        }
+
         public virtual void ExecuteTask(Task task) {
             // TODO: put something here...
         }
