@@ -31,7 +31,7 @@ namespace Grammars {
 
         public bool MatchAttributes(AttributedElement el, Dictionary<string, IElementContainer> otherContainers=null, bool raw = false) {
             if (el == null) return true;
-            ICollection<string> otherKeys = el.GetAttributes(true).Keys;
+            ICollection<string> otherKeys = el.GetAttributes(raw: true).Keys;
             if (otherKeys == null || otherKeys.Count == 0) return true;
             bool exactMatch = el.HasAttribute("_grammar_exactmatch");
             bool matchClasses = el.HasAttribute("_grammar_matchclasses");
@@ -112,6 +112,66 @@ namespace Grammars {
                 return "false";
             } else return null;
 		}
+
+        public AttributedElement GetAttributeSource(string key) {
+            if (GetAttribute(key, raw: true) == null) {
+                return null;
+            } else if (attributes.ContainsKey(key)) {
+                AttributedElement src = this;
+                int srcCount = 0;
+                string value = GetAttribute(key, raw: true);
+                foreach (AttributeClass cl in classes) {
+                    if (cl.GetAttribute(key, raw: true) == value) {
+                        AttributedElement newSrc = cl.GetAttributeSource(key);
+                        if (newSrc != null) {
+                            src = newSrc;
+                            srcCount++;
+                        }
+                    }
+                }
+                if (srcCount < 2) { //if 2 classes specify same attribute, then element is source!
+                    return src;
+                } else return this;
+            } else return null;
+        }
+
+        public AttributedElement GetObjectAttributeSource(string key) {
+            if (GetObjectAttribute(key) == null) {
+                return null;
+            } else if (objectAttributes.ContainsKey(key)) {
+                AttributedElement src = this;
+                int srcCount = 0;
+                object value = GetObjectAttribute(key);
+                foreach (AttributeClass cl in classes) {
+                    if (cl.GetObjectAttribute(key) == value) {
+                        AttributedElement newSrc = cl.GetAttributeSource(key);
+                        if (newSrc != null) {
+                            src = newSrc;
+                            srcCount++;
+                        }
+                    }
+                }
+                if (srcCount < 2) { //if 2 classes specify same attribute, then element is source!
+                    return src;
+                } else return this;
+            } else return null;
+        }
+
+        public AttributedElement GetAttributeClassSource(AttributeClass cl) {
+            if (!classes.Contains(cl)) return null;
+            AttributedElement src = this;
+            int srcCount = 0;
+            foreach (AttributeClass cla in classes) {
+                AttributedElement newSrc = cla.GetAttributeClassSource(cl);
+                if (newSrc != null) {
+                    src = newSrc;
+                    srcCount++;
+                }
+            }
+            if (srcCount < 2) { //if 2 classes inherit from same class, then element is source!
+                return src;
+            } else return this;
+        }
 
         public IDictionary<string, List<AttributedElement>> GetLinks() {
             return new Dictionary<string, List<AttributedElement>>(links);
@@ -277,7 +337,7 @@ namespace Grammars {
                     }
                 }
             } else {
-                newAtts = GetAttributes(raw);
+                newAtts = GetAttributes(raw: raw);
             }
             // Copy attributes
             foreach (KeyValuePair<string, string> entry in newAtts) {
@@ -345,7 +405,7 @@ namespace Grammars {
         public void SetAttributesUsingDifference(AttributedElement source, AttributedElement target, bool notify=true) {
             if (target == null) {
                 classes.ExceptWith(source.GetAttributeClasses());
-                foreach (string key in source.GetAttributes(true).Keys) {
+                foreach (string key in source.GetAttributes(raw: true).Keys) {
                     RemoveAttribute(key, notify:false);
                 }
             } else {
@@ -392,7 +452,20 @@ namespace Grammars {
                     classes.Add(cl);
                 }
                 // Add attributes from top class only
-                SetAttributes(attClass.GetAttributes(), notify);
+                IDictionary<string, string> clAttributes = attClass.GetAttributes();
+                foreach (KeyValuePair<string, string> att in clAttributes) {
+                    if (!HasAttribute(att.Key) || GetAttributeSource(att.Key) != this) {
+                        SetAttribute(att.Key, att.Value);
+                    }
+                }
+                IDictionary<string, object> clObjAttributes = attClass.GetObjectAttributes();
+                foreach (KeyValuePair<string, object> att in clObjAttributes) {
+                    if (!HasObjectAttribute(att.Key) || GetObjectAttributeSource(att.Key) != this) {
+                        SetObjectAttribute(att.Key, att.Value);
+                    }
+                }
+                if (notify) OnAttributeChanged(EventArgs.Empty);
+                //SetAttributes(attClass.GetAttributes(), notify);
             }
         }
 

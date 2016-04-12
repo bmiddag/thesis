@@ -30,9 +30,11 @@ namespace Demo {
             if (el.GetAttributeClasses().Count > 0) {
                 writer.WriteStartElement("AttributeClasses");
                 foreach (AttributeClass cl in el.GetAttributeClasses()) {
-                    writer.WriteStartElement("AttributeClass");
-                    writer.WriteAttributeString("name", cl.GetName());
-                    writer.WriteEndElement();
+                    if (el.GetAttributeClassSource(cl) == el) {
+                        writer.WriteStartElement("AttributeClass");
+                        writer.WriteAttributeString("name", cl.GetName());
+                        writer.WriteEndElement();
+                    }
                 }
                 writer.WriteEndElement();
             }
@@ -41,10 +43,12 @@ namespace Demo {
             if (el.GetAttributes(raw:true).Count > 0) {
                 writer.WriteStartElement("Attributes");
                 foreach (KeyValuePair<string, string> att in el.GetAttributes(raw:true)) {
-                    writer.WriteStartElement("Attribute");
-                    writer.WriteAttributeString("key", att.Key);
-                    writer.WriteAttributeString("value", att.Value);
-                    writer.WriteEndElement();
+                    if (el.GetAttributeSource(att.Key) == el) {
+                        writer.WriteStartElement("Attribute");
+                        writer.WriteAttributeString("key", att.Key);
+                        writer.WriteAttributeString("value", att.Value);
+                        writer.WriteEndElement();
+                    }
                 }
                 writer.WriteEndElement();
             }
