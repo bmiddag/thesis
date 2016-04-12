@@ -39,8 +39,13 @@ namespace Grammars.Events {
             }
         }
 
-        public object SelectedMatch {
-            get { return selectedMatch; }
+        public IDictionary<string, AttributedElement> SelectedMatch {
+            get {
+                Dictionary<string, AttributedElement> dict = new Dictionary<string, AttributedElement>();
+                if (source == null || query == null || selectedMatch == null || !selectedMatch.Success) return dict;
+                dict.Add("query", source);
+                return dict;
+            }
         }
 
         protected Traverser<Task> traverser = null;

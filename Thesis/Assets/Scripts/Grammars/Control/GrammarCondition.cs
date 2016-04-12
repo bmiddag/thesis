@@ -97,5 +97,35 @@ namespace Grammars {
         public static bool SumAttribute<T>(Grammar<T> grammar, string selector, string attrName, string cmpOperation, double number) where T : StructureModel {
             return AggregateOperation(grammar, selector, attrName, "SUM", cmpOperation, number);
         }
+
+        public static bool TraverserMatch<T>(Grammar<T> grammar, string traverser, string queryName) where T : StructureModel {
+            Dictionary<string, string> parameters = new Dictionary<string, string>();
+            parameters.Add("query", queryName);
+            List<object> replies;
+
+            if (grammar.GetListener(traverser) != null) {
+                replies = grammar.SendGrammarEvent("CheckMatch",
+                    replyExpected: true,
+                    source: grammar,
+                    targets: new string[] { traverser },
+                    stringParameters: parameters);
+            } else {
+                replies = grammar.SendGrammarEvent(traverser + ".CheckMatch",
+                    replyExpected: true,
+                    source: grammar,
+                    targets: new string[] { "controller" },
+                    stringParameters: parameters);
+            }
+            if (replies == null || replies.Count == 0) {
+                // Error
+                return false;
+            } else if (replies[0] != null) {
+                return true;
+            } else return false;
+        }
+
+        public static bool TaskMatch<T>(Grammar<T> grammar, string taskName) where T : StructureModel {
+            return (grammar.CurrentTask != null && grammar.CurrentTask.Action == taskName);
+        }
     }
 }

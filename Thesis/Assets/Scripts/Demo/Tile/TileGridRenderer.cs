@@ -46,37 +46,6 @@ namespace Demo {
             }
         }
 
-        IEnumerator FindTransform() {
-            TileGrid query = new TileGrid(4, 3);
-            TileGrid target = new TileGrid(4, 3);
-
-            for (int x = 0; x < 4; x++) {
-                for (int y = 0; y < 3; y++) {
-                    if (x != 3) {
-                        Tile tile = new Tile(query, x, y);
-                        if (x == y) tile.SetAttribute("_demo_color", "blue");
-                    }
-                    if (x != 0) {
-                        Tile tarTile = new Tile(target, x, y);
-                        if(x-1 == y) tarTile.SetAttribute("_demo_color", "blue");
-                    }
-                }
-            }
-
-            TileGridTransformer t = new TileGridTransformer();
-            t.Source = grid;
-            bool found = t.Find(query);
-            if (found) {
-                print("Found it!");
-                //print(t.);
-            } else {
-                print("Not found");
-            }
-            //yield return new WaitForSeconds(2);
-            if(found) t.Transform(target);
-            yield return null;
-        }
-
         // Use this for initialization
         void Start() {
             controller.RegisterStructureRenderer(this);
@@ -133,11 +102,11 @@ namespace Demo {
                     grid.SetGridSize(w, h-1, 0, 0);
                 }
 
-                if (!controller.paused) {
+                /*if (!controller.paused) {
                     if (Input.GetKeyDown(KeyCode.F)) {
                         StartCoroutine("FindTransform");
                     }
-                }
+                }*/
             }
 		}
 

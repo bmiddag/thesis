@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 using System.Collections;
 using Grammars.Events;
 using System.Threading;
+using System;
 
 namespace Demo {
     public class DemoController : MonoBehaviour, IGrammarEventHandler {
@@ -305,6 +306,12 @@ namespace Demo {
             if (handler == null) return;
             if (name == null) name = handler.Name;
             listeners.Add(name, handler);
+        }
+
+        public IGrammarEventHandler GetListener(string name) {
+            if (listeners.ContainsKey(name)) {
+                return listeners[name];
+            } else return null;
         }
     }
 }

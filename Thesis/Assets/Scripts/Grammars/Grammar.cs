@@ -519,5 +519,11 @@ namespace Grammars {
                 return taskProcessors[eventName];
             } else return null;
         }
+
+        public IGrammarEventHandler GetListener(string name) {
+            if (listeners.ContainsKey(name)) {
+                return listeners[name];
+            } else return null;
+        }
     }
 }

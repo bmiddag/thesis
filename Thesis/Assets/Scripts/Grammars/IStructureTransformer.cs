@@ -1,4 +1,6 @@
-﻿namespace Grammars {
+﻿using System.Collections.Generic;
+
+namespace Grammars {
     /// <summary>
     /// Abstract class for transforming a substructure (e.g. subgraph, a group of tiles, etc.) into another structure.
     /// </summary>
@@ -12,9 +14,9 @@
         }
 
         /// <summary>
-        /// A generic object representation of the selected match.
+        /// A dictionary representation of the selected match.
         /// </summary>
-        object SelectedMatch { get; }
+        IDictionary<string, AttributedElement> SelectedMatch { get; }
 
         /// <summary>
         /// The rule this structure transformer belongs to (null if it is used outside of a rule).

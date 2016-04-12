@@ -112,7 +112,7 @@ namespace Grammars {
             }
         }
 
-        protected object Find(T query) {
+        protected IDictionary<string, AttributedElement> Find(T query) {
             IStructureTransformer<T> transformer = Transformer;
             bool found = transformer.Find(query);
             if (found) {
@@ -134,8 +134,10 @@ namespace Grammars {
                 case "Match":
                 case "Find":
                     if (task.HasAttribute("query") && GetQuery(task["query"]) != null) {
-                        object matches = Find(GetQuery(task["query"]));
+                        IDictionary<string, AttributedElement> matches = Find(GetQuery(task["query"]));
                         task.AddReply(matches);
+                    } else {
+                        task.AddReply(null);
                     }
                     break;
             }
@@ -308,6 +310,12 @@ namespace Grammars {
         public TaskProcessor GetTaskProcessor(string eventName) {
             if (taskProcessors.ContainsKey(eventName)) {
                 return taskProcessors[eventName];
+            } else return null;
+        }
+
+        public IGrammarEventHandler GetListener(string name) {
+            if (listeners.ContainsKey(name)) {
+                return listeners[name];
             } else return null;
         }
     }

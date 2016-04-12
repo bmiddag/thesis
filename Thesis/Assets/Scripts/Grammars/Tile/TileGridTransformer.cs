@@ -21,9 +21,7 @@ namespace Grammars.Tiles {
         List<TilePos> matches;
 
         public TileGrid Source {
-            get {
-                return source;
-            }
+            get { return source; }
             set {
                 if (source != value) {
                     if (matches != null) {
@@ -37,8 +35,33 @@ namespace Grammars.Tiles {
             }
         }
 
-        public object SelectedMatch {
-            get { return selectedOffset; }
+        public IDictionary<string, AttributedElement> SelectedMatch {
+            get {
+                Dictionary<string, AttributedElement> dict = new Dictionary<string, AttributedElement>();
+                if (source == null || query == null || selectedOffset == null) return dict;
+                int w = query.GetGridSize().x;
+                int h = query.GetGridSize().y;
+                int sX = selectedOffset.x;
+                int sY = selectedOffset.y;
+                int rot = selectedOffset.Rotation;
+                for (int x = 0; x < w; x++) {
+                    for (int y = 0; y < h; y++) {
+                        int curSX = sX + x; int curSY = sY + y;
+                        switch (rot) {
+                            case 0: curSX = sX + x; curSY = sY + y; break;
+                            case 1: curSX = sX - y; curSY = sY + x; break;
+                            case 2: curSX = sX - x; curSY = sY - y; break;
+                            case 3: curSX = sX + y; curSY = sY - x; break;
+                        }
+                        Tile sourceTile = source.GetTile(curSX, curSY);
+                        Tile queryTile = query == null ? null : query.GetTile(x, y);
+                        if (queryTile != null) {
+                            dict.Add(x + "#" + y, sourceTile);
+                        }
+                    }
+                }
+                return dict;
+            }
         }
 
         protected Traverser<TileGrid> traverser = null;

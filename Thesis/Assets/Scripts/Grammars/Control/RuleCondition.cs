@@ -1,4 +1,7 @@
-﻿using System.Linq;
+﻿using Grammars.Graphs;
+using Grammars.Tiles;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace Grammars {
@@ -39,5 +42,60 @@ namespace Grammars {
         }
 
         // Example rule conditions are listed here
+
+        // AND-result of 2 conditions
+        public static bool And<T>(Rule<T> rule, RuleCondition cond1, RuleCondition cond2) where T : StructureModel {
+            return (cond1.Check() && cond2.Check());
+        }
+
+        // OR-result of 2 conditions
+        public static bool Or<T>(Rule<T> rule, RuleCondition cond1, RuleCondition cond2) where T : StructureModel {
+            return (cond1.Check() || cond2.Check());
+        }
+
+        // NOT-result of a condition
+        public static bool Not<T>(Rule<T> rule, RuleCondition cond) where T : StructureModel {
+            return !cond.Check();
+        }
+
+        public static bool TraverserMatch<T>(Rule<T> rule, string traverser, string queryName) where T : StructureModel {
+            Grammar<T> grammar = rule.Grammar;
+            Dictionary<string, string> parameters = new Dictionary<string, string>();
+            parameters.Add("query", queryName);
+            List<object> replies;
+
+            if (grammar.GetListener(traverser) != null) {
+                replies = grammar.SendGrammarEvent("CheckMatch",
+                    replyExpected: true,
+                    source: grammar,
+                    targets: new string[] { traverser },
+                    stringParameters: parameters);
+            } else {
+                replies = grammar.SendGrammarEvent(traverser + ".CheckMatch",
+                    replyExpected: true,
+                    source: grammar,
+                    targets: new string[] { "controller" },
+                    stringParameters: parameters);
+            }
+            if (replies != null && replies.Count > 0 && replies[0] != null) {
+                object match = replies[0];
+                rule.SetObjectAttribute(traverser, match);
+                if(typeof(IDictionary<string, AttributedElement>).IsAssignableFrom(match.GetType())) {
+                    IDictionary<string, AttributedElement> matchDict = (IDictionary<string, AttributedElement>)match;
+                    foreach (KeyValuePair<string, AttributedElement> pair in matchDict) {
+                        rule.SetObjectAttribute(traverser + pair.Key, pair.Value);
+                    }
+                }
+                return true;
+            } else {
+                rule.RemoveAttribute(traverser);
+                return false;
+            }
+        }
+
+        public static bool TaskMatch<T>(Rule<T> rule, string taskName) where T : StructureModel {
+            Grammar<T> grammar = rule.Grammar;
+            return (grammar.CurrentTask != null && grammar.CurrentTask.Action == taskName);
+        }
     }
 }

@@ -37,16 +37,11 @@ namespace Demo {
         }
 
         public StructureModel Source {
-            get {
-                return graph;
-            }
+            get { return graph; }
         }
 
         public IGrammarEventHandler Grammar {
-            get {
-                return grammar;
-            }
-
+            get { return grammar; }
             set {
                 if (value == null) {
                     grammar = null;
@@ -56,56 +51,6 @@ namespace Demo {
                     print("Wrong grammar type for this demo renderer.");
                 }
             }
-        }
-
-        IEnumerator FindTransform() {
-            Graph query = new Graph();
-            Graph target = new Graph();
-
-            // Test graph
-            Node queryNode1 = new Node(query, 1);
-            controller.AddAttributeClass(queryNode1, "white_circles");
-
-            Node targetNode1 = new Node(target, 1);
-            controller.AddAttributeClass(targetNode1, "blue_squares");
-            targetNode1.SetAttribute("transformed", "true");
-
-            Node queryNode2 = new Node(query, 2);
-            controller.AddAttributeClass(queryNode2, "blue_squares");
-
-            Node targetNode2 = new Node(target, 2);
-            controller.AddAttributeClass(targetNode2, "white_circles");
-            targetNode2.SetAttribute("transformed", "true");
-
-            Node targetNode3 = new Node(target, 3);
-            controller.AddAttributeClass(targetNode3, "yellow_triangles");
-            //targetNode3.SetAttribute("transformed", "true");
-
-            Node queryNode4 = new Node(query, 4);
-            controller.AddAttributeClass(queryNode4, "yellow_triangles");
-
-            Edge queryEdge = new Edge(query, queryNode2, queryNode1, true);
-            Edge queryEdge2 = new Edge(query, queryNode4, queryNode2, false);
-            Edge targetEdge = new Edge(target, targetNode2, targetNode1, true);
-            Edge targetEdge2 = new Edge(target, targetNode1, targetNode3, false);
-            targetEdge["transformed"] = "true";
-            targetEdge["_demo_color"] = "blue";
-
-            GraphTransformer t = new GraphTransformer();
-            t.Source = graph;
-            bool found = t.Find(query);
-            if (found) {
-                print("Found it!");
-                //print(t.nodeTransformations.Count);
-            } else {
-                print("Not found");
-            }
-            //yield return new WaitForSeconds(2);
-            if (found) {
-                t.Select();
-                t.Transform(target);
-            }
-            yield return null;
         }
 
         // Use this for initialization
@@ -199,11 +144,11 @@ namespace Demo {
                     Destroy(drawingEdgeRenderer.gameObject);
                 }
 
-                if (!controller.paused) {
+                /*if (!controller.paused) {
                     if (Input.GetKeyDown(KeyCode.F)) {
                         StartCoroutine("FindTransform");
                     }
-                }
+                }*/
             }
 		}
 

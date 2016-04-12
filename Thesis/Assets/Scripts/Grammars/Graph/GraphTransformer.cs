@@ -35,8 +35,15 @@ namespace Grammars.Graphs {
             }
         }
 
-        public object SelectedMatch {
-            get { return selectedMatch; }
+        public IDictionary<string, AttributedElement> SelectedMatch {
+            get {
+                Dictionary<string, AttributedElement> dict = new Dictionary<string, AttributedElement>();
+                if (source == null || query == null || selectedMatch == null || selectedMatch.Count == 0) return dict;
+                foreach (KeyValuePair<Node, Node> pair in selectedMatch) {
+                    dict.Add("query_" + pair.Value.GetID(), pair.Key);
+                }
+                return dict;
+            }
         }
 
         protected Traverser<Graph> traverser = null;
