@@ -166,7 +166,7 @@ namespace Grammars.Graphs {
                     // Get the query node that matches this marked source node
                     Node markedQueryNode = selection.Values.Where(n => (n.GetID().ToString() == markedNode["_grammar_query_id"])).First();
                     Edge sourceEdge = node.GetEdges()[markedNode];
-                    Edge queryEdge = queryNode.GetEdges()[markedQueryNode];
+                    Edge queryEdge = queryNode.GetEdges().ContainsKey(markedQueryNode) ? queryNode.GetEdges()[markedQueryNode] : null;
                     if (queryEdge == null) {
                         edgesValid = false;
                         break;
@@ -186,10 +186,13 @@ namespace Grammars.Graphs {
                 // add number attribute && add to selection
                 node.SetAttribute("_grammar_query_id", queryNode.GetID().ToString());
                 selection.Add(node, queryNode);
-                bool partlyMatched = _Find(node, queryNode, selection);
+                
+                // Copy selection and create remaining query/source nodes lists
+                Dictionary<Node, Node> selectionCopy = new Dictionary<Node, Node>(selection); // source, query
+                bool partlyMatched = _Find(node, queryNode, selectionCopy);
                 if (partlyMatched) {
                     // Copy selection and create remaining query/source nodes lists
-                    Dictionary<Node, Node> selectionCopy = new Dictionary<Node, Node>(selection); // source, query
+                    //Dictionary<Node, Node> selectionCopy = new Dictionary<Node, Node>(selection); // source, query
 
                     partlyMatched = _Find(currentSourceNode, currentQueryNode, selectionCopy);
                     if (partlyMatched) {
@@ -296,8 +299,8 @@ namespace Grammars.Graphs {
                             }
                         }
                         if (targetEdge == null) {
-                            // Delete that edge in the source graph.
-                            sourceEdge.Destroy();
+                            // Delete that edge in the source graph (may already have been destroyed by nodes being deleted).
+                            if(sourceEdge != null) sourceEdge.Destroy();
                         } else {
                             // Copy difference in attributes between query & target to source edge.
                             SetAttributesUsingDifference(sourceEdge, queryEdge, targetEdge);

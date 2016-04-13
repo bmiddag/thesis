@@ -149,16 +149,18 @@ namespace Grammars {
             int tempRuleIndex = -1;
             foreach (Rule<T> rule in ruleSet) {
                 rule.Deselect();
-                if(findFirst) rule.Find(Source);
+                if (findFirst) rule.Find(Source);
             }
             // Make a copy of the rule list without the ones that are certain to fail. 
             List<Rule<T>> tempRules = new List<Rule<T>>();
             foreach (Rule<T> rule in ruleSet) {
-                if(rule.CheckCondition() && (!findFirst || rule.HasSelected())) {
+                if (rule.CheckCondition() && (!findFirst || rule.HasSelected())) {
                     tempRules.Add(rule);
+                    UnityEngine.MonoBehaviour.print("[" + Name + "]: Rule matches: " + rule.Name);
                 }
             }
             if (tempRules.Count == 0) {
+                UnityEngine.MonoBehaviour.print("[" + Name + "]: No rules were matched");
                 return false;
             }
 
@@ -242,6 +244,7 @@ namespace Grammars {
             // Select rule
             bool foundRule = SelectRule(new List<Rule<T>>(rules.Values), ruleSelectionController, findAllRules);
             if (foundRule && selectedRule != null) {
+                UnityEngine.MonoBehaviour.print("[" + Name + "]: Applying rule: " + selectedRule.Name);
                 selectedRule.Apply(Source);
             }
             bool foundAny = foundRule;
@@ -254,13 +257,11 @@ namespace Grammars {
                 bool foundConstraint = SelectRule(new List<Rule<T>>(selectedConstraint.GetRules().Values), selectedConstraint.Selector, selectedConstraint.FindFirst);
                 foundAny = foundAny || foundConstraint;
                 if (foundConstraint && selectedRule != null) {
-                    UnityEngine.MonoBehaviour.print("Rule found");
                     //if(random.NextDouble() < 0.4) return;
                     selectedRule.Apply(Source);
                     checkedConstraints.Clear(); // List is cleared so this could be an infinite loop if rules are written badly.
                     selectedConstraint = CheckConstraints(checkedConstraints);
                 } else {
-                    UnityEngine.MonoBehaviour.print("No rule found");
                     //if (random.NextDouble() < 0.4) return;
                     checkedConstraints.Add(selectedConstraint);
                     selectedConstraint = CheckConstraints(checkedConstraints);

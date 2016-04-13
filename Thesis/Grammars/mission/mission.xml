@@ -31,25 +31,25 @@
     </Constraint>
   </Constraints>
   <Rules>
-    <Initial probability="0.5">
+    <Initial probability="0.5" name="initial_1">
       <Target>initial_1</Target>
     </Initial>
-    <Initial probability="0.5">
+    <Initial probability="0.5" name="initial_2">
       <Target>initial_2</Target>
     </Initial>
-	<Rule probability="0.1">
+	<Rule probability="0.1" name="enemy_chain">
       <Query>enemy_chain_query</Query>
       <Target>enemy_chain_target</Target>
     </Rule>
-	<Rule probability="0.1">
+	<Rule probability="0.1" name="insert_branch">
       <Query>insert_branch_query</Query>
       <Target>insert_branch_target</Target>
     </Rule>
-	<Rule probability="0.1">
+	<Rule probability="0.1" name="generate_keylock">
       <Query>generate_keylock_query</Query>
       <Target>generate_keylock_target</Target>
     </Rule>
-    <Rule probability="0.3">
+    <Rule probability="0.3" name="add_enemy">
       <Query>add_enemy_query</Query>
       <Target>add_enemy_target</Target>
     </Rule>
@@ -58,15 +58,15 @@
       <Query>linkback_query</Query>
       <Target>linkback_target</Target>
     </Rule>
-    <Rule probability="0.05">
+    <Rule probability="0.05" name="endlevel">
       <Query>endlevel_query</Query>
       <Target>endlevel_target</Target>
     </Rule>
-    <Rule probability="0.25">
+    <Rule probability="0.25" name="improve_pacing">
       <Query>improve_pacing_query</Query>
       <Target>improve_pacing_target</Target>
     </Rule>
-    <Rule probability="0.05">
+    <Rule probability="0.05" name="endbranch">
       <Query>endbranch_query</Query>
       <Target>endbranch_target</Target>
     </Rule>
