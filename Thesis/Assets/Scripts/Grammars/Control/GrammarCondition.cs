@@ -127,5 +127,11 @@ namespace Grammars {
         public static bool TaskMatch<T>(Grammar<T> grammar, string taskName) where T : StructureModel {
             return (grammar.CurrentTask != null && grammar.CurrentTask.Action == taskName);
         }
+
+        public static bool CountElementsProximity<T>(Grammar<T> grammar, string selector, string cmpOperation, double number) where T : StructureModel {
+            // TODO: edit this
+            List<AttributedElement> elements = StringEvaluator.SelectElements(grammar.Source, selector);
+            return StringEvaluator.Compare(cmpOperation, elements.Count, number);
+        }
     }
 }

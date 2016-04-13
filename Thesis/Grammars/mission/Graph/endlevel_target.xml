@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Graph>
+  <Nodes>
+    <Node id="0" hashCode="-2006452224" active="True">
+      <AttributeClasses>
+        <AttributeClass name="boss" />
+      </AttributeClasses>
+      <Attributes />
+    </Node>
+    <Node id="1" hashCode="-1454503168" active="True">
+      <AttributeClasses>
+        <AttributeClass name="end" />
+      </AttributeClasses>
+      <Attributes />
+    </Node>
+    <Node id="2" hashCode="-1301010688" active="True">
+      <AttributeClasses>
+        <AttributeClass name="key" />
+      </AttributeClasses>
+      <Attributes />
+    </Node>
+    <Node id="3" hashCode="1963571456" active="True">
+      <AttributeClasses>
+        <AttributeClass name="lock" />
+      </AttributeClasses>
+      <Attributes />
+    </Node>
+    <Node id="4" hashCode="1603045888" active="True">
+      <AttributeClasses>
+        <AttributeClass name="treasure" />
+      </AttributeClasses>
+      <Attributes />
+    </Node>
+  </Nodes>
+  <Edges>
+    <Edge node1="-2006452224" node2="-1301010688" directed="True" />
+    <Edge node1="-2006452224" node2="1963571456" directed="True" />
+    <Edge node1="1963571456" node2="1603045888" directed="True" />
+    <Edge node1="1963571456" node2="-1454503168" directed="True" />
+  </Edges>
+</Graph>

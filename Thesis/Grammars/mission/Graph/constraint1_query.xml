@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Graph>
+  <Nodes>
+    <Node id="0" hashCode="-2061600768" active="True" />
+    <Node id="1" hashCode="-1421292288" active="True">
+      <AttributeClasses>
+        <AttributeClass name="enemy" />
+      </AttributeClasses>
+      <Attributes>
+        <Attribute key="visited" value="_grammar_nomatch" />
+      </Attributes>
+    </Node>
+    <Node id="2" hashCode="1194870784" active="True" />
+  </Nodes>
+  <Edges>
+    <Edge node1="-2061600768" node2="-1421292288" directed="True" />
+    <Edge node1="-1421292288" node2="1194870784" directed="True" />
+  </Edges>
+</Graph>

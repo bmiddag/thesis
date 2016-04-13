@@ -19,9 +19,7 @@ namespace Demo {
         bool updateRenderer = false; // If true, sprite & text will be updated during the next call of Update(). Prevents chaining of renderer updates.
 
         public AttributedElement Element {
-            get {
-                return node;
-            }
+            get { return node; }
         }
 
         // Use this for initialization
@@ -153,14 +151,33 @@ namespace Demo {
         // ************************** NODE RENDERING CODE ************************** \\
         void UpdateSprite() {
 			if (node != null) {
-                if (node.HasAttribute("_demo_shape")) {
+                if (node.HasAttribute("_demo_image")) {
+                    string image = node.GetAttribute("_demo_image");
+                    string upperImage = char.ToUpper(image[0]) + image.Substring(1);
+                    spriteRender.sprite = Resources.Load<Sprite>("Sprites/Images/" + upperImage);
+                } else if (node.HasAttribute("_demo_shape")) {
                     string shape = node.GetAttribute("_demo_shape");
                     string upperShape = char.ToUpper(shape[0]) + shape.Substring(1);
-                    spriteRender.sprite = Resources.Load<Sprite>("Sprites/" + upperShape);
+                    spriteRender.sprite = Resources.Load<Sprite>("Sprites/Shapes/" + upperShape);
                 } else {
-                    spriteRender.sprite = Resources.Load<Sprite>("Sprites/Circle");
+                    spriteRender.sprite = Resources.Load<Sprite>("Sprites/Shapes/Circle");
                 }
-                if (node.HasAttribute("_demo_color")) {
+                if (node.HasAttribute("_demo_size")) {
+                    string size = node.GetAttribute("_demo_size");
+                    switch (size) {
+                        case "big":
+                        case "large":
+                            transform.localScale = new Vector3(1.4f, 1.4f, 1f);
+                            break;
+                        case "small":
+                            transform.localScale = new Vector3(0.6f, 0.6f, 1f);
+                            break;
+                        default:
+                            transform.localScale = new Vector3(1f, 1f, 1f);
+                            break;
+                    }
+                }
+                if (node.HasAttribute("_demo_color") && !node.HasAttribute("_demo_image")) {
                     string color = node.GetAttribute("_demo_color");
                     switch (color) {
                         case "red":
@@ -186,13 +203,45 @@ namespace Demo {
 		}
 
         void UpdateText() {
+            // Handle gameobject changes
             if (text == null) {
-                text = gameObject.AddComponent<Text>();
-                text.color = Color.black;
-                text.font = Font.CreateDynamicFontFromOSFont("Arial", 24);
-                text.fontSize = 24;
-                text.alignment = TextAnchor.MiddleCenter;
+                text = new GameObject("Node " + node.GetID().ToString() + ": Index").AddComponent<Text>();
+                text.transform.SetParent(transform);
+                text.transform.localPosition = new Vector3(0, 0);
+                RectTransform rt = text.GetComponent<RectTransform>();
+                if (rt != null) {
+                    rt.sizeDelta = new Vector2(75, 75);
+                }
+                text.color = new Color(0.2f, 0.2f, 0.2f);
+                text.font = Font.CreateDynamicFontFromOSFont("Arial", 14);
+                text.fontSize = 14;
+                text.alignment = TextAnchor.LowerRight;
             }
+            /*if (node != null && node.HasAttribute("_demo_image")) {
+                if (text == null || text.gameObject == gameObject) {
+                    if (text != null) Destroy(text);
+                    text = new GameObject("Node " + node.GetID().ToString() + ": Index").AddComponent<Text>();
+                    text.transform.SetParent(transform);
+                    text.transform.localPosition = new Vector3(0, 0);
+                    RectTransform rt = text.GetComponent<RectTransform>();
+                    if (rt != null) {
+                        rt.sizeDelta = new Vector2(75, 75);
+                    }
+                    text.color = Color.gray;
+                    text.font = Font.CreateDynamicFontFromOSFont("Arial", 14);
+                    text.fontSize = 14;
+                    text.alignment = TextAnchor.LowerRight;
+                }
+            } else {
+                if (text == null || text.gameObject != gameObject) {
+                    if (text != null) Destroy(text.gameObject);
+                    text = gameObject.AddComponent<Text>();
+                    text.color = Color.black;
+                    text.font = Font.CreateDynamicFontFromOSFont("Arial", 24);
+                    text.fontSize = 24;
+                    text.alignment = TextAnchor.MiddleCenter;
+                }
+            }*/
             if (node != null) {
                 text.text = node.GetID().ToString();
                 gameObject.name = "Node " + node.GetID().ToString();

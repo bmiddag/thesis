@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Linq.Dynamic;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Linq.Expressions;
 using Grammars.Events;
 
 namespace Grammars {
@@ -48,7 +45,7 @@ namespace Grammars {
         private static string ParseExpression(string expression) {
             // attributes start with # and end with whitespace, #, ), +, -, (, *, or = (previously . was included)
             string expandedExpression = Regex.Replace(expression, @"Has\(#(?<attName>[^\s\#\)\+\-\(\*=]+)\)", "HasAttribute(\"${attName}\")");
-            expandedExpression = Regex.Replace(expression, @"d\(#(?<attName>[^\s\#\)\+\-\(\*\.=]+)\)",
+            expandedExpression = Regex.Replace(expandedExpression, @"d\(#(?<attName>[^\s\#\)\+\-\(\*=]+)\)",
                 "(HasAttribute(\"${attName}\") ? double.Parse(GetAttribute(\"${attName}\")) : -1)");
             expandedExpression = Regex.Replace(expandedExpression, @"#(?<attName>[^\s\#\)\+\-\(\*=]+)", "GetAttribute(\"${attName}\")");
             UnityEngine.MonoBehaviour.print(expandedExpression);

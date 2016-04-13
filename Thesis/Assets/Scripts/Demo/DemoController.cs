@@ -218,6 +218,7 @@ namespace Demo {
             DemoIO dirSerializer = new DemoIO(dirName, this);
             List<string> grammars = dirSerializer.GetSubDirectories();
             foreach (string grmName in grammars) {
+                if (grmName != "mission") continue; // TODO
                 print("Loading grammar: " + grmName);
                 string filename = dirName + grmName + "/" + grmName + ".xml";
                 DemoIO serializer = new DemoIO(filename, this);

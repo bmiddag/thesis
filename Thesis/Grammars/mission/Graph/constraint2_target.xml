@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Graph>
+  <Nodes>
+    <Node id="2" hashCode="180801792" active="True">
+      <AttributeClasses>
+        <AttributeClass name="treasure" />
+      </AttributeClasses>
+      <Attributes>
+        <Attribute key="const_shortpath" value="1" />
+      </Attributes>
+    </Node>
+    <Node id="0" hashCode="1556345600" active="True" />
+  </Nodes>
+  <Edges>
+    <Edge node1="1556345600" node2="180801792" directed="True" />
+  </Edges>
+</Graph>

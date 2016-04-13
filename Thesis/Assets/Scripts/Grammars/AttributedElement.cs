@@ -43,7 +43,10 @@ namespace Grammars {
                     // Ignore _grammar_ attributes, but use them for selection properties
                 } else {
                     // if (!HasAttribute(otherAtt) || GetAttribute(otherAtt, raw) != el.GetAttribute(otherAtt, raw)) {
-                    if (GetAttribute(otherAtt, raw) != el.GetAttribute(otherAtt, raw)) {
+                    if(el.GetAttribute(otherAtt, raw) == "_grammar_nomatch" && GetAttribute(otherAtt, raw) != null) {
+                        attsMatched = false;
+                        if (!noMatch) return false;
+                    } else if (GetAttribute(otherAtt, raw) != el.GetAttribute(otherAtt, raw)) {
                         attsMatched = false;
                         if(!noMatch) return false;
                     } else if (exactMatch && noMatch) {

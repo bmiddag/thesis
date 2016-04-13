@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Graph>
+  <Nodes>
+    <Node id="0" hashCode="1599795712" active="True" />
+    <Node id="1" hashCode="127909376" active="True">
+      <AttributeClasses>
+        <AttributeClass name="open" />
+      </AttributeClasses>
+      <Attributes>
+        <Attribute key="const_shortpath" value="1" />
+      </Attributes>
+    </Node>
+    <Node id="2" hashCode="728607744" active="True" />
+    <Node id="3" hashCode="-622209536" active="True">
+      <AttributeClasses>
+        <AttributeClass name="lock" />
+      </AttributeClasses>
+      <Attributes />
+    </Node>
+    <Node id="4" hashCode="-1923647744" active="True">
+      <AttributeClasses>
+        <AttributeClass name="open" />
+      </AttributeClasses>
+      <Attributes>
+        <Attribute key="const_shortpath" value="1" />
+      </Attributes>
+    </Node>
+    <Node id="5" hashCode="-1753635328" active="True">
+      <AttributeClasses>
+        <AttributeClass name="key" />
+      </AttributeClasses>
+      <Attributes />
+    </Node>
+  </Nodes>
+  <Edges>
+    <Edge node1="1599795712" node2="127909376" directed="True" />
+    <Edge node1="1599795712" node2="-1923647744" directed="True" />
+    <Edge node1="127909376" node2="-622209536" directed="True" />
+    <Edge node1="-622209536" node2="728607744" directed="True" />
+    <Edge node1="-1923647744" node2="-1753635328" directed="True" />
+  </Edges>
+</Graph>

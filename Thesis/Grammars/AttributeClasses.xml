@@ -22,44 +22,47 @@
   <!-- MISSION ATTRIBUTE CLASSES -->
   <AttClass name="enemy">
     <Attributes>
-      <Attribute key="_demo_shape" value="triangle" />
-      <Attribute key="_demo_color" value="red" />
+	  <Attribute key="_demo_image" value="enemy" />
+	  <Attribute key="enemy" value="true" />
+    </Attributes>
+  </AttClass>
+  <AttClass name="boss">
+    <Attributes>
+	  <Attribute key="_demo_image" value="enemy" />
+	  <Attribute key="_demo_size" value="large" />
+	  <Attribute key="boss" value="true" />
     </Attributes>
   </AttClass>
   <AttClass name="open">
     <Attributes>
-      <Attribute key="_demo_shape" value="circle" />
-      <Attribute key="_demo_color" value="black" />
+	  <Attribute key="_demo_image" value="unknown" />
+	  <Attribute key="unknown" value="true" />
     </Attributes>
   </AttClass>
   <AttClass name="treasure">
     <Attributes>
-      <Attribute key="_demo_shape" value="circle" />
-      <Attribute key="_demo_color" value="green" />
+      <Attribute key="_demo_image" value="treasure" />
+	  <Attribute key="const_branch" value="-0.5" />
     </Attributes>
   </AttClass>
   <AttClass name="key">
     <Attributes>
-      <Attribute key="_demo_shape" value="triangle" />
-      <Attribute key="_demo_color" value="yellow" />
+	  <Attribute key="_demo_image" value="key" />
     </Attributes>
   </AttClass>
   <AttClass name="lock">
     <Attributes>
-      <Attribute key="_demo_shape" value="triangle" />
-      <Attribute key="_demo_color" value="black" />
+	  <Attribute key="_demo_image" value="lock" />
     </Attributes>
   </AttClass>
   <AttClass name="start">
     <Attributes>
-      <Attribute key="_demo_shape" value="square" />
-      <Attribute key="_demo_color" value="green" />
+	  <Attribute key="_demo_image" value="start" />
     </Attributes>
   </AttClass>
   <AttClass name="end">
     <Attributes>
-      <Attribute key="_demo_shape" value="square" />
-      <Attribute key="_demo_color" value="blue" />
+	  <Attribute key="_demo_image" value="stop" />
     </Attributes>
   </AttClass>
 </AttributeClasses>

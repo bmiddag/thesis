@@ -84,14 +84,33 @@ namespace Demo {
         // ************************** NODE RENDERING CODE ************************** \\
         void UpdateSprite() {
 			if (tile != null) {
-                if (tile.HasAttribute("_demo_shape")) {
+                if (tile.HasAttribute("_demo_image")) {
+                    string image = tile.GetAttribute("_demo_image");
+                    string upperImage = char.ToUpper(image[0]) + image.Substring(1);
+                    spriteRender.sprite = Resources.Load<Sprite>("Sprites/Images/" + upperImage);
+                } else if (tile.HasAttribute("_demo_shape")) {
                     string shape = tile.GetAttribute("_demo_shape");
                     string upperShape = char.ToUpper(shape[0]) + shape.Substring(1);
-                    spriteRender.sprite = Resources.Load<Sprite>("Sprites/" + upperShape);
+                    spriteRender.sprite = Resources.Load<Sprite>("Sprites/Shapes/" + upperShape);
                 } else {
-                    spriteRender.sprite = Resources.Load<Sprite>("Sprites/Square");
+                    spriteRender.sprite = Resources.Load<Sprite>("Sprites/Shapes/Square");
                 }
-                if (tile.HasAttribute("_demo_color")) {
+                if (tile.HasAttribute("_demo_size")) {
+                    string size = tile.GetAttribute("_demo_size");
+                    switch (size) {
+                        case "big":
+                        case "large":
+                            transform.localScale = new Vector3(1.4f, 1.4f, 1f);
+                            break;
+                        case "small":
+                            transform.localScale = new Vector3(0.6f, 0.6f, 1f);
+                            break;
+                        default:
+                            transform.localScale = new Vector3(1f, 1f, 1f);
+                            break;
+                    }
+                }
+                if (tile.HasAttribute("_demo_color") && !tile.HasAttribute("_demo_image")) {
                     string color = tile.GetAttribute("_demo_color");
                     switch (color) {
                         case "red":
