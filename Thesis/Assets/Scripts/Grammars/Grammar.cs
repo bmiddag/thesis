@@ -224,12 +224,16 @@ namespace Grammars {
         }
 
         public virtual void Loop(int wait = 0) {
-            while (!threadStop) {
-                lock (taskQueue) {
-                    while(taskQueue.Count == 0) Monitor.Wait(taskQueue);
-                    Update();
+            try {
+                while (!threadStop) {
+                    lock (taskQueue) {
+                        while (taskQueue.Count == 0) Monitor.Wait(taskQueue);
+                        Update();
+                    }
+                    if (wait > 0) Thread.Sleep(wait);
                 }
-                if (wait > 0) Thread.Sleep(wait);
+            } catch (Exception e) {
+                UnityEngine.Debug.LogError(e.Message + e.StackTrace);
             }
         }
 

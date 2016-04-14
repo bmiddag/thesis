@@ -384,7 +384,7 @@ namespace Grammars {
                 }
             }
             foreach (KeyValuePair<string, string> entry in tempNewAtts) {
-                newAtts.Add(entry.Key, entry.Value);
+                if(!newAtts.ContainsKey(entry.Key)) newAtts.Add(entry.Key, entry.Value);
             }
             if (!newAtts.ContainsKey("_grammar_keep")) {
                 tempNewAtts = new Dictionary<string, string>(newAtts);
