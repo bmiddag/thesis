@@ -24,7 +24,9 @@
       <AttributeClasses>
         <AttributeClass name="open" />
       </AttributeClasses>
-      <Attributes />
+      <Attributes>
+	    <Attribute key="copy$source$rule.matches.query_2$const" value="true" />
+	  </Attributes>
     </Node>
   </Nodes>
   <Edges>

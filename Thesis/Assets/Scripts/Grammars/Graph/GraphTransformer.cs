@@ -151,6 +151,12 @@ namespace Grammars.Graphs {
             if (sourceNodes.Count < queryNodes.Count) return false;
             if (queryNodes.Count == 0) return true; // Nothing else to query along this path => dead end
             Node queryNode = queryNodes.First();
+            bool noEdge = false;
+            if (currentQueryNode.GetEdges()[queryNode].HasAttribute("_grammar_noEdge")) {
+                noEdge = true;
+                sourceNodes = source.GetNodes().Except(currentSourceNode.GetEdges().Keys).Except(selection.Keys)
+                .OrderByDescending(n => n.GetAttributes().Count).ToList();
+            }
             
             foreach (Node node in sourceNodes) {
                 if (findFirst && matches.Count > 0) continue;
@@ -158,7 +164,12 @@ namespace Grammars.Graphs {
                 if (node.HasAttribute("_grammar_query_id")) continue;
                 // Compare node at the other end
                 if (!MatchAttributes(node, queryNode)) continue; // Compare node attributes
-                if (node.GetEdges().Count < queryNode.GetEdges().Count) continue; // Compare edge count
+                if (node.GetEdges().Count < queryNode.GetEdges().Values.Where(e => !e.HasAttribute("_grammar_noEdge")).Count()) continue; // Compare edge count
+                /*if (noEdge) {
+                    if (node.GetEdges().Count < queryNode.GetEdges().Values.Where(e => !e.HasAttribute("_grammar_noEdge")).Count()) continue;
+                } else {
+                    if (node.GetEdges().Count < queryNode.GetEdges().Count) continue;
+                }*/
                 // For all edges that node has to nodes already selected (including currentNode): compare edge
                 HashSet<Node> adjacentMarkedNodes = new HashSet<Node>(node.GetEdges().Keys.Intersect(selection.Keys));
                 bool edgesValid = true;
@@ -167,7 +178,7 @@ namespace Grammars.Graphs {
                     Node markedQueryNode = selection.Values.Where(n => (n.GetID().ToString() == markedNode["_grammar_query_id"])).First();
                     Edge sourceEdge = node.GetEdges()[markedNode];
                     Edge queryEdge = queryNode.GetEdges().ContainsKey(markedQueryNode) ? queryNode.GetEdges()[markedQueryNode] : null;
-                    if (queryEdge == null) {
+                    if (queryEdge == null || queryEdge.HasAttribute("_grammar_noEdge")) {
                         edgesValid = false;
                         break;
                     }
@@ -282,6 +293,7 @@ namespace Grammars.Graphs {
                     // For all edges outgoing from this node in query graph, check if there is a corresponding edge in target graph
                     foreach (Edge queryEdge in queryNode.GetEdges().Values) {
                         if (queryEdge.GetNode1() != queryNode) continue;
+                        if (queryEdge.HasAttribute("_grammar_noEdge")) continue;
                         // Find that edge in the target graph
                         Edge targetEdge = null;
                         foreach (Edge targetEdgeIter in targetNode.GetEdges().Values) {
@@ -329,7 +341,7 @@ namespace Grammars.Graphs {
                 if (!newNodes.ContainsKey(id1) && !newNodes.ContainsKey(id2)) {
                     // If not, we should still check if it's nonexistent in the query graph.
                     foreach (Edge queryEdge in query.GetEdges()) {
-                        if (targetEdge.EqualsOtherGraphEdge(queryEdge)) {
+                        if (targetEdge.EqualsOtherGraphEdge(queryEdge) && !queryEdge.HasAttribute("_grammar_noEdge")) {
                             existingEdge = true;
                             break;
                         }

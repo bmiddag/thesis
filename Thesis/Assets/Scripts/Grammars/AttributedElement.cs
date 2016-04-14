@@ -43,9 +43,11 @@ namespace Grammars {
                     // Ignore _grammar_ attributes, but use them for selection properties
                 } else {
                     // if (!HasAttribute(otherAtt) || GetAttribute(otherAtt, raw) != el.GetAttribute(otherAtt, raw)) {
-                    if(el.GetAttribute(otherAtt, raw) == "_grammar_nomatch" && GetAttribute(otherAtt, raw) != null) {
-                        attsMatched = false;
-                        if (!noMatch) return false;
+                    if(el.GetAttribute(otherAtt, raw) == "_grammar_nomatch") {
+                        if (GetAttribute(otherAtt, raw) != null) {
+                            attsMatched = false;
+                            if (!noMatch) return false;
+                        }
                     } else if (GetAttribute(otherAtt, raw) != el.GetAttribute(otherAtt, raw)) {
                         attsMatched = false;
                         if(!noMatch) return false;
@@ -343,6 +345,7 @@ namespace Grammars {
                 newAtts = GetAttributes(raw: raw);
             }
             // Copy attributes
+            IDictionary<string, string> tempNewAtts = new Dictionary<string, string>();
             foreach (KeyValuePair<string, string> entry in newAtts) {
                 if (entry.Key.StartsWith("copy$")) {
                     string elStr = entry.Key.Substring(5);
@@ -350,15 +353,19 @@ namespace Grammars {
                     AttributedElement copyStart = el != null ? el : this;
                     AttributedElement copyEl = null;
                     while (elStr.Contains("$")) {
-                        if (elStr.StartsWith("target$") || elStr.StartsWith("source$")) {
+                        int dollarIndex = elStr.IndexOf("$");
+                        string preDollar = elStr.Substring(0, dollarIndex);
+                        string postDollar = elStr.Substring(dollarIndex + 1);
+                        if (preDollar == "query" || preDollar == "target" || preDollar == "source") {
                             // Additional match
-                            if (elStr.StartsWith("target$")) copyStart = this;
-                            if (elStr.StartsWith("source$") && el != null) copyStart = el;
-                            elStr = elStr.Substring(0, elStr.IndexOf("$"));
+                            if (preDollar == "target") copyStart = this;
+                            if (preDollar == "query" && el != null) copyStart = el;
+                            if (preDollar == "source" && HasObjectAttribute("_source")) copyStart = (AttributedElement)GetObjectAttribute("_source");
+                            elStr = postDollar;
                         } else {
                             // Additional match
-                            attStr = elStr.Substring(elStr.IndexOf("$") + 1);
-                            elStr = elStr.Substring(0, elStr.IndexOf("$"));
+                            attStr = postDollar;
+                            elStr = preDollar;
                             break;
                         }
                     }
@@ -369,15 +376,19 @@ namespace Grammars {
                         if (copiedAtts != null) {
                             foreach (KeyValuePair<string, string> copiedEntry in copiedAtts) {
                                 if (attStr == null || copiedEntry.Key.Contains(attStr)) {
-                                    newAtts.Add(copiedEntry);
+                                    tempNewAtts.Add(copiedEntry);
                                 }
                             }
                         }
                     }
                 }
             }
+            foreach (KeyValuePair<string, string> entry in tempNewAtts) {
+                newAtts.Add(entry.Key, entry.Value);
+            }
             if (!newAtts.ContainsKey("_grammar_keep")) {
-                foreach (KeyValuePair<string, string> entry in newAtts) {
+                tempNewAtts = new Dictionary<string, string>(newAtts);
+                foreach (KeyValuePair<string, string> entry in tempNewAtts) {
                     if (entry.Key.StartsWith("_grammar_") || entry.Key.StartsWith("copy$")) newAtts.Remove(entry.Key);
                 }
             }
@@ -412,10 +423,19 @@ namespace Grammars {
                     RemoveAttribute(key, notify:false);
                 }
             } else {
+                bool sourceAdded = false;
+                if (!target.HasObjectAttribute("_source")) {
+                    target.SetObjectAttribute("_source", this, notify: false);
+                    sourceAdded = true;
+                }
                 HashSet<AttributeClass> newCls = target.GetNewAttributeClasses(source);
                 HashSet<AttributeClass> remCls = target.GetRemovedAttributeClasses(source);
                 IDictionary<string, string> newAtts = target.GetNewAttributes(source, raw:true);
                 HashSet<string> remAtts = target.GetRemovedAttributes(source);
+
+                if (sourceAdded && target.HasObjectAttribute("_source")) {
+                    target.RemoveObjectAttribute("_source", notify: false);
+                }
 
                 // object attributes
                 Dictionary<string, object> newObjAtts = target.GetObjectAttributes();
@@ -497,8 +517,8 @@ namespace Grammars {
                     if (links.ContainsKey(linkSpecifier) && links[linkSpecifier] != null && links[linkSpecifier].Count > 0) {
                         subcontainer = links[linkSpecifier][0];
                     }
-                } else if (GetObjectAttribute(specifier) != null && typeof(IElementContainer).IsAssignableFrom(GetObjectAttribute(specifier).GetType())) {
-                    subcontainer = (IElementContainer)GetObjectAttribute(specifier);
+                } else if (GetObjectAttribute(subcontainerStr) != null && typeof(IElementContainer).IsAssignableFrom(GetObjectAttribute(subcontainerStr).GetType())) {
+                    subcontainer = (IElementContainer)GetObjectAttribute(subcontainerStr);
                 }
                 if (subcontainer == null) {
                     switch (subcontainerStr) {

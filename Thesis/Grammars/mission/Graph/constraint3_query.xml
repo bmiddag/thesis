@@ -16,6 +16,7 @@
     <Node id="1" hashCode="-1953946112" active="True">
       <Attributes>
         <Attribute key="visited" value="_grammar_nomatch" />
+        <Attribute key="_edges" value="2" />
       </Attributes>
     </Node>
   </Nodes>

@@ -9,6 +9,7 @@
     <Node id="1" hashCode="693852928" active="True">
       <Attributes>
         <Attribute key="const_shortpath" value="1" />
+        <Attribute key="_edges" value="2" />
       </Attributes>
     </Node>
     <Node id="0" hashCode="1556345600" active="True" />

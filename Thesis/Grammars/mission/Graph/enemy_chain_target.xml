@@ -5,7 +5,9 @@
       <AttributeClasses>
         <AttributeClass name="enemy" />
       </AttributeClasses>
-      <Attributes />
+      <Attributes>
+	    <Attribute key="copy$source$rule.matches.query_1$const" value="true" />
+	  </Attributes>
     </Node>
     <Node id="2" hashCode="1574704128" active="True" />
     <Node id="0" hashCode="-1625769472" active="True" />
@@ -19,13 +21,17 @@
       <AttributeClasses>
         <AttributeClass name="treasure" />
       </AttributeClasses>
-      <Attributes />
+      <Attributes>
+	    <Attribute key="copy$source$rule.matches.query_1$const" value="true" />
+	  </Attributes>
     </Node>
     <Node id="5" hashCode="992156928" active="True">
       <AttributeClasses>
         <AttributeClass name="open" />
       </AttributeClasses>
-      <Attributes />
+      <Attributes>
+	    <Attribute key="copy$source$rule.matches.query_1$const" value="true" />
+	  </Attributes>
     </Node>
   </Nodes>
   <Edges>

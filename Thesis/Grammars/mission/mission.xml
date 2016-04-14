@@ -5,27 +5,9 @@
     <Constraint name="constraint1_10enemies" active="true">
       <GrammarCondition>CountElements("Has(#enemy)","&lt;=",10)</GrammarCondition>
       <Rules>
-        <Rule probability="1">
+        <Rule probability="1" name="CONSTRAINT1-RULE">
           <Query>constraint1_query</Query>
           <Target>constraint1_target</Target>
-        </Rule>
-      </Rules>
-    </Constraint>
-	<Constraint name="constraint2_branch" active="true">
-      <GrammarCondition>SumAttribute(,"const_branch","&lt;=",5)</GrammarCondition>
-      <Rules>
-        <Rule probability="1">
-          <Query>constraint2_query</Query>
-          <Target>constraint2_target</Target>
-        </Rule>
-      </Rules>
-    </Constraint>
-	<Constraint name="constraint3_shortpath" active="true">
-      <GrammarCondition>CountElementsProximity("Has(#const_shortpath)","&lt;=",3)</GrammarCondition>
-      <Rules>
-        <Rule probability="1">
-          <Query>constraint3_query</Query>
-          <Target>constraint3_target</Target>
         </Rule>
       </Rules>
     </Constraint>
@@ -58,7 +40,7 @@
       <Query>linkback_query</Query>
       <Target>linkback_target</Target>
     </Rule>
-    <Rule probability="0.05" name="endlevel">
+    <Rule probability="0.1" name="endlevel">
       <Query>endlevel_query</Query>
       <Target>endlevel_target</Target>
     </Rule>
@@ -66,7 +48,7 @@
       <Query>improve_pacing_query</Query>
       <Target>improve_pacing_target</Target>
     </Rule>
-    <Rule probability="0.05" name="endbranch">
+    <Rule probability="0.15" name="endbranch">
       <Query>endbranch_query</Query>
       <Target>endbranch_target</Target>
     </Rule>

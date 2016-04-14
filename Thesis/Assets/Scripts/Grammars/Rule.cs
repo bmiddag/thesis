@@ -121,6 +121,8 @@ namespace Grammars {
             }
             bool found = Find(source);
             if (found) {
+                transformer.Select();
+                hasSelected = true;
                 transformer.Transform(target);
                 return true;
             } else {
@@ -179,6 +181,23 @@ namespace Grammars {
                         subcontainer = target; break;
                     case "task":
                         subcontainer = grammar.CurrentTask; break;
+                    case "matches":
+                        if (hasSelected && transformer != null) {
+                            IDictionary<string, AttributedElement> matches = transformer.SelectedMatch;
+                            passSpecifier = specifier.Substring(specifier.IndexOf(".") + 1);
+                            if (passSpecifier != null) {
+                                if (passSpecifier.Contains(".")) {
+                                    string passPassSpecifier = passSpecifier.Substring(passSpecifier.IndexOf(".") + 1);
+                                    string subsubcontainerStr = passSpecifier.Substring(0, passSpecifier.IndexOf("."));
+                                    if (matches.ContainsKey(subsubcontainerStr) && matches[subsubcontainerStr] != null) {
+                                        return matches[subsubcontainerStr].GetElements(passPassSpecifier);
+                                    }
+                                } else if (matches.ContainsKey(passSpecifier)) {
+                                    return matches[passSpecifier].GetElements();
+                                }
+                            }
+                        }
+                        break;
                     case "source":
                     case "grammar":
                         subcontainer = grammar; break;

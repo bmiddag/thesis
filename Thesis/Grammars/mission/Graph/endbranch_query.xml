@@ -6,11 +6,13 @@
       <AttributeClasses>
         <AttributeClass name="open" />
       </AttributeClasses>
-      <Attributes />
+      <Attributes>
+        <Attribute key="_edges" value="2" />
+      </Attributes>
     </Node>
     <Node id="2" hashCode="-184175360" active="True">
       <AttributeClasses>
-        <AttributeClass name="enemy" />
+        <AttributeClass name="end" />
       </AttributeClasses>
       <Attributes>
         <Attribute key="_grammar_nomatch" value="true" />

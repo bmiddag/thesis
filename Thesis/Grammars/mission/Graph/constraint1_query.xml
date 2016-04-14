@@ -8,6 +8,7 @@
       </AttributeClasses>
       <Attributes>
         <Attribute key="visited" value="_grammar_nomatch" />
+        <Attribute key="_edges" value="2" />
       </Attributes>
     </Node>
     <Node id="2" hashCode="1194870784" active="True" />

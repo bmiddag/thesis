@@ -9,7 +9,7 @@
     </Node>
     <Node id="1" hashCode="1106730752" active="True">
       <AttributeClasses>
-        <AttributeClass name="enemy" />
+        <AttributeClass name="end" />
       </AttributeClasses>
       <Attributes>
         <Attribute key="_grammar_nomatch" value="true" />
