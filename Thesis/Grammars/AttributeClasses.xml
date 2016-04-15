@@ -42,7 +42,7 @@
   <AttClass name="treasure">
     <Attributes>
       <Attribute key="_demo_image" value="treasure" />
-	  <Attribute key="const_branch" value="-0.5" />
+	  <Attribute key="treasure" value="true" />
     </Attributes>
   </AttClass>
   <AttClass name="key">

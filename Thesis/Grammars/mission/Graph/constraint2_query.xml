@@ -10,6 +10,7 @@
       <Attributes>
         <Attribute key="const_shortpath" value="1" />
         <Attribute key="_edges" value="2" />
+        <Attribute key="partOfGroup" value="@_PartOfGroup(grammar, constraint2_group)" />
       </Attributes>
     </Node>
     <Node id="0" hashCode="1556345600" active="True" />

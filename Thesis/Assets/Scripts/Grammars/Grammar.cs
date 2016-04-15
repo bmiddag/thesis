@@ -124,7 +124,7 @@ namespace Grammars {
             } else taskThread = null;
         }
 
-        protected bool CheckStopCondition() { // TODO: Change to int?
+        protected bool CheckStopCondition() {
             if (Source == null) return true;
             if (stopConditions != null && stopConditions.Count > 0) {
                 int stop = -1; // index of failed stop condition
@@ -156,7 +156,7 @@ namespace Grammars {
             foreach (Rule<T> rule in ruleSet) {
                 if (rule.CheckCondition() && (!findFirst || rule.HasSelected())) {
                     tempRules.Add(rule);
-                    UnityEngine.MonoBehaviour.print("[" + Name + "]: Rule matches: " + rule.Name);
+                    //UnityEngine.MonoBehaviour.print("[" + Name + "]: Rule matches: " + rule.Name);
                 }
             }
             if (tempRules.Count == 0) {
@@ -183,7 +183,6 @@ namespace Grammars {
                     if (ruleIndex < 0 || ruleIndex >= ruleSet.Count) ruleIndex = -1;
                 }
             }
-
             if (ruleIndex != -1) {
                 selectedRule = ruleSet[ruleIndex];
                 return true;
@@ -262,6 +261,7 @@ namespace Grammars {
                 foundAny = foundAny || foundConstraint;
                 if (foundConstraint && selectedRule != null) {
                     //if(random.NextDouble() < 0.4) return;
+                    UnityEngine.MonoBehaviour.print("[" + Name + "]: Applying constraint rule: " + selectedRule.Name);
                     selectedRule.Apply(Source);
                     checkedConstraints.Clear(); // List is cleared so this could be an infinite loop if rules are written badly.
                     selectedConstraint = CheckConstraints(checkedConstraints);

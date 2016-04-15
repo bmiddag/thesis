@@ -405,27 +405,29 @@ namespace Grammars.Graphs {
             */
         }
 
-        protected bool MatchAttributes(AttributedElement source, AttributedElement query) {
-            if (source == null || query == null) return false;
+        protected bool MatchAttributes(AttributedElement sourceEl, AttributedElement queryEl) {
+            if (sourceEl == null || queryEl == null) return false;
             if (rule != null) {
-                source.SetObjectAttribute("grammar", rule.Grammar, notify: false);
-                source.SetObjectAttribute("rule", rule, notify: false);
-                bool match = source.MatchAttributes(query);
-                source.RemoveObjectAttribute("grammar", notify: false);
-                source.RemoveObjectAttribute("rule", notify: false);
+                sourceEl.SetObjectAttribute("grammar", rule.Grammar, notify: false);
+                sourceEl.SetObjectAttribute("rule", rule, notify: false);
+                queryEl.SetObjectAttribute("_grammar_matching", sourceEl, notify: false);
+                bool match = sourceEl.MatchAttributes(queryEl);
+                queryEl.RemoveObjectAttribute("_grammar_matching", notify: false);
+                sourceEl.RemoveObjectAttribute("grammar", notify: false);
+                sourceEl.RemoveObjectAttribute("rule", notify: false);
                 return match;
-            } else return source.MatchAttributes(query);
+            } else return sourceEl.MatchAttributes(queryEl);
         }
 
-        protected void SetAttributesUsingDifference(AttributedElement source, AttributedElement query, AttributedElement target) {
-            if (source == null || target == null) return;
+        protected void SetAttributesUsingDifference(AttributedElement sourceEl, AttributedElement queryEl, AttributedElement targetEl) {
+            if (sourceEl == null || targetEl == null) return;
             if (rule != null) {
-                source.SetObjectAttribute("grammar", rule.Grammar, notify: false);
-                source.SetObjectAttribute("rule", rule, notify: false);
-                source.SetAttributesUsingDifference(query, target, notify: false);
-                source.RemoveObjectAttribute("grammar", notify: false);
-                source.RemoveObjectAttribute("rule", notify: false);
-            } else source.SetAttributesUsingDifference(query, target, notify: false);
+                sourceEl.SetObjectAttribute("grammar", rule.Grammar, notify: false);
+                sourceEl.SetObjectAttribute("rule", rule, notify: false);
+                sourceEl.SetAttributesUsingDifference(queryEl, targetEl, notify: false);
+                sourceEl.RemoveObjectAttribute("grammar", notify: false);
+                sourceEl.RemoveObjectAttribute("rule", notify: false);
+            } else sourceEl.SetAttributesUsingDifference(queryEl, targetEl, notify: false);
         }
 
         public void Destroy() {

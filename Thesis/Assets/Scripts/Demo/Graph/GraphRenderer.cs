@@ -162,7 +162,7 @@ namespace Demo {
         public void AddEdgeRenderer(Edge edge) {
             if (edgeRenderers.ContainsKey(edge)) {
                 UpdateEdge(edge);
-            } else {
+            } else if(nodeRenderers.ContainsKey(edge.GetNode1()) && nodeRenderers.ContainsKey(edge.GetNode2())) {
                 EdgeRenderer edgeRen = CreateEdgeRenderer(nodeRenderers[edge.GetNode1()].gameObject.transform.position,
                     nodeRenderers[edge.GetNode2()].gameObject.transform.position);
                 edgeRen.gameObject.name = "Edge " + edge.GetNode1().GetID() + "-" + edge.GetNode2().GetID();

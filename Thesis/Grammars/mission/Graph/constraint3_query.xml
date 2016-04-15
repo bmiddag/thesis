@@ -17,6 +17,7 @@
       <Attributes>
         <Attribute key="visited" value="_grammar_nomatch" />
         <Attribute key="_edges" value="2" />
+        <Attribute key="partOfGroup" value="@_PartOfGroup(grammar, constraint3_group)" />
       </Attributes>
     </Node>
   </Nodes>

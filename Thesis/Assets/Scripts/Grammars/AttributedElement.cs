@@ -42,17 +42,21 @@ namespace Grammars {
                 if (otherAtt.StartsWith("_grammar_")) {
                     // Ignore _grammar_ attributes, but use them for selection properties
                 } else {
+                    string thisAtt = GetAttribute(otherAtt, raw);
+                    string elAtt = el.GetAttribute(otherAtt, raw);
                     // if (!HasAttribute(otherAtt) || GetAttribute(otherAtt, raw) != el.GetAttribute(otherAtt, raw)) {
-                    if(el.GetAttribute(otherAtt, raw) == "_grammar_nomatch") {
-                        if (GetAttribute(otherAtt, raw) != null) {
+                    if (elAtt == "_grammar_automatch") {
+                        if (noMatch) return false;
+                    } else if (elAtt == "_grammar_nomatch") {
+                        if (thisAtt != null) {
                             attsMatched = false;
                             if (!noMatch) return false;
                         }
-                    } else if (GetAttribute(otherAtt, raw) != el.GetAttribute(otherAtt, raw)) {
+                    } else if (thisAtt != elAtt) {
                         attsMatched = false;
                         if(!noMatch) return false;
-                    } else if (exactMatch && noMatch) {
-                        return false;
+                    } else if (exactMatch) {
+                        if(noMatch) return false;
                     }
                     count++;
                 }

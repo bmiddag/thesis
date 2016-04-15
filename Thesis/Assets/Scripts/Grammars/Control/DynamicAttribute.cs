@@ -86,5 +86,23 @@ namespace Grammars {
             return (element.GetAttributes(raw: true).Count-1).ToString();
         }
 
+        public static string PartOfGroup(AttributedElement element, string attName, string groupSelector, string groupName) {
+            object sourceObj = element.GetObjectAttribute("_grammar_matching");
+            if (sourceObj == null || !typeof(AttributedElement).IsAssignableFrom(sourceObj.GetType())) return "false";
+            AttributedElement sourceEl = (AttributedElement)sourceObj;
+
+            List<AttributedElement> els = sourceEl.GetElements(groupSelector);
+            if (els == null || els.Count == 0) return "false";
+            AttributedElement groupEl = els[0];
+            object group = groupEl.GetObjectAttribute(groupName);
+            if (group == null) return "false";
+
+            if (typeof(IEnumerable<AttributedElement>).IsAssignableFrom(group.GetType())) {
+                IEnumerable<AttributedElement> grouplist = (IEnumerable<AttributedElement>)group;
+                if (grouplist.Contains(sourceEl)) return "_grammar_automatch";
+            }
+            return "false";
+        }
+
     }
 }

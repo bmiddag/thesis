@@ -48,7 +48,7 @@ namespace Grammars {
             expandedExpression = Regex.Replace(expandedExpression, @"d\(#(?<attName>[^\s\#\)\+\-\(\*=]+)\)",
                 "(HasAttribute(\"${attName}\") ? double.Parse(GetAttribute(\"${attName}\")) : -1)");
             expandedExpression = Regex.Replace(expandedExpression, @"#(?<attName>[^\s\#\)\+\-\(\*=]+)", "GetAttribute(\"${attName}\")");
-            UnityEngine.MonoBehaviour.print(expandedExpression);
+            //UnityEngine.MonoBehaviour.print(expandedExpression);
             return expandedExpression;
         }
 

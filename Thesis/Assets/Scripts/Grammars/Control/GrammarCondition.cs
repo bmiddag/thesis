@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Grammars.Graphs;
+using Grammars.Tiles;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -128,10 +130,63 @@ namespace Grammars {
             return (grammar.CurrentTask != null && grammar.CurrentTask.Action == taskName);
         }
 
-        public static bool CountElementsProximity<T>(Grammar<T> grammar, string selector, string cmpOperation, double number) where T : StructureModel {
-            // TODO: edit this
-            List<AttributedElement> elements = StringEvaluator.SelectElements(grammar.Source, selector);
-            return StringEvaluator.Compare(cmpOperation, elements.Count, number);
+        public static bool CountElementsGrouped<T>(Grammar<T> grammar, string groupName, string groupSelector, string inGroupSelector, string cmpOperation, double number) where T : StructureModel {
+            List<AttributedElement> elements = StringEvaluator.SelectElements(grammar.Source, groupSelector);
+            HashSet<HashSet<AttributedElement>> groups = new HashSet<HashSet<AttributedElement>>();
+            if (elements != null && elements.Count > 0) {
+                for(int i=0; i<elements.Count; i++) {
+                    AttributedElement el = elements[i];
+                    HashSet<HashSet<AttributedElement>> adjacentGroups = new HashSet<HashSet<AttributedElement>>();
+                    // Check if already in group
+                    bool groupFound = false;
+                    foreach(HashSet<AttributedElement> group in groups) {
+                        if (group.Contains(el)) {
+                            groupFound = true;
+                            break;
+                        } else {
+                            foreach (AttributedElement el2 in group) {
+                                if (el2.GetType() == typeof(Node) && el.GetType() == typeof(Node)) {
+                                    if (((Node)el2).GetEdges().Keys.Contains((Node)el)) {
+                                        adjacentGroups.Add(group);
+                                        break;
+                                    }
+                                } else if (el2.GetType() == typeof(Tile) && el.GetType() == typeof(Tile)) {
+                                    if (((Tile)el2).GetNeighbors().Values.Contains((Tile)el)) {
+                                        adjacentGroups.Add(group);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (!groupFound) {
+                        HashSet<AttributedElement> newGroup = new HashSet<AttributedElement>();
+                        newGroup.Add(el);
+                        if (adjacentGroups.Count > 0) {
+                            // merge this one with all adjacent groups
+                            foreach (HashSet<AttributedElement> group in adjacentGroups) {
+                                groups.Remove(group);
+                                newGroup.UnionWith(group);
+                            }
+                        }
+                        groups.Add(newGroup);
+                    }
+                }
+            }
+            foreach (HashSet<AttributedElement> group in groups) {
+                int count = group.Count;
+                if (inGroupSelector != null && inGroupSelector.Trim() != "") {
+                    List<AttributedElement> selected = StringEvaluator.SelectElementsFromList(new List<AttributedElement>(group), inGroupSelector);
+                    if (selected != null) count = selected.Count;
+                }
+                bool countOkay = StringEvaluator.Compare(cmpOperation, count, number);
+                if (!countOkay) {
+                    grammar.SetObjectAttribute(groupName, group);
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

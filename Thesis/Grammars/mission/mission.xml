@@ -11,6 +11,24 @@
         </Rule>
       </Rules>
     </Constraint>
+    <Constraint name="constraint2_branch" active="true">
+      <GrammarCondition>CountElementsGrouped("constraint2_group","Has(#const_branch)",,"&lt;=",5) &amp;&amp; CountElementsGrouped("constraint2_group","Has(#treasure)",,"&gt;=",1)</GrammarCondition>
+      <Rules>
+        <Rule probability="1" name="CONSTRAINT2-RULE">
+          <Query>constraint2_query</Query>
+          <Target>constraint2_target</Target>
+        </Rule>
+      </Rules>
+    </Constraint>
+    <Constraint name="constraint3_shortpath" active="true">
+      <GrammarCondition>CountElementsGrouped("constraint3_group","Has(#const_shortpath)",,"&lt;=",3)</GrammarCondition>
+      <Rules>
+        <Rule probability="1" name="CONSTRAINT3-RULE">
+          <Query>constraint3_query</Query>
+          <Target>constraint3_target</Target>
+        </Rule>
+      </Rules>
+    </Constraint>
   </Constraints>
   <Rules>
     <Initial probability="0.5" name="initial_1">
@@ -27,7 +45,7 @@
       <Query>insert_branch_query</Query>
       <Target>insert_branch_target</Target>
     </Rule>
-	<Rule probability="0.1" name="generate_keylock">
+	<Rule probability="0.05" name="generate_keylock">
       <Query>generate_keylock_query</Query>
       <Target>generate_keylock_target</Target>
     </Rule>
@@ -53,17 +71,4 @@
       <Target>endbranch_target</Target>
     </Rule>
   </Rules>
-  <StopConditions>
-    <GrammarCondition name="SumAttribute">
-      <string>where [d(#sidepath) &gt; 0.199]</string>
-      <string>sidepath</string>
-      <string>&gt;=</string>
-      <double>1.6</double>
-    </GrammarCondition>
-    <GrammarCondition name="CountElements">
-      <string>from [edges] where [#_demo_color = "red"]</string>
-      <string>&gt;=</string>
-      <double>8</double>
-    </GrammarCondition>
-  </StopConditions>
 </Grammar>

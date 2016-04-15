@@ -13,6 +13,7 @@
       </AttributeClasses>
       <Attributes>
         <Attribute key="const_shortpath" value="_grammar_nomatch" />
+        <Attribute key="const_branch" value="_grammar_nomatch" />
       </Attributes>
     </Node>
     <Node id="2" hashCode="405528576" active="False" />
