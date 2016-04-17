@@ -222,7 +222,8 @@ namespace Demo {
                 print("Loading grammar: " + grmName);
                 string filename = dirName + grmName + "/" + grmName + ".xml";
                 DemoIO serializer = new DemoIO(filename, this);
-                serializer.ParseGrammar();
+                IGrammarEventHandler eventHandler = serializer.ParseGrammar();
+                //SetGrammar(eventHandler);
             }
             yield return null;
         }

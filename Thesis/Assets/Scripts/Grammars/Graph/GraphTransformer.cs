@@ -151,9 +151,9 @@ namespace Grammars.Graphs {
             if (sourceNodes.Count < queryNodes.Count) return false;
             if (queryNodes.Count == 0) return true; // Nothing else to query along this path => dead end
             Node queryNode = queryNodes.First();
-            bool noEdge = false;
+            //bool noEdge = false;
             if (currentQueryNode.GetEdges()[queryNode].HasAttribute("_grammar_noEdge")) {
-                noEdge = true;
+                //noEdge = true;
                 sourceNodes = source.GetNodes().Except(currentSourceNode.GetEdges().Keys).Except(selection.Keys)
                 .OrderByDescending(n => n.GetAttributes().Count).ToList();
             }

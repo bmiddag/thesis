@@ -1,4 +1,6 @@
 ﻿using Grammars;
+using Grammars.Control;
+using Grammars.Events;
 using Grammars.Graphs;
 using Grammars.Tiles;
 using System;
@@ -218,6 +220,41 @@ namespace Demo {
             return graph;
         }
 
+        public Task DeserializeTask() {
+            // Create an XML reader for this file.
+            Task task = null;
+            AttributedElement currentElement = null;
+            using (XmlReader reader = XmlReader.Create(filename)) {
+                while (reader.Read()) {
+                    switch (reader.NodeType) {
+                        case XmlNodeType.Element:
+                            // Get element name and switch on it.
+                            switch (reader.Name) {
+                                case "Task":
+                                    string action = reader["action"];
+                                    if (action == null) throw new System.FormatException("Deserialization failed"); // Deserialization failed
+                                    task = new Task(action: action);
+                                    if (!reader.IsEmptyElement) currentElement = task;
+                                    break;
+                                case "AttributeClass":
+                                    string name = reader["name"];
+                                    if (name == null || currentElement == null) return null; // Deserialization failed
+                                    controller.AddAttributeClass(currentElement, name);
+                                    break;
+                                case "Attribute":
+                                    string key = reader["key"];
+                                    string val = reader["value"];
+                                    if (key == null || val == null) return null; // Deserialization failed
+                                    currentElement.SetAttribute(key, val);
+                                    break;
+                            }
+                            break;
+                    }
+                }
+            }
+            return task;
+        }
+
         public void SerializeAttributeClasses(IDictionary<string, AttributeClass> classesDict) {
             using (XmlWriter writer = XmlWriter.Create(filename, settings)) {
                 writer.WriteStartDocument();
@@ -247,7 +284,7 @@ namespace Demo {
                         switch (reader.Name) {
                             case "AttClass":
                                 string name = reader["name"];
-                                if (name == null) return null; // Deserialization failed
+                                if (name == null) throw new System.FormatException("Deserialization failed");
                                 AttributeClass cl = new AttributeClass(name);
                                 classesDict.Add(name, cl);
                                 classAttributes.Add(name, new Dictionary<string, string>());
@@ -256,13 +293,13 @@ namespace Demo {
                                 break;
                             case "AttributeClass":
                                 string clName = reader["name"];
-                                if (clName == null || currentClass == null) return null; // Deserialization failed
+                                if (clName == null || currentClass == null) throw new System.FormatException("Deserialization failed");
                                 classClasses[currentClass.GetName()].Add(clName);
                                 break;
                             case "Attribute":
                                 string key = reader["key"];
                                 string val = reader["value"];
-                                if (key == null || val == null || currentClass == null) return null; // Deserialization failed
+                                if (key == null || val == null || currentClass == null) throw new System.FormatException("Deserialization failed");
                                 classAttributes[currentClass.GetName()].Add(key, val);
                                 break;
                         }
@@ -291,10 +328,12 @@ namespace Demo {
             return dirList;
         }
 
-        public void ParseGrammar() {
+        public IGrammarEventHandler ParseGrammar() {
             string grammarType = null;
             string findFirst = null;
             string name = null;
+            bool intergrammar = false;
+            bool traverser = false;
             // Create an XML reader for this file.
             using (XmlReader reader = XmlReader.Create(filename)) {
                 while (reader.Read()) {
@@ -305,27 +344,78 @@ namespace Demo {
                             name = reader["name"];
                             if (grammarType == null || name == null) throw new System.FormatException("Deserialization failed");
                             break;
+                        } else if (reader.Name == "InterGrammarController") {
+                            findFirst = reader["findFirst"];
+                            name = reader["name"];
+                            grammarType = "task";
+                            intergrammar = true;
+                            if (name == null) throw new System.FormatException("Deserialization failed");
+                            break;
+                        } else if (reader.Name == "Traverser") {
+                            traverser = true;
+                            grammarType = reader["type"];
+                            if (grammarType == null || name == null) throw new System.FormatException("Deserialization failed");
                         }
                     }
                 }
-                switch (grammarType.ToLowerInvariant()) {
-                    case "graph":
-                        Grammar<Graph> graphGrammar = new Grammar<Graph>(name, typeof(GraphTransformer), null, findFirst=="true");
-                        _ParseGrammar(reader, graphGrammar);
-                        controller.SetGrammar(graphGrammar);
-                        break;
-                    case "tilegrid":
-                        Grammar<TileGrid> tileGrammar = new Grammar<TileGrid>(name, typeof(TileGridTransformer), null, findFirst=="true");
-                        _ParseGrammar(reader, tileGrammar);
-                        controller.SetGrammar(tileGrammar);
-                        break;
+                IGrammarEventHandler eventHandler = null;
+                if (!traverser) {
+                    switch (grammarType.ToLowerInvariant()) {
+                        case "graph":
+                            Grammar<Graph> graphGrammar = new Grammar<Graph>(name, typeof(GraphTransformer), null, findFirst == "true");
+                            _ParseGrammar<Graph>(reader, graphGrammar);
+                            eventHandler = graphGrammar;
+                            break;
+                        case "tilegrid":
+                            Grammar<TileGrid> tileGrammar = new Grammar<TileGrid>(name, typeof(TileGridTransformer), null, findFirst == "true");
+                            _ParseGrammar<TileGrid>(reader, tileGrammar);
+                            eventHandler = tileGrammar;
+                            break;
+                        case "task":
+                            Grammar<Task> taskGrammar;
+                            if (intergrammar) {
+                                taskGrammar = new InterGrammarController(name, ruleSelectionController: null, findAllRules: findFirst == "true");
+                            } else {
+                                taskGrammar = new Grammar<Task>(name, typeof(TaskTransformer), null, findFirst == "true");
+                            }
+                            _ParseGrammar<Task>(reader, taskGrammar);
+                            eventHandler = taskGrammar;
+                            break;
+                    }
+                } else {
+                    switch (grammarType.ToLowerInvariant()) {
+                        case "graph":
+                            Traverser<Graph> graphTraverser = new Traverser<Graph>(name, typeof(GraphTransformer));
+                            _ParseGrammar<Graph>(reader, graphTraverser);
+                            eventHandler = graphTraverser;
+                            break;
+                        case "tilegrid":
+                            Traverser<TileGrid> tileTraverser = new Traverser<TileGrid>(name, typeof(TileGridTransformer));
+                            _ParseGrammar<TileGrid>(reader, tileTraverser);
+                            eventHandler = tileTraverser;
+                            break;
+                        case "task":
+                            Traverser<Task> taskTraverser = new Traverser<Task>(name, typeof(TaskTransformer));
+                            _ParseGrammar<Task>(reader, taskTraverser);
+                            eventHandler = taskTraverser;
+                            break;
+                    }
                 }
+                return eventHandler;
             }
         }
 
-        private void _ParseGrammar<T>(XmlReader reader, Grammar<T> grammar) where T : StructureModel {
+        private void _ParseGrammar<T>(XmlReader reader, IGrammarEventHandler eventHandler) where T : StructureModel {
             Constraint<T> currentConstraint = null;
             Rule<T> currentRule = null;
+            Grammar<T> grammar = null;
+            Traverser<T> traverser = null;
+            if (eventHandler == null) return;
+            if (typeof(Grammar<T>).IsAssignableFrom(eventHandler.GetType())) {
+                grammar = (Grammar<T>)eventHandler;
+            } else if (typeof(Traverser<T>).IsAssignableFrom(eventHandler.GetType())) {
+                traverser = (Traverser<T>)eventHandler;
+            }
             //Stack<GrammarCondition> currentGrammarCondition = new Stack<GrammarCondition>();
             //Stack<RuleCondition> currentRuleCondition = new Stack<RuleCondition>();
             Stack<MethodCaller> currentMethodCaller = new Stack<MethodCaller>();
@@ -586,6 +676,7 @@ namespace Demo {
                             case "RuleCondition":
                             case "RuleProbability":
                             case "RuleMatchSelector":
+                            case "TaskProcessor":
                                 currentMethodCaller.Pop();
                                 break;
                             case "Constraint":
@@ -601,11 +692,6 @@ namespace Demo {
             }
         }
 
-        public string[] ReadLines() {
-            string[] lines = File.ReadAllLines(filename, Encoding.UTF8);
-            return lines;
-        }
-
         public static T Deserialize<T>(string dirname, string name, DemoController controller) where T : StructureModel {
             if (name == null || name.Trim() == "") return null;
             string filename = name;
@@ -619,6 +705,11 @@ namespace Demo {
                 DemoIO serializer = new DemoIO(filename, controller);
                 TileGrid grid = serializer.DeserializeGrid();
                 return (T)(object)grid;
+            } else if (typeof(T) == typeof(Task)) {
+                filename = dirname + "/Task/" + filename + ".xml";
+                DemoIO serializer = new DemoIO(filename, controller);
+                Task task = serializer.DeserializeTask();
+                return (T)(object)task;
             }
             return null;
         }
