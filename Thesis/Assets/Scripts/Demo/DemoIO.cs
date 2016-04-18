@@ -15,8 +15,10 @@ namespace Demo {
         string filename;
         XmlWriterSettings settings;
         DemoController controller;
+        private static Dictionary<string, IGrammarEventHandler> tempLoaded = new Dictionary<string, IGrammarEventHandler>();
+        public static Dictionary<IGrammarEventHandler, List<string>> tempListeners = new Dictionary<IGrammarEventHandler, List<string>>();
 
-        public DemoIO(string filename, DemoController controller) {
+        public DemoIO(string filename, DemoController controller, bool clearDictionaries = true) {
             this.filename = filename;
             this.controller = controller;
             settings = new XmlWriterSettings {
@@ -25,6 +27,10 @@ namespace Demo {
                 NewLineChars = "\r\n",
                 NewLineHandling = NewLineHandling.Replace
             };
+            if (clearDictionaries) {
+                tempLoaded.Clear();
+                tempListeners.Clear();
+            }
         }
 
         void SerializeAttributedElement(XmlWriter writer, AttributedElement el) {
@@ -328,7 +334,11 @@ namespace Demo {
             return dirList;
         }
 
-        public IGrammarEventHandler ParseGrammar() {
+        public IGrammarEventHandler ParseGrammar(bool clearDictionaries = true) {
+            if (clearDictionaries) {
+                tempLoaded.Clear();
+                tempListeners.Clear();
+            }
             string grammarType = null;
             string findFirst = null;
             string name = null;
@@ -400,6 +410,22 @@ namespace Demo {
                             eventHandler = taskTraverser;
                             break;
                     }
+                }
+                if(eventHandler != null) tempLoaded.Add(eventHandler.Name, eventHandler);
+                if (clearDictionaries) {
+                    // add listeners
+                    foreach (KeyValuePair<IGrammarEventHandler, List<string>> lList in tempListeners) {
+                        foreach (string listener in lList.Value) {
+                            IGrammarEventHandler eh = null;
+                            if (tempLoaded.TryGetValue(listener, out eh)) {
+                                lList.Key.AddListener(eh);
+                                //eh.AddListener(lList.Key);
+                            } else throw new System.FormatException("Deserialization failed: listener not found");
+                        }
+                    }
+                    // clear them
+                    tempLoaded.Clear();
+                    tempListeners.Clear();
                 }
                 return eventHandler;
             }
@@ -607,10 +633,10 @@ namespace Demo {
                                     reader.Read();
                                     name = reader.Value;
                                     if (name == null) throw new System.FormatException("Deserialization failed");
-                                    tProc = (TaskProcessor)StringEvaluator.ParseMethodCaller(name, typeof(TaskProcessor), grammar, container: grammar);
+                                    tProc = (TaskProcessor)StringEvaluator.ParseMethodCaller(name, typeof(TaskProcessor), grammar, container: eventHandler);
                                 } else {
-                                    if (currentRule == null) throw new System.FormatException("Deserialization failed");
-                                    tProc = TaskProcessor.FromName(name, container: grammar);
+                                    //if (currentRule == null) throw new System.FormatException("Deserialization failed");
+                                    tProc = TaskProcessor.FromName(name, container: eventHandler);
                                 }
                                 if (tProc == null) throw new System.FormatException("Deserialization failed");
                                 if (ev == null) {
@@ -624,17 +650,26 @@ namespace Demo {
                                 if (!reader.IsEmptyElement) currentMethodCaller.Push(tProc);
                                 break;
                             case "Query":
-                                reader.Read();
-                                name = reader.Value;
-                                if (name == null || currentRule == null) throw new System.FormatException("Deserialization failed");
-                                T query = Deserialize<T>(new FileInfo(filename).Directory.FullName, name, controller);
-                                currentRule.Query = query;
+                                if (traverser != null) {
+                                    string qName = reader["name"];
+                                    reader.Read();
+                                    name = reader.Value;
+                                    if(name == null || qName == null) throw new System.FormatException("Deserialization failed");
+                                    T query = Deserialize<T>(new FileInfo(filename).Directory.FullName, name, controller, clearDictionaries: false);
+                                    traverser.AddQuery(qName, query);
+                                } else {
+                                    reader.Read();
+                                    name = reader.Value;
+                                    if (name == null || currentRule == null) throw new System.FormatException("Deserialization failed");
+                                    T query = Deserialize<T>(new FileInfo(filename).Directory.FullName, name, controller, clearDictionaries: false);
+                                    currentRule.Query = query;
+                                }
                                 break;
                             case "Target":
                                 reader.Read();
                                 name = reader.Value;
                                 if (name == null || currentRule == null) throw new System.FormatException("Deserialization failed");
-                                T target = Deserialize<T>(new FileInfo(filename).Directory.FullName, name, controller);
+                                T target = Deserialize<T>(new FileInfo(filename).Directory.FullName, name, controller, clearDictionaries: false);
                                 currentRule.Target = target;
                                 break;
                             case "string":
@@ -667,6 +702,18 @@ namespace Demo {
                                     }
                                 }
                                 break;
+                            case "Listener":
+                                name = reader["name"];
+                                if (name == null && !reader.IsEmptyElement) {
+                                    reader.Read();
+                                    name = reader.Value;
+                                }
+                                if(name == null) throw new System.FormatException("Deserialization failed");
+                                if (!tempListeners.ContainsKey(eventHandler)) {
+                                    tempListeners.Add(eventHandler, new List<string>());
+                                }
+                                tempListeners[eventHandler].Add(name);
+                                break;
                         }
                         break;
                     case XmlNodeType.EndElement:
@@ -692,26 +739,57 @@ namespace Demo {
             }
         }
 
-        public static T Deserialize<T>(string dirname, string name, DemoController controller) where T : StructureModel {
-            if (name == null || name.Trim() == "") return null;
+        public static T Deserialize<T>(string dirname, string name, DemoController controller, bool clearDictionaries = true) {
+            if (name == null || name.Trim() == "") return default(T);
             string filename = name;
             if (typeof(T) == typeof(Graph)) {
                 filename = dirname + "/Graph/" + filename + ".xml";
-                DemoIO serializer = new DemoIO(filename, controller);
+                DemoIO serializer = new DemoIO(filename, controller, clearDictionaries: clearDictionaries);
                 Graph graph = serializer.DeserializeGraph();
                 return (T)(object)graph;
             } else if (typeof(T) == typeof(TileGrid)) {
                 filename = dirname + "/TileGrid/" + filename + ".xml";
-                DemoIO serializer = new DemoIO(filename, controller);
+                DemoIO serializer = new DemoIO(filename, controller, clearDictionaries: clearDictionaries);
                 TileGrid grid = serializer.DeserializeGrid();
                 return (T)(object)grid;
             } else if (typeof(T) == typeof(Task)) {
                 filename = dirname + "/Task/" + filename + ".xml";
-                DemoIO serializer = new DemoIO(filename, controller);
+                DemoIO serializer = new DemoIO(filename, controller, clearDictionaries: clearDictionaries);
                 Task task = serializer.DeserializeTask();
                 return (T)(object)task;
+            } else if (typeof(T) == typeof(IGrammarEventHandler)) {
+                DirectoryInfo dirInfo = new DirectoryInfo(dirname);
+                FileInfo[] files = dirInfo.GetFiles();
+                foreach (FileInfo file in files) {
+                    if (file.Name == filename + ".xml") {
+                        filename = dirInfo.FullName + "/" + filename + ".xml";
+                        DemoIO serializer = new DemoIO(filename, controller, clearDictionaries: clearDictionaries);
+                        IGrammarEventHandler eh = serializer.ParseGrammar();
+                        return (T)(object)eh;
+                    }
+                }
+                // Not returned yet? Check subdirs
+                DirectoryInfo[] subdirs = dirInfo.GetDirectories();
+                foreach (DirectoryInfo subdir in subdirs) {
+                    if (subdir.Name == filename) {
+                        filename = subdir.FullName + "/" + filename + ".xml";
+                        DemoIO serializer = new DemoIO(filename, controller, clearDictionaries: clearDictionaries);
+                        IGrammarEventHandler eh = serializer.ParseGrammar();
+                        return (T)(object)eh;
+                    }
+                }
+                // Then check parent subdirs.
+                DirectoryInfo[] psubdirs = dirInfo.Parent.GetDirectories();
+                foreach (DirectoryInfo subdir in psubdirs) {
+                    if (subdir.Name == filename) {
+                        filename = subdir.FullName + "/" + filename + ".xml";
+                        DemoIO serializer = new DemoIO(filename, controller, clearDictionaries: clearDictionaries);
+                        IGrammarEventHandler eh = serializer.ParseGrammar();
+                        return (T)(object)eh;
+                    }
+                }
             }
-            return null;
+            return default(T);
         }
     }
 }

@@ -53,24 +53,21 @@ namespace Demo {
             }
         }
 
+        public string Name {
+            get {
+                if (grammar != null) {
+                    return grammar.Name;
+                } else return "";
+            }
+        }
+
         // Use this for initialization
         void Start() {
-            controller.RegisterStructureRenderer(this);
+            if(controller.currentStructureRenderer == null) controller.RegisterStructureRenderer(this);
 
             // Create the graph
             graph = new Graph();
             graph.StructureChanged += GraphStructureChanged;
-
-			/*Node root = new Node(graph, 0);
-			root.AddAttributeClass(yellow_triangles);
-			root.SetAttribute("_demo_x", "100");
-			root.SetAttribute("_demo_y", "100");
-
-			Node node2 = new Node(graph, 1);
-			node2.AddAttributeClass(blue_squares);
-			node2.SetAttribute("_demo_x", "-100");
-			node2.SetAttribute("_demo_y", "-100");
-            root.AddEdge(node2);*/
         }
 
         // Update is called once per frame

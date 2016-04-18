@@ -9,6 +9,8 @@ using System.Collections;
 using Grammars.Events;
 using System.Threading;
 using System;
+using Grammars.Control;
+using Grammars.Tiles;
 
 namespace Demo {
     public class DemoController : MonoBehaviour, IGrammarEventHandler {
@@ -32,33 +34,20 @@ namespace Demo {
         public AttributedElement currentElement;
 
         Dictionary<string, IGrammarEventHandler> listeners = new Dictionary<string, IGrammarEventHandler>();
+        List<IStructureRenderer> structureRenderers = new List<IStructureRenderer>();
 
         IDictionary<string, AttributeClass> attributeClasses = new Dictionary<string, AttributeClass>(); // TODO: move to grammar
 
+        public GameObject canvas;
+
         public string Name {
             get { return "DemoController"; }
-
             set {}
         }
 
         // Use this for initialization
         void Start() {
             system = EventSystem.current;
-            //if (currentStructureRenderer == null) currentStructureRenderer = FindObjectOfType<GraphRenderer>();
-            //if (currentStructureRenderer == null) currentStructureRenderer = FindObjectOfType<TileGridRenderer>();
-
-            // Define some attribute classes
-            /*attributeClasses["yellow_triangles"] = new AttributeClass("yellow_triangles");
-            attributeClasses["blue_squares"] = new AttributeClass("blue_squares");
-            attributeClasses["white_circles"] = new AttributeClass("white_circles");
-
-            attributeClasses["yellow_triangles"].SetAttribute("_demo_shape", "triangle");
-            attributeClasses["yellow_triangles"].SetAttribute("_demo_color", "yellow");
-            attributeClasses["blue_squares"].SetAttribute("_demo_shape", "square");
-            attributeClasses["blue_squares"].SetAttribute("_demo_color", "blue");
-            attributeClasses["white_circles"].SetAttribute("_demo_shape", "circle");
-            attributeClasses["white_circles"].SetAttribute("_demo_color", "white");*/
-
             StartCoroutine("LoadAttributeClasses");
         }
 
@@ -190,15 +179,59 @@ namespace Demo {
             currentPopUp = null;
         }
 
-        public void SetGrammar<T>(Grammar<T> grammar) where T : StructureModel {
+        public void PrepareGrammar(string dirName, string grmName) {
+            print("Loading grammar: " + grmName);
+            string filename = dirName + grmName + "/" + grmName + ".xml";
+            DemoIO serializer = new DemoIO(filename, this);
+            IGrammarEventHandler eventHandler = serializer.ParseGrammar();
+            //SetGrammar(eventHandler);
+            bool success = false;
+
+            if (typeof(InterGrammarController).IsAssignableFrom(eventHandler.GetType())) {
+                InterGrammarController con = (InterGrammarController)eventHandler;
+                Dictionary<string, IGrammarEventHandler> conListeners = con.GetListeners();
+                foreach (KeyValuePair<string, IGrammarEventHandler> conListener in conListeners) {
+                    CreateRenderer(conListener.Value);
+                }
+                success = true;
+            } else if (typeof(Grammar<Graph>).IsAssignableFrom(eventHandler.GetType()) && currentStructureRenderer != null) {
+                Grammar<Graph> grammar = (Grammar<Graph>)eventHandler;
+                SetGrammar(currentStructureRenderer, grammar);
+                success = true;
+            } else if (typeof(Grammar<TileGrid>).IsAssignableFrom(eventHandler.GetType()) && currentStructureRenderer != null) {
+                Grammar<TileGrid> grammar = (Grammar<TileGrid>)eventHandler;
+                SetGrammar(currentStructureRenderer, grammar);
+                success = true;
+            }
+            if (success) {
+                eventHandler.AddListener(this);
+                AddListener(eventHandler);
+                print("Grammar successfully set.");
+                SendGrammarEvent("start", targets: new string[] { eventHandler.Name });
+            }
+        }
+
+        public void CreateRenderer(IGrammarEventHandler eventHandler) {
+            if (typeof(Grammar<Graph>).IsAssignableFrom(eventHandler.GetType())) {
+                Grammar<Graph> grammar = (Grammar<Graph>)eventHandler;
+                GraphRenderer graphRen = new GameObject().AddComponent<GraphRenderer>();
+                if (canvas != null) graphRen.transform.SetParent(canvas.transform);
+                graphRen.gameObject.name = grammar.Name;
+                SetGrammar(graphRen, grammar);
+            } else if (typeof(Grammar<TileGrid>).IsAssignableFrom(eventHandler.GetType())) {
+                Grammar<TileGrid> grammar = (Grammar<TileGrid>)eventHandler;
+                TileGridRenderer gridRen = new GameObject().AddComponent<TileGridRenderer>();
+                if (canvas != null) gridRen.transform.SetParent(canvas.transform);
+                gridRen.gameObject.name = grammar.Name;
+                SetGrammar(gridRen, grammar);
+            }
+        }
+
+        public void SetGrammar<T>(IStructureRenderer renderer, Grammar<T> grammar) where T : StructureModel {
             //Type renType = currentStructureRenderer.GetType();
-            if (typeof(T) != currentStructureRenderer.Source.GetType()) return;
-            grammar.Source = (T)currentStructureRenderer.Source;
-            currentStructureRenderer.Grammar = grammar;
-            grammar.AddListener(this);
-            this.AddListener(grammar);
-            print("Grammar successfully set.");
-            SendGrammarEvent("start", targets: new string[] { grammar.Name });
+            if (typeof(T) != renderer.Source.GetType()) return;
+            grammar.Source = (T)renderer.Source;
+            renderer.Grammar = grammar;
         }
 
         public IEnumerator GrammarStep() {
@@ -214,16 +247,12 @@ namespace Demo {
         }
 
         public IEnumerator LoadGrammar() {
-            string dirName = "Grammars/";
-            DemoIO dirSerializer = new DemoIO(dirName, this);
-            List<string> grammars = dirSerializer.GetSubDirectories();
-            foreach (string grmName in grammars) {
-                if (grmName != "mission") continue; // TODO
-                print("Loading grammar: " + grmName);
-                string filename = dirName + grmName + "/" + grmName + ".xml";
-                DemoIO serializer = new DemoIO(filename, this);
-                IGrammarEventHandler eventHandler = serializer.ParseGrammar();
-                //SetGrammar(eventHandler);
+            if (currentStructureRenderer == null) {
+                PrepareGrammar("Grammars/", "controller");
+            } else if(currentStructureRenderer.GetType() == typeof(GraphRenderer)) {
+                PrepareGrammar("Grammars/", "mission");
+            } else if (currentStructureRenderer.GetType() == typeof(GraphRenderer)) {
+                PrepareGrammar("Grammars/", "tilespace");
             }
             yield return null;
         }
@@ -245,9 +274,12 @@ namespace Demo {
         }
 
         void OnDestroy() {
-            if (currentStructureRenderer.Grammar != null) {
-                SendGrammarEvent("Stop", targets: new string[] { currentStructureRenderer.Grammar.Name });
+            foreach (KeyValuePair<string, IGrammarEventHandler> listener in listeners) {
+                SendGrammarEvent("Stop", targets: new string[] { listener.Key });
             }
+            /*if (currentStructureRenderer != null && currentStructureRenderer.Grammar != null) {
+                SendGrammarEvent("Stop", targets: new string[] { currentStructureRenderer.Grammar.Name });
+            }*/
         }
 
         public void HandleGrammarEvent(Task task) {

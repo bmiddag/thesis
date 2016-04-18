@@ -140,5 +140,9 @@ namespace Grammars.Control {
                 }
             }
         }
+
+        public Dictionary<string, IGrammarEventHandler> GetListeners() {
+            return new Dictionary<string, IGrammarEventHandler>(listeners);
+        }
     }
 }

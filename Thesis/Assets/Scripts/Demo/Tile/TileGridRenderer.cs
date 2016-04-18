@@ -46,9 +46,17 @@ namespace Demo {
             }
         }
 
+        public string Name {
+            get {
+                if (grammar != null) {
+                    return grammar.Name;
+                } else return "";
+            }
+        }
+
         // Use this for initialization
         void Start() {
-            controller.RegisterStructureRenderer(this);
+            if (controller.currentStructureRenderer == null) controller.RegisterStructureRenderer(this);
             gridLines = new List<LineRenderer>();
             InitGridLines();
 

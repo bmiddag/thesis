@@ -17,6 +17,10 @@ namespace Demo {
             set;
         }
 
+        string Name {
+            get;
+        }
+
         IEnumerator SaveStructure();
         IEnumerator LoadStructure();
 
