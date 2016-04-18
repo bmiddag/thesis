@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<InterGrammarController name="controller" findFirst="true">
+  <Constraints>
+    <!-- Voorlopig geen enkele -->
+  </Constraints>
+  <Rules>
+    <!-- Voorlopig geen enkele -->
+  </Rules>
+  <StopConditions>
+    <!-- Voorlopig geen enkele -->
+  </StopConditions>
+  <Listeners>
+    <Listener>mission</Listener>
+    <Listener>graphspace</Listener>
+    <Listener>tilespace</Listener>
+    <Listener>mission_traverser</Listener>
+    <Listener>graphspace_traverser</Listener>
+    <Listener>tilespace_traverser</Listener>
+  </Listeners>
+</InterGrammarController>

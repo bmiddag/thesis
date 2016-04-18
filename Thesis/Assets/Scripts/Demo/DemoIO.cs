@@ -654,7 +654,7 @@ namespace Demo {
                                     string qName = reader["name"];
                                     reader.Read();
                                     name = reader.Value;
-                                    if(name == null || qName == null) throw new System.FormatException("Deserialization failed");
+                                    if (name == null || qName == null) throw new System.FormatException("Deserialization failed");
                                     T query = Deserialize<T>(new FileInfo(filename).Directory.FullName, name, controller, clearDictionaries: false);
                                     traverser.AddQuery(qName, query);
                                 } else {
