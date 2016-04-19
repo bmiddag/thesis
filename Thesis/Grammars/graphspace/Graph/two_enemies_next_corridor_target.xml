@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Graph>
+  <Nodes>
+    <Node id="0" hashCode="-270775296" active="True">
+      <Attributes>
+        <Attribute key="link$mission" value="rule.mission_traverser_query_0" />
+      </Attributes>
+    </Node>
+    <Node id="1" hashCode="-1446415872" active="True">
+      <AttributeClasses>
+        <AttributeClass name="corridor" />
+      </AttributeClasses>
+      <Attributes>
+        <Attribute key="link$mission$1" value="rule.mission_traverser_query_1" />
+        <Attribute key="link$mission$2" value="rule.mission_traverser_query_2" />
+      </Attributes>
+    </Node>
+  </Nodes>
+  <Edges>
+    <Edge node1="-270775296" node2="-1446415872" directed="True" />
+  </Edges>
+</Graph>

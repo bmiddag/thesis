@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Graph>
+  <Nodes>
+    <Node id="0" hashCode="2106776320" active="True">
+      <AttributeClasses>
+        <AttributeClass name="room" />
+      </AttributeClasses>
+      <Attributes>
+        <Attribute key="link$mission" value="rule.mission_traverser_query_0" />
+      </Attributes>
+    </Node>
+  </Nodes>
+  <Edges />
+</Graph>

@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Graph>
+  <Nodes>
+    <Node id="0" hashCode="-404370432" active="True">
+      <AttributeClasses>
+        <AttributeClass name="start" />
+      </AttributeClasses>
+      <Attributes>
+        <Attribute key="_grammar_current" value="true" />
+        <Attribute key="_link_graphspace" value="false" />
+      </Attributes>
+    </Node>
+  </Nodes>
+  <Edges />
+</Graph>

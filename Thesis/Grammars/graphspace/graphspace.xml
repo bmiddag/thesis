@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Grammar name="graphspace" type="graph" findFirst="true">
+  <Constraints>
+    <!-- None -->
+  </Constraints>
+  <Rules>
+    <Initial probability="1" name="initial_startroom">
+      <RuleCondition>TraverserMatch("mission_traverser","startroom")</RuleCondition>
+      <Target>initial_startroom</Target>
+      <RuleAction>TraverserNext("mission_traverser",,,)</RuleAction>
+    </Initial>
+    <Rule probability="0.1" name="boss_next">
+      <RuleCondition>TraverserMatch("mission_traverser","boss_next")</RuleCondition>
+      <Query>boss_next_query</Query>
+      <Target>boss_next_target</Target>
+      <RuleAction>TraverserNext("mission_traverser",mission_traverser_query_1,,)</RuleAction>
+    </Rule>
+    <Rule probability="0.1" name="one_enemy_next">
+      <RuleCondition>TraverserMatch("mission_traverser","one_enemy_next")</RuleCondition>
+      <Query>one_enemy_next_query</Query>
+      <Target>one_enemy_next_target</Target>
+      <RuleAction>TraverserNext("mission_traverser",mission_traverser_query_1,,)</RuleAction>
+    </Rule>
+    <Rule probability="0.1" name="two_enemies_next">
+      <RuleCondition>TraverserMatch("mission_traverser","two_enemies_next")</RuleCondition>
+      <Query>two_enemies_next_query</Query>
+      <Target>two_enemies_next_target</Target>
+      <RuleAction>TraverserNext("mission_traverser",mission_traverser_query_2,,)</RuleAction>
+    </Rule>
+  </Rules>
+  <Listeners>
+    <Listener alias="controller">controller</Listener>
+    <Listener>mission_traverser</Listener>
+  </Listeners>
+</Grammar>

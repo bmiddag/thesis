@@ -16,7 +16,7 @@ namespace Demo {
         XmlWriterSettings settings;
         DemoController controller;
         private static Dictionary<string, IGrammarEventHandler> tempLoaded = new Dictionary<string, IGrammarEventHandler>();
-        public static Dictionary<IGrammarEventHandler, List<string>> tempListeners = new Dictionary<IGrammarEventHandler, List<string>>();
+        private static Dictionary<IGrammarEventHandler, Dictionary<string, string>> tempListeners = new Dictionary<IGrammarEventHandler, Dictionary<string, string>>();
 
         public DemoIO(string filename, DemoController controller, bool clearDictionaries = true) {
             this.filename = filename;
@@ -414,11 +414,15 @@ namespace Demo {
                 if(eventHandler != null) tempLoaded.Add(eventHandler.Name, eventHandler);
                 if (clearDictionaries) {
                     // add listeners
-                    foreach (KeyValuePair<IGrammarEventHandler, List<string>> lList in tempListeners) {
-                        foreach (string listener in lList.Value) {
+                    foreach (KeyValuePair<IGrammarEventHandler, Dictionary<string, string>> lList in tempListeners) {
+                        foreach (KeyValuePair<string, string> listener in lList.Value) {
                             IGrammarEventHandler eh = null;
-                            if (tempLoaded.TryGetValue(listener, out eh)) {
-                                lList.Key.AddListener(eh);
+                            if (tempLoaded.TryGetValue(listener.Key, out eh)) {
+                                if (listener.Value != null && listener.Value != "") {
+                                    lList.Key.AddListener(eh, name: listener.Value);
+                                } else {
+                                    lList.Key.AddListener(eh);
+                                }
                                 //eh.AddListener(lList.Key);
                             } else throw new System.FormatException("Deserialization failed: listener not found");
                         }
@@ -625,6 +629,26 @@ namespace Demo {
                                 }
                                 if (!reader.IsEmptyElement) currentMethodCaller.Push(rCond);
                                 break;
+                            case "RuleAction":
+                                name = reader["name"];
+                                RuleAction rAct;
+                                if (name == null) {
+                                    reader.Read();
+                                    name = reader.Value;
+                                    if (currentRule == null || name == null) throw new System.FormatException("Deserialization failed");
+                                    rAct = (RuleAction)StringEvaluator.ParseMethodCaller(name, typeof(RuleAction), grammar, currentRule);
+                                } else {
+                                    if (currentRule == null) throw new System.FormatException("Deserialization failed");
+                                    rAct = RuleAction.FromName(name, currentRule);
+                                }
+                                if (rAct == null) throw new System.FormatException("Deserialization failed");
+                                if (currentMethodCaller.Count == 0) {
+                                    if (currentRule != null) currentRule.AddAction(rAct);
+                                } else {
+                                    currentMethodCaller.Peek().AddArgument(rAct);
+                                }
+                                if (!reader.IsEmptyElement) currentMethodCaller.Push(rAct);
+                                break;
                             case "TaskProcessor":
                                 string ev = reader["event"];
                                 name = reader["name"];
@@ -704,15 +728,20 @@ namespace Demo {
                                 break;
                             case "Listener":
                                 name = reader["name"];
+                                string alias = reader["name"];
                                 if (name == null && !reader.IsEmptyElement) {
                                     reader.Read();
                                     name = reader.Value;
                                 }
                                 if(name == null) throw new System.FormatException("Deserialization failed");
                                 if (!tempListeners.ContainsKey(eventHandler)) {
-                                    tempListeners.Add(eventHandler, new List<string>());
+                                    tempListeners.Add(eventHandler, new Dictionary<string, string>());
                                 }
-                                tempListeners[eventHandler].Add(name);
+                                if (alias == null || alias.Trim() == "") {
+                                    tempListeners[eventHandler].Add(name, "");
+                                } else {
+                                    tempListeners[eventHandler].Add(name, alias);
+                                }
                                 break;
                         }
                         break;
@@ -723,6 +752,7 @@ namespace Demo {
                             case "RuleCondition":
                             case "RuleProbability":
                             case "RuleMatchSelector":
+                            case "RuleAction":
                             case "TaskProcessor":
                                 currentMethodCaller.Pop();
                                 break;

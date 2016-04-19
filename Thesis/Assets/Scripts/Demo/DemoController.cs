@@ -218,12 +218,14 @@ namespace Demo {
                 if (canvas != null) graphRen.transform.SetParent(canvas.transform);
                 graphRen.gameObject.name = grammar.Name;
                 SetGrammar(graphRen, grammar);
+                structureRenderers.Add(graphRen);
             } else if (typeof(Grammar<TileGrid>).IsAssignableFrom(eventHandler.GetType())) {
                 Grammar<TileGrid> grammar = (Grammar<TileGrid>)eventHandler;
                 TileGridRenderer gridRen = new GameObject().AddComponent<TileGridRenderer>();
                 if (canvas != null) gridRen.transform.SetParent(canvas.transform);
                 gridRen.gameObject.name = grammar.Name;
                 SetGrammar(gridRen, grammar);
+                structureRenderers.Add(gridRen);
             }
         }
 

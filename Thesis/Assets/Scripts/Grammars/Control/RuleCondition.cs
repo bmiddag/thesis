@@ -83,7 +83,7 @@ namespace Grammars {
                 if(typeof(IDictionary<string, AttributedElement>).IsAssignableFrom(match.GetType())) {
                     IDictionary<string, AttributedElement> matchDict = (IDictionary<string, AttributedElement>)match;
                     foreach (KeyValuePair<string, AttributedElement> pair in matchDict) {
-                        rule.SetObjectAttribute(traverser + pair.Key, pair.Value);
+                        rule.SetObjectAttribute(traverser + "_" + pair.Key, pair.Value);
                     }
                 }
                 return true;

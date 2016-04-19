@@ -85,7 +85,7 @@ namespace Grammars {
                         List<AttributedElement> targets = new List<AttributedElement>();
                         foreach (KeyValuePair<string, Tile> pair in neighbors) {
                             if (task.HasAttribute("neighborSelector")) {
-                                string sel = task.GetAttribute("neighborselector");
+                                string sel = task.GetAttribute("neighborSelector");
                                 if (sel != null && !sel.Contains(pair.Key)) continue;
                             }
                             if (!pair.Value.HasLink(linkName) || pair.Value.HasAttribute("placeholder")) targets.Add(pair.Value);

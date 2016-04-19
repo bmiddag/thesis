@@ -41,6 +41,27 @@ namespace Grammars {
             foreach (string otherAtt in otherKeys) {
                 if (otherAtt.StartsWith("_grammar_")) {
                     // Ignore _grammar_ attributes, but use them for selection properties
+                } else if(otherAtt.StartsWith("link$")) {
+                    string linkName = otherAtt.Substring(5);
+                    if (linkName.Contains("$")) linkName = linkName.Substring(0, linkName.IndexOf("$"));
+                    string value = el.GetAttribute(otherAtt, raw);
+                    if (value == null || value.Trim() == "") {
+                        // return true if no link
+                        if (HasLink(linkName)) {
+                            attsMatched = false;
+                            if (!noMatch) return false;
+                        }
+                    } else {
+                        List<AttributedElement> els = GetElements(value);
+                        if (els.Count > 0) {
+                            foreach (AttributedElement linkEl in els) {
+                                if (!links.ContainsKey(linkName) || !links[linkName].Contains(linkEl)) {
+                                    attsMatched = false;
+                                    if (!noMatch) return false;
+                                }
+                            }
+                        }
+                    }
                 } else {
                     string thisAtt = GetAttribute(otherAtt, raw);
                     string elAtt = el.GetAttribute(otherAtt, raw);
@@ -199,6 +220,7 @@ namespace Grammars {
         }
 
         public void AddLink(string type, AttributedElement el) {
+            if (el == null) return;
             if (links.ContainsKey(type) && links[type] != null) {
                 if(!links[type].Contains(el)) links[type].Add(el);
             } else {
@@ -208,8 +230,15 @@ namespace Grammars {
         }
 
         public void RemoveLink(string type, AttributedElement el) {
+            if (el == null) return;
             if (links.ContainsKey(type) && links[type] != null && links[type].Contains(el)) {
                 links[type].Remove(el);
+            }
+        }
+
+        public void RemoveLinks(string type) {
+            if (links.ContainsKey(type)) {
+                links.Remove(type);
             }
         }
 
@@ -229,10 +258,27 @@ namespace Grammars {
 
 		public void SetAttribute(string key, string value, bool notify=true, bool copy=false) {
             if (dynamicAttributes.ContainsKey(key)) dynamicAttributes.Remove(key);
+            if (key.StartsWith("link$") && copy) {
+                string linkName = key.Substring(5);
+                if (linkName.Contains("$")) linkName = linkName.Substring(0, linkName.IndexOf("$"));
+                if (value == null || value.Trim() == "") {
+                    RemoveLinks(linkName);
+                    return;
+                } else {
+                    List<AttributedElement> els = GetElements(value);
+                    if (els.Count > 0) {
+                        foreach (AttributedElement el in els) {
+                            AddLink(linkName, el);
+                        }
+                    }
+                    return;
+                }
+            }
             if (value == null) {
                 attributes.Remove(key);
                 return;
             }
+
             if (value.StartsWith("@_") || value.StartsWith("@+")) {
                 // @ = Dynamic, _ = copies are not dynamic, + = copies are dynamic
                 DynamicAttribute da = StringEvaluator.ParseDynamicAttribute(value.Substring(2), this, key);
@@ -243,6 +289,9 @@ namespace Grammars {
                 }
             }
             if (value.StartsWith("from$") && copy) {
+                string newVal = ParseRaw(value);
+                if (newVal != null) attributes[key] = newVal;
+            } else if (value.StartsWith("link$") && copy) {
                 string newVal = ParseRaw(value);
                 if (newVal != null) attributes[key] = newVal;
             } else {

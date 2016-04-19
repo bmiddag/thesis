@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Traverser name="mission_traverser" type="graph">
+  <Queries>
+    <Query name="start">start</Query>
+    <Query name="one_enemy_next">one_enemy_next</Query>
+    <Query name="two_enemies_next">two_enemies_next</Query>
+    <Query name="boss_next">boss_next</Query>
+  </Queries>
+  <TaskProcessors>
+    <TaskProcessor event="Next">GraphTraverser_NextElement("graphspace")</TaskProcessor>
+  </TaskProcessors>
+  <Listeners>
+    <Listener alias="origin">mission</Listener>
+    <Listener>controller</Listener>
+  </Listeners>
+</Traverser>

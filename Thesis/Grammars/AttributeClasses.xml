@@ -36,7 +36,7 @@
   <AttClass name="open">
     <Attributes>
 	  <Attribute key="_demo_image" value="unknown" />
-	  <Attribute key="unknown" value="true" />
+	  <Attribute key="placeholder" value="true" />
     </Attributes>
   </AttClass>
   <AttClass name="treasure">
@@ -63,6 +63,49 @@
   <AttClass name="end">
     <Attributes>
 	  <Attribute key="_demo_image" value="stop" />
+    </Attributes>
+  </AttClass>
+  
+  <!-- SPACE GRAPH ATTRIBUTE CLASSES -->
+  <AttClass name="room">
+    <Attributes>
+	  <Attribute key="space_element" value="room" />
+	  <Attribute key="space_size" value="normal" />
+    </Attributes>
+  </AttClass>
+  <AttClass name="corridor">
+    <Attributes>
+	  <Attribute key="_demo_image" value="corridor" />
+	  <Attribute key="space_element" value="corridor" />
+    </Attributes>
+  </AttClass>
+  <AttClass name="bigroom">
+    <Attributes>
+	  <Attribute key="space_element" value="room" />
+	  <Attribute key="space_size" value="large" />
+	  <Attribute key="_demo_size" value="large" />
+    </Attributes>
+  </AttClass>
+  
+  <!-- TILE SPACE ATTRIBUTE CLASSES -->
+  <AttClass name="tile_floor">
+    <Attributes>
+	  <Attribute key="_demo_image" value="tile_floor" />
+	  <Attribute key="empty" value="true" />
+    </Attributes>
+  </AttClass>
+  <AttClass name="tile_wall">
+    <Attributes>
+	  <Attribute key="_demo_image" value="tile_wall" />
+	  <Attribute key="wall" value="true" />
+	  <Attribute key="empty" value="false" />
+    </Attributes>
+  </AttClass>
+  <AttClass name="tile_enemy">
+    <Attributes>
+	  <Attribute key="_demo_image" value="tile_enemy" />
+	  <Attribute key="empty" value="false" />
+	  <Attribute key="enemy" value="true" />
     </Attributes>
   </AttClass>
 </AttributeClasses>

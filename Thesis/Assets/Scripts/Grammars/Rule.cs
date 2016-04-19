@@ -52,6 +52,11 @@ namespace Grammars {
             set { matchSelector = value; }
         }
 
+        protected List<RuleAction> actions = null;
+        public List<RuleAction> Actions {
+            get { return new List<RuleAction>(actions); }
+        }
+
         protected bool hasSelected;
         protected bool active;
 
@@ -82,6 +87,7 @@ namespace Grammars {
             this.dynamicProbability = dynamicProbability;
             this.matchSelector = matchSelector;
             this.active = active;
+            actions = new List<RuleAction>();
             hasSelected = false;
         }
 
@@ -124,6 +130,11 @@ namespace Grammars {
                 transformer.Select();
                 hasSelected = true;
                 transformer.Transform(target);
+                if (actions != null) {
+                    foreach (RuleAction act in actions) {
+                        act.Execute();
+                    }
+                }
                 return true;
             } else {
                 return false;
@@ -209,6 +220,18 @@ namespace Grammars {
                 return subcontainer.GetElements(passSpecifier);
             } else {
                 return base.GetElements(specifier);
+            }
+        }
+
+        public void AddAction(RuleAction act) {
+            if (actions != null) {
+                actions.Add(act);
+            }
+        }
+
+        public void RemoveAction(RuleAction act) {
+            if (actions != null) {
+                actions.Remove(act);
             }
         }
     }

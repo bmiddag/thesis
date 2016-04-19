@@ -233,6 +233,9 @@ namespace Grammars {
             } else if (methodCallerType == typeof(RuleMatchSelector)) {
                 caller = RuleMatchSelector.FromName(methodName, rule);
                 defaultArgs = 2;
+            } else if (methodCallerType == typeof(RuleAction)) {
+                caller = RuleAction.FromName(methodName, rule);
+                defaultArgs = 1;
             } else if (methodCallerType == typeof(DynamicAttribute)) {
                 caller = DynamicAttribute.FromName(methodName, element, attName);
                 defaultArgs = 2;
