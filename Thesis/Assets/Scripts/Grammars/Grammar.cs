@@ -104,6 +104,11 @@ namespace Grammars {
             get { return this; }
         }
 
+        public override string LinkType {
+            get { return "grammar"; }
+            set { }
+        }
+
         public Grammar(string name, Type transformerType = null, GrammarRuleSelector ruleSelectionController = null,
             bool findAllRules = false, bool threaded = true) {
             this.name = name;
@@ -149,12 +154,12 @@ namespace Grammars {
             int tempRuleIndex = -1;
             foreach (Rule<T> rule in ruleSet) {
                 rule.Deselect();
-                if (findFirst) rule.Find(Source);
+                if (findFirst && rule.CheckCondition()) rule.Find(Source);
             }
             // Make a copy of the rule list without the ones that are certain to fail. 
             List<Rule<T>> tempRules = new List<Rule<T>>();
             foreach (Rule<T> rule in ruleSet) {
-                if (rule.CheckCondition() && (!findFirst || rule.HasSelected())) {
+                if ((findFirst || rule.CheckCondition()) && (!findFirst || rule.HasSelected())) {
                     tempRules.Add(rule);
                     //UnityEngine.MonoBehaviour.print("[" + Name + "]: Rule matches: " + rule.Name);
                 }
@@ -242,8 +247,8 @@ namespace Grammars {
                 currentTask = taskQueue.Peek();
             } else return;
 
-            UnityEngine.MonoBehaviour.print("[" + Name + "]: Starting update");
-            if (source != null) UnityEngine.MonoBehaviour.print("[" + Name + "]: Source count: " + source.GetElements().Count);
+            //UnityEngine.MonoBehaviour.print("[" + Name + "]: Starting update");
+            //if (source != null) UnityEngine.MonoBehaviour.print("[" + Name + "]: Source count: " + source.GetElements().Count);
             // Select rule
             bool foundRule = SelectRule(new List<Rule<T>>(rules.Values), ruleSelectionController, findAllRules);
             if (foundRule && selectedRule != null) {
@@ -396,8 +401,20 @@ namespace Grammars {
                     switch (specifier) {
                         case "task":
                             if(CurrentTask != null) return CurrentTask.GetElements(); break;
+                        case "task_structure":
+                            if (CurrentTask != null) {
+                                attrList.Add(currentTask);
+                                return attrList;
+                            }
+                            break;
                         case "source":
                             if(Source != null) return Source.GetElements(); break;
+                        case "source_structure":
+                            if (Source != null) {
+                                attrList.Add(Source);
+                                return attrList;
+                            }
+                            break;
                     }
                     return base.GetElements(specifier);
                 }
@@ -408,49 +425,58 @@ namespace Grammars {
         public virtual void HandleGrammarEvent(Task task) {
             if (task == null) return;
             UnityEngine.MonoBehaviour.print("[" + name + "]" + " Received event: " + task.Action);
-            if (GetTaskProcessor(task.Action) != null) {
-                GetTaskProcessor(task.Action).Process(task);
-            } else if(task.ReplyExpected) {
-                List<AttributedElement> els;
-                switch (task.Action) {
-                    case "GetElements":
-                        els = GetElements(task.GetAttribute("specifier")); // doesn't matter if specifier = null :)
-                        task.AddReply(els);
-                        break;
-                    case "GetStructure":
-                        els = GetElements(task.GetAttribute("specifier"));
-                        if (els != null && els.Count > 0 && els[0] != null && typeof(StructureModel).IsAssignableFrom(els[0].GetType())) {
-                            task.AddReply(els[0]);
-                        } else task.AddReply(null);
-                        break;
-                    case "GenerateNext":
-                        lock (taskQueue) {
-                            taskQueue.Enqueue(task);
-                            Monitor.PulseAll(taskQueue);
-                            while (!task.HasAttribute("completed")) Monitor.Wait(taskQueue);
-                        }
-                        task.AddReply("completed");
-                        break;
-                    default:
-                        break;
-                }
-            } else {
-                switch (task.Action) {
-                    case "Stop":
-                        if (task.Targets.Contains(this)) {
+            try {
+                if (GetTaskProcessor(task.Action) != null) {
+                    GetTaskProcessor(task.Action).Process(task);
+                } else if (task.ReplyExpected) {
+                    List<AttributedElement> els;
+                    switch (task.Action) {
+                        case "GetElements":
+                            els = GetElements(task.GetAttribute("specifier")); // doesn't matter if specifier = null :)
+                            task.AddReply(els);
+                            break;
+                        case "GetStructure":
+                            els = GetElements(task.GetAttribute("specifier"));
+                            if (els != null && els.Count > 0 && els[0] != null && typeof(StructureModel).IsAssignableFrom(els[0].GetType())) {
+                                task.AddReply(els[0]);
+                            } else task.AddReply(null);
+                            break;
+                        case "GenerateNext":
                             lock (taskQueue) {
-                                threadStop = true;
+                                taskQueue.Enqueue(task);
+                                Monitor.PulseAll(taskQueue);
+                                while (!task.HasAttribute("completed")) Monitor.Wait(taskQueue);
+                            }
+                            task.AddReply("completed");
+                            break;
+                        default:
+                            break;
+                    }
+                } else {
+                    switch (task.Action) {
+                        case "Stop":
+                            if (!threadStop) {
+                                if (task.Targets.Contains(this)) {
+                                    lock (taskQueue) {
+                                        threadStop = true;
+                                        Monitor.PulseAll(taskQueue);
+                                    }
+                                }
+                                SendGrammarEvent("Stop",
+                                    source: this,
+                                    targets: new List<string>(listeners.Keys).ToArray());
+                            }
+                            break;
+                        default:
+                            lock (taskQueue) {
+                                taskQueue.Enqueue(task);
                                 Monitor.PulseAll(taskQueue);
                             }
-                        }
-                        break;
-                    default:
-                        lock(taskQueue) {
-                            taskQueue.Enqueue(task);
-                            Monitor.PulseAll(taskQueue);
-                        }
-                        break;
+                            break;
+                    }
                 }
+            } catch (Exception e) {
+                UnityEngine.Debug.LogError(e.Message + e.StackTrace);
             }
         }
 
@@ -484,9 +510,11 @@ namespace Grammars {
             if (targets != null) {
                 task.ReplyExpected = replyExpected;
                 foreach (string tarStr in targets) {
-                    IGrammarEventHandler target = listeners[tarStr];
-                    if (target != null) {
-                        task.AddTarget(target);
+                    if (listeners.ContainsKey(tarStr)) {
+                        IGrammarEventHandler target = listeners[tarStr];
+                        if (target != null) {
+                            task.AddTarget(target);
+                        }
                     }
                 }
             }

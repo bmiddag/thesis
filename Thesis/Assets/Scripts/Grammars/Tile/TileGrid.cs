@@ -5,7 +5,13 @@ namespace Grammars.Tiles {
     public class TileGrid : StructureModel {
         Tile[,] grid;
 
-		public TileGrid(int width, int height) : base() {
+        protected string structureName = null;
+        public override string LinkType {
+            get { return structureName; }
+            set { structureName = value; }
+        }
+
+        public TileGrid(int width, int height) : base() {
             grid = new Tile[width, height];
 		}
 

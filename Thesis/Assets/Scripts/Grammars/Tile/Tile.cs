@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Grammars.Tiles {
     public class Tile : AttributedElement {
@@ -7,9 +8,12 @@ namespace Grammars.Tiles {
         bool destroyed = false;
 
         public override IElementContainer Container {
-            get {
-                return grid;
-            }
+            get { return grid; }
+        }
+
+        public override string LinkType {
+            get { return grid.LinkType; }
+            set {}
         }
 
         public Tile(TileGrid grid, int x, int y) : base() {

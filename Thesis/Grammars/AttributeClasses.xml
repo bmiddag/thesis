@@ -58,6 +58,7 @@
   <AttClass name="start">
     <Attributes>
 	  <Attribute key="_demo_image" value="start" />
+	  <Attribute key="start" value="true" />
     </Attributes>
   </AttClass>
   <AttClass name="end">

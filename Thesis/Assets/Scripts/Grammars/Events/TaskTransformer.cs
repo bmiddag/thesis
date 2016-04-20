@@ -77,7 +77,7 @@ namespace Grammars.Events {
             } else {
                 pattern = query.Action;
             }
-            if (query != null || query.Source != null) {
+            if (query != null && query.Source != null) {
                 if (query.Source != source.Source) return false;
             }
             if (!MatchAttributes(source, query)) return false;
@@ -136,6 +136,9 @@ namespace Grammars.Events {
                 source.Action = newTask;
             }
             source.Targets = target.Targets;
+            if (target.Source != null) {
+                source.Source = target.Source;
+            }
             SetAttributesUsingDifference(source, query, target);
             /*if (target.Parameters.Count > 0) {
                 List<object> sourceParams = source.Parameters;

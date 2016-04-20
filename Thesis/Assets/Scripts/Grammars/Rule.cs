@@ -4,6 +4,11 @@ using System.Collections.Generic;
 namespace Grammars {
     public class Rule<T> : AttributedElement
         where T : StructureModel {
+        public override string LinkType {
+            get { return "rule"; }
+            set { }
+        }
+
         protected Grammar<T> grammar;
         public Grammar<T> Grammar {
             get { return grammar; }
@@ -111,6 +116,7 @@ namespace Grammars {
 
         public bool Find(T source) {
             hasSelected = false;
+            if (query == null && target == null && actions.Count > 0) return true;
             InitStructureTransformer(source);
             bool found = transformer.Find(query);
             if (found) {
@@ -123,17 +129,20 @@ namespace Grammars {
         public bool Apply(T source, bool useExisting = true) {
             if (useExisting && transformer != null) {
                 transformer.Transform(target);
+                foreach (RuleAction act in actions) {
+                    act.Execute();
+                }
                 return true;
             }
             bool found = Find(source);
             if (found) {
-                transformer.Select();
-                hasSelected = true;
-                transformer.Transform(target);
-                if (actions != null) {
-                    foreach (RuleAction act in actions) {
-                        act.Execute();
-                    }
+                if (transformer != null) {
+                    //transformer.Select();
+                    //hasSelected = true;
+                    transformer.Transform(target);
+                }
+                foreach (RuleAction act in actions) {
+                    act.Execute();
                 }
                 return true;
             } else {
@@ -224,15 +233,11 @@ namespace Grammars {
         }
 
         public void AddAction(RuleAction act) {
-            if (actions != null) {
-                actions.Add(act);
-            }
+            actions.Add(act);
         }
 
         public void RemoveAction(RuleAction act) {
-            if (actions != null) {
-                actions.Remove(act);
-            }
+            actions.Remove(act);
         }
     }
 }

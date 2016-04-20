@@ -7,6 +7,12 @@ namespace Grammars.Graphs {
 		HashSet<Node> nodes;
 		HashSet<Edge> edges;
 
+        protected string structureName = null;
+        public override string LinkType {
+            get { return structureName; }
+            set { structureName = value; }
+        }
+
         public Graph() : base() {
 			nodes = new HashSet<Node>();
 			edges = new HashSet<Edge>();

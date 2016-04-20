@@ -2,6 +2,12 @@
 
 namespace Grammars.Events {
     public class Task : StructureModel {
+        protected string structureName = null;
+        public override string LinkType {
+            get { return structureName; }
+            set { structureName = value; }
+        }
+
         protected List<IGrammarEventHandler> targets;
         public List<IGrammarEventHandler> Targets {
             get { return new List<IGrammarEventHandler>(targets); }

@@ -57,6 +57,11 @@ namespace Grammars {
             get { return grammar; }
         }
 
+        public override string LinkType {
+            get { return "constraint"; }
+            set { }
+        }
+
         public Constraint(Grammar<T> grammar, string name, bool active=true) {
             this.grammar = grammar;
             grammar.AddConstraint(name, this);

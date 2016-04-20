@@ -207,7 +207,7 @@ namespace Demo {
                 eventHandler.AddListener(this);
                 AddListener(eventHandler);
                 print("Grammar successfully set.");
-                SendGrammarEvent("start", targets: new string[] { eventHandler.Name });
+                SendGrammarEvent("Start", targets: new string[] { eventHandler.Name });
             }
         }
 
@@ -215,6 +215,8 @@ namespace Demo {
             if (typeof(Grammar<Graph>).IsAssignableFrom(eventHandler.GetType())) {
                 Grammar<Graph> grammar = (Grammar<Graph>)eventHandler;
                 GraphRenderer graphRen = new GameObject().AddComponent<GraphRenderer>();
+                graphRen.controller = this;
+                graphRen.cameraControl = FindObjectOfType<CameraControl>();
                 if (canvas != null) graphRen.transform.SetParent(canvas.transform);
                 graphRen.gameObject.name = grammar.Name;
                 SetGrammar(graphRen, grammar);
@@ -222,6 +224,8 @@ namespace Demo {
             } else if (typeof(Grammar<TileGrid>).IsAssignableFrom(eventHandler.GetType())) {
                 Grammar<TileGrid> grammar = (Grammar<TileGrid>)eventHandler;
                 TileGridRenderer gridRen = new GameObject().AddComponent<TileGridRenderer>();
+                gridRen.controller = this;
+                gridRen.cameraControl = FindObjectOfType<CameraControl>();
                 if (canvas != null) gridRen.transform.SetParent(canvas.transform);
                 gridRen.gameObject.name = grammar.Name;
                 SetGrammar(gridRen, grammar);
@@ -233,6 +237,7 @@ namespace Demo {
             //Type renType = currentStructureRenderer.GetType();
             if (typeof(T) != renderer.Source.GetType()) return;
             grammar.Source = (T)renderer.Source;
+            renderer.Source.LinkType = grammar.Name;
             renderer.Grammar = grammar;
         }
 

@@ -7,6 +7,11 @@ using System.Linq;
 namespace Grammars {
     public class Traverser<T> : AttributedElement, IGrammarEventHandler
         where T : StructureModel {
+        public override string LinkType {
+            get { return "traverser"; }
+            set { }
+        }
+
         protected Dictionary<string, IGrammarEventHandler> listeners;
         protected Dictionary<string, TaskProcessor> taskProcessors;
         protected Dictionary<string, T> queries;
@@ -28,10 +33,13 @@ namespace Grammars {
             get {
                 if (source == null) {
                     if (listeners.ContainsKey("origin")) {
+                        Dictionary<string, string> stringParameters = new Dictionary<string, string>();
+                        stringParameters.Add("specifier", "source.this");
                         List<object> replies = SendGrammarEvent("GetStructure",
                             replyExpected: true,
                             source: this,
-                            targets: new string[] { "origin" });
+                            targets: new string[] { "origin" },
+                            stringParameters: stringParameters);
                         if (replies != null && replies.Count > 0 && replies[0] != null && typeof(T).IsAssignableFrom(replies[0].GetType())) {
                             source = (T)replies[0];
                         }
@@ -45,7 +53,10 @@ namespace Grammars {
         public IStructureTransformer<T> Transformer {
             get {
                 if (transformerType != null) {
-                    return (IStructureTransformer<T>)(Activator.CreateInstance(transformerType));
+                    IStructureTransformer<T> newTrans = (IStructureTransformer<T>)(Activator.CreateInstance(transformerType));
+                    newTrans.Source = Source;
+                    newTrans.Traverser = this;
+                    return newTrans;
                 } else return null;
             }
             set {
@@ -68,6 +79,7 @@ namespace Grammars {
             source = null;
             listeners = new Dictionary<string, IGrammarEventHandler>();
             queries = new Dictionary<string, T>();
+            taskProcessors = new Dictionary<string, TaskProcessor>();
         }
 
         public virtual void GenerateMore() {
@@ -88,7 +100,8 @@ namespace Grammars {
 
         public virtual void SetFirstElement() {
             if (currentElement == null) {
-                List<AttributedElement> possibleStarts = source.GetElements();
+                T src = Source;
+                List<AttributedElement> possibleStarts = src.GetElements();
                 if (possibleStarts != null && possibleStarts.Count > 0) {
                     IEnumerable<AttributedElement> markedStarts = possibleStarts.Where(e => e.HasAttribute("start"));
                     if (markedStarts != null && markedStarts.Count() > 0) possibleStarts = markedStarts.ToList();
@@ -101,7 +114,7 @@ namespace Grammars {
                     if (replies == null || replies.Count == 0) {
                         return;
                     }
-                    possibleStarts = source.GetElements();
+                    possibleStarts = Source.GetElements();
                     if (possibleStarts != null && possibleStarts.Count > 0) {
                         IEnumerable<AttributedElement> markedStarts = possibleStarts.Where(e => e.HasAttribute("start"));
                         if (markedStarts != null && markedStarts.Count() > 0) possibleStarts = markedStarts.ToList();
@@ -114,8 +127,12 @@ namespace Grammars {
 
         protected IDictionary<string, AttributedElement> Find(T query) {
             IStructureTransformer<T> transformer = Transformer;
+            if (CurrentElement == null) {
+                SetFirstElement();
+            }
             bool found = transformer.Find(query);
             if (found) {
+                //UnityEngine.MonoBehaviour.print("Traverser found a match!");
                 transformer.Select();
                 return transformer.SelectedMatch;
             } else return null;
@@ -130,6 +147,7 @@ namespace Grammars {
                         GetTaskProcessor("Next").Process(task);
                     }
                     break;
+                case "CheckMatch":
                 case "Checkmatch":
                 case "Match":
                 case "Find":
@@ -195,34 +213,38 @@ namespace Grammars {
         public virtual void HandleGrammarEvent(Task task) {
             if (task == null) return;
             UnityEngine.MonoBehaviour.print("[" + name + "]" + " Received event: " + task.Action);
-            if (GetTaskProcessor(task.Action) != null) {
-                GetTaskProcessor(task.Action).Process(task);
-            } else if (task.ReplyExpected) {
-                switch (task.Action) {
-                    case "GetElements":
-                        if (task.HasAttribute("specifier")) {
-                            task.AddReply(GetElements(task["specifier"]));
-                        } else {
-                            task.AddReply(GetElements());
-                        }
-                        break;
-                    case "SetCurrentElement":
-                        if (task.HasObjectAttribute("element")) {
-                            AttributedElement el = (AttributedElement)task.GetObjectAttribute("element");
-                            CurrentElement = el;
-                        } else if (task.HasAttribute("element")) {
-                            AttributedElement el = source.GetElement("element");
-                            CurrentElement = el;
-                        }
-                        task.AddReply(CurrentElement);
-                        break;
-                    case "GetCurrentElement":
-                        task.AddReply(CurrentElement);
-                        break;
-                    default:
-                        ExecuteTask(task);
-                        break;
+            try {
+                if (GetTaskProcessor(task.Action) != null) {
+                    GetTaskProcessor(task.Action).Process(task);
+                } else if (task.ReplyExpected) {
+                    switch (task.Action) {
+                        case "GetElements":
+                            if (task.HasAttribute("specifier")) {
+                                task.AddReply(GetElements(task["specifier"]));
+                            } else {
+                                task.AddReply(GetElements());
+                            }
+                            break;
+                        case "SetCurrentElement":
+                            if (task.HasObjectAttribute("element")) {
+                                AttributedElement el = (AttributedElement)task.GetObjectAttribute("element");
+                                CurrentElement = el;
+                            } else if (task.HasAttribute("element")) {
+                                AttributedElement el = Source.GetElement("element");
+                                CurrentElement = el;
+                            }
+                            task.AddReply(CurrentElement);
+                            break;
+                        case "GetCurrentElement":
+                            task.AddReply(CurrentElement);
+                            break;
+                        default:
+                            ExecuteTask(task);
+                            break;
+                    }
                 }
+            } catch (Exception e) {
+                UnityEngine.Debug.LogError(e.Message + e.StackTrace);
             }
         }
 

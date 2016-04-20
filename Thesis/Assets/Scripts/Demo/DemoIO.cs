@@ -17,6 +17,7 @@ namespace Demo {
         DemoController controller;
         private static Dictionary<string, IGrammarEventHandler> tempLoaded = new Dictionary<string, IGrammarEventHandler>();
         private static Dictionary<IGrammarEventHandler, Dictionary<string, string>> tempListeners = new Dictionary<IGrammarEventHandler, Dictionary<string, string>>();
+        private static Dictionary<Task, Dictionary<string, List<string>>> tempTaskListeners = new Dictionary<Task, Dictionary<string, List<string>>>();
 
         public DemoIO(string filename, DemoController controller, bool clearDictionaries = true) {
             this.filename = filename;
@@ -30,6 +31,7 @@ namespace Demo {
             if (clearDictionaries) {
                 tempLoaded.Clear();
                 tempListeners.Clear();
+                tempTaskListeners.Clear();
             }
         }
 
@@ -234,6 +236,7 @@ namespace Demo {
                 while (reader.Read()) {
                     switch (reader.NodeType) {
                         case XmlNodeType.Element:
+                            string name;
                             // Get element name and switch on it.
                             switch (reader.Name) {
                                 case "Task":
@@ -242,8 +245,48 @@ namespace Demo {
                                     task = new Task(action: action);
                                     if (!reader.IsEmptyElement) currentElement = task;
                                     break;
+                                case "Source":
+                                    name = reader["name"];
+                                    if (name == null) {
+                                        if (!reader.IsEmptyElement) {
+                                            reader.Read();
+                                            name = reader.Value;
+                                        }
+                                    }
+                                    if (name != null) {
+                                        if (!tempTaskListeners.ContainsKey(task)) {
+                                            tempTaskListeners.Add(task, new Dictionary<string, List<string>>());
+                                        }
+                                        if (!tempTaskListeners[task].ContainsKey("source")) {
+                                            tempTaskListeners[task].Add("source", new List<string>());
+                                        }
+                                        tempTaskListeners[task]["source"].Add(name);
+                                    } else {
+                                        throw new System.FormatException("Deserialization failed"); // Deserialization failed
+                                    }
+                                    break;
+                                case "Target":
+                                    name = reader["name"];
+                                    if (name == null) {
+                                        if (!reader.IsEmptyElement) {
+                                            reader.Read();
+                                            name = reader.Value;
+                                        }
+                                    }
+                                    if (name != null) {
+                                        if (!tempTaskListeners.ContainsKey(task)) {
+                                            tempTaskListeners.Add(task, new Dictionary<string, List<string>>());
+                                        }
+                                        if (!tempTaskListeners[task].ContainsKey("target")) {
+                                            tempTaskListeners[task].Add("target", new List<string>());
+                                        }
+                                        tempTaskListeners[task]["target"].Add(name);
+                                    } else {
+                                        throw new System.FormatException("Deserialization failed"); // Deserialization failed
+                                    }
+                                    break;
                                 case "AttributeClass":
-                                    string name = reader["name"];
+                                    name = reader["name"];
                                     if (name == null || currentElement == null) return null; // Deserialization failed
                                     controller.AddAttributeClass(currentElement, name);
                                     break;
@@ -338,6 +381,7 @@ namespace Demo {
             if (clearDictionaries) {
                 tempLoaded.Clear();
                 tempListeners.Clear();
+                tempTaskListeners.Clear();
             }
             string grammarType = null;
             string findFirst = null;
@@ -364,7 +408,9 @@ namespace Demo {
                         } else if (reader.Name == "Traverser") {
                             traverser = true;
                             grammarType = reader["type"];
+                            name = reader["name"];
                             if (grammarType == null || name == null) throw new System.FormatException("Deserialization failed");
+                            break;
                         }
                     }
                 }
@@ -411,7 +457,16 @@ namespace Demo {
                             break;
                     }
                 }
-                if(eventHandler != null) tempLoaded.Add(eventHandler.Name, eventHandler);
+                if (eventHandler != null) {
+                    tempLoaded.Add(eventHandler.Name, eventHandler);
+                }
+                if (tempListeners.ContainsKey(eventHandler)) {
+                    foreach (string listener in tempListeners[eventHandler].Keys) {
+                        if (!tempLoaded.ContainsKey(listener)) {
+                            Deserialize<IGrammarEventHandler>(new FileInfo(filename).Directory.FullName, listener, controller, clearDictionaries: false);
+                        }
+                    }
+                }
                 if (clearDictionaries) {
                     // add listeners
                     foreach (KeyValuePair<IGrammarEventHandler, Dictionary<string, string>> lList in tempListeners) {
@@ -427,9 +482,26 @@ namespace Demo {
                             } else throw new System.FormatException("Deserialization failed: listener not found");
                         }
                     }
+                    foreach (KeyValuePair<Task, Dictionary<string, List<string>>> taskPair in tempTaskListeners) {
+                        Task task = taskPair.Key;
+                        foreach (KeyValuePair<string, List<string>> listenerPair in taskPair.Value) {
+                            string target = listenerPair.Key;
+                            foreach (string listener in listenerPair.Value) {
+                                IGrammarEventHandler eh = null;
+                                if (tempLoaded.TryGetValue(listener, out eh)) {
+                                    if (target == "source") {
+                                        task.Source = eh;
+                                    } else if (target == "target") {
+                                        task.AddTarget(eh);
+                                    }
+                                } else throw new System.FormatException("Deserialization failed: listener not found");
+                            }
+                        }
+                    }
                     // clear them
                     tempLoaded.Clear();
                     tempListeners.Clear();
+                    tempTaskListeners.Clear();
                 }
                 return eventHandler;
             }
@@ -561,7 +633,10 @@ namespace Demo {
                                     }
                                 }
                                 double probability;
-                                if (name == null || probabilityStr == null || !double.TryParse(probabilityStr, out probability)) throw new System.FormatException("Deserialization failed");
+                                if (probabilityStr == null || !double.TryParse(probabilityStr, out probability)) {
+                                    probability = 1;
+                                }
+                                if (name == null) throw new System.FormatException("Deserialization failed");
                                 currentRule = new Rule<T>(grammar, name, probability, priority:priority, active:active);
                                 if (currentConstraint != null) {
                                     currentConstraint.AddRule(currentRule);
@@ -667,7 +742,11 @@ namespace Demo {
                                     ev = tProc.Method.Name;
                                 }
                                 if (currentMethodCaller.Count == 0) {
-                                    grammar.AddTaskProcessor(ev, tProc);
+                                    if (grammar != null) {
+                                        grammar.AddTaskProcessor(ev, tProc);
+                                    } else if (traverser != null) {
+                                        traverser.AddTaskProcessor(ev, tProc);
+                                    }
                                 } else {
                                     currentMethodCaller.Peek().AddArgument(tProc);
                                 }
@@ -728,7 +807,7 @@ namespace Demo {
                                 break;
                             case "Listener":
                                 name = reader["name"];
-                                string alias = reader["name"];
+                                string alias = reader["alias"];
                                 if (name == null && !reader.IsEmptyElement) {
                                     reader.Read();
                                     name = reader.Value;
@@ -794,7 +873,7 @@ namespace Demo {
                     if (file.Name == filename + ".xml") {
                         filename = dirInfo.FullName + "/" + filename + ".xml";
                         DemoIO serializer = new DemoIO(filename, controller, clearDictionaries: clearDictionaries);
-                        IGrammarEventHandler eh = serializer.ParseGrammar();
+                        IGrammarEventHandler eh = serializer.ParseGrammar(clearDictionaries: clearDictionaries);
                         return (T)(object)eh;
                     }
                 }
@@ -804,7 +883,7 @@ namespace Demo {
                     if (subdir.Name == filename) {
                         filename = subdir.FullName + "/" + filename + ".xml";
                         DemoIO serializer = new DemoIO(filename, controller, clearDictionaries: clearDictionaries);
-                        IGrammarEventHandler eh = serializer.ParseGrammar();
+                        IGrammarEventHandler eh = serializer.ParseGrammar(clearDictionaries: clearDictionaries);
                         return (T)(object)eh;
                     }
                 }
@@ -814,7 +893,7 @@ namespace Demo {
                     if (subdir.Name == filename) {
                         filename = subdir.FullName + "/" + filename + ".xml";
                         DemoIO serializer = new DemoIO(filename, controller, clearDictionaries: clearDictionaries);
-                        IGrammarEventHandler eh = serializer.ParseGrammar();
+                        IGrammarEventHandler eh = serializer.ParseGrammar(clearDictionaries: clearDictionaries);
                         return (T)(object)eh;
                     }
                 }

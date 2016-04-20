@@ -8,7 +8,7 @@ using Grammars.Events;
 
 namespace Demo {
 	public class GraphRenderer : MonoBehaviour, IStructureRenderer {
-		Graph graph;
+        Graph graph;
         public NodeRenderer currentNode = null;
         public EdgeRenderer currentEdge = null;
         NodeRenderer startNode = null;
@@ -37,7 +37,12 @@ namespace Demo {
         }
 
         public StructureModel Source {
-            get { return graph; }
+            get {
+                if (graph == null) {
+                    graph = new Graph();
+                }
+                return graph;
+            }
         }
 
         public IGrammarEventHandler Grammar {
@@ -66,7 +71,7 @@ namespace Demo {
             if(controller.currentStructureRenderer == null) controller.RegisterStructureRenderer(this);
 
             // Create the graph
-            graph = new Graph();
+            if(graph == null) graph = new Graph();
             graph.StructureChanged += GraphStructureChanged;
         }
 

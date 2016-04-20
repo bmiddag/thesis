@@ -9,9 +9,12 @@ namespace Grammars.Graphs {
         bool directed = false;
 
         public override IElementContainer Container {
-            get {
-                return graph;
-            }
+            get { return graph; }
+        }
+
+        public override string LinkType {
+            get { return graph.LinkType; }
+            set { }
         }
 
         public Edge(Graph graph, Node node1, Node node2, bool directed = false) : base() {

@@ -41,7 +41,7 @@
       <Query>enemy_chain_query</Query>
       <Target>enemy_chain_target</Target>
     </Rule>
-	<Rule probability="0.1" name="insert_branch">
+	<Rule probability="0.08" name="insert_branch">
       <Query>insert_branch_query</Query>
       <Target>insert_branch_target</Target>
     </Rule>
@@ -66,9 +66,16 @@
       <Query>improve_pacing_query</Query>
       <Target>improve_pacing_target</Target>
     </Rule>
-    <Rule probability="0.15" name="endbranch">
+    <Rule probability="0.32" name="endbranch">
       <Query>endbranch_query</Query>
       <Target>endbranch_target</Target>
     </Rule>
+    <Rule probability="0.7" name="merge_open">
+      <Query>merge_open_query</Query>
+      <Target>merge_open_target</Target>
+    </Rule>
   </Rules>
+  <Listeners>
+    <Listener alias="controller">controller</Listener>
+  </Listeners>
 </Grammar>

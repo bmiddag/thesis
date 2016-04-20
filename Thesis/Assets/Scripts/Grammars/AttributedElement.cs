@@ -16,6 +16,11 @@ namespace Grammars {
 
         public abstract IElementContainer Container { get; }
 
+        public abstract string LinkType {
+            get;
+            set;
+        }
+
         public AttributedElement() {
 			attributes = new Dictionary<string, string>();
             dynamicAttributes = new Dictionary<string, DynamicAttribute>();
@@ -219,25 +224,34 @@ namespace Grammars {
             }
         }
 
-        public void AddLink(string type, AttributedElement el) {
+        public void AddLink(string type, AttributedElement el, bool addOther=true) {
             if (el == null) return;
             if (links.ContainsKey(type) && links[type] != null) {
-                if(!links[type].Contains(el)) links[type].Add(el);
+                if (!links[type].Contains(el)) {
+                    links[type].Add(el);
+                    if(addOther) el.AddLink(LinkType, this, addOther: false);
+                }
             } else {
                 links[type] = new List<AttributedElement>();
                 links[type].Add(el);
+                if(addOther) el.AddLink(LinkType, this, addOther: false);
             }
         }
 
-        public void RemoveLink(string type, AttributedElement el) {
+        public void RemoveLink(string type, AttributedElement el, bool removeOther = true) {
             if (el == null) return;
             if (links.ContainsKey(type) && links[type] != null && links[type].Contains(el)) {
                 links[type].Remove(el);
+                if (removeOther) el.RemoveLink(LinkType, this, removeOther: false);
             }
         }
 
-        public void RemoveLinks(string type) {
+        public void RemoveLinks(string type, bool removeOther=true) {
             if (links.ContainsKey(type)) {
+                List<AttributedElement> tempLinks = new List<AttributedElement>(links[type]);
+                foreach (AttributedElement link in tempLinks) {
+                    RemoveLink(type, link, removeOther: removeOther);
+                }
                 links.Remove(type);
             }
         }

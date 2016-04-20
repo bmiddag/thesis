@@ -26,6 +26,9 @@ namespace Demo {
 
         public StructureModel Source {
             get {
+                if (grid == null) {
+                    grid = new TileGrid(30, 30);
+                }
                 return grid;
             }
         }
@@ -61,7 +64,7 @@ namespace Demo {
             InitGridLines();
 
             // Create the graph
-            grid = new TileGrid(30, 30);
+            if(grid == null) grid = new TileGrid(30, 30);
             grid.StructureChanged += TileGridStructureChanged;
             updateRenderer = true;
         }

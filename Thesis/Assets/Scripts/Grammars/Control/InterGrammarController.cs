@@ -101,43 +101,52 @@ namespace Grammars.Control {
 
         public override void HandleGrammarEvent(Task task) {
             if (task == null) return;
-            if (GetTaskProcessor(task.Action) != null) {
-                GetTaskProcessor(task.Action).Process(task);
-            } else if (task.ReplyExpected) {
-                List<AttributedElement> els;
-                switch (task.Action) {
-                    case "GetElements":
-                        els = GetElements(task.GetAttribute("specifier")); // doesn't matter if specifier = null :)
-                        task.AddReply(els);
-                        break;
-                    case "GetStructure":
-                        els = GetElements(task.GetAttribute("specifier"));
-                        if (els != null && els.Count > 0 && els[0] != null && typeof(StructureModel).IsAssignableFrom(els[0].GetType())) {
-                            task.AddReply(els[0]);
-                        } else task.AddReply(null);
-                        break;
-                    default:
-                        Source = task;
-                        Update();
-                        break;
-                }
-            } else {
-                switch (task.Action) {
-                    case "Stop":
-                        if (task.Targets.Contains(this)) {
+            try {
+                if (GetTaskProcessor(task.Action) != null) {
+                    GetTaskProcessor(task.Action).Process(task);
+                } else if (task.ReplyExpected) {
+                    List<AttributedElement> els;
+                    switch (task.Action) {
+                        case "GetElements":
+                            els = GetElements(task.GetAttribute("specifier")); // doesn't matter if specifier = null :)
+                            task.AddReply(els);
+                            break;
+                        case "GetStructure":
+                            els = GetElements(task.GetAttribute("specifier"));
+                            if (els != null && els.Count > 0 && els[0] != null && typeof(StructureModel).IsAssignableFrom(els[0].GetType())) {
+                                task.AddReply(els[0]);
+                            } else task.AddReply(null);
+                            break;
+                        default:
+                            Source = task;
+                            Update();
+                            break;
+                    }
+                } else {
+                    switch (task.Action) {
+                        case "Stop":
+                            if (!threadStop) {
+                                if (task.Targets.Contains(this)) {
+                                    lock (taskQueue) {
+                                        threadStop = true;
+                                        Monitor.PulseAll(taskQueue);
+                                    }
+                                }
+                                SendGrammarEvent("Stop",
+                                    source: this,
+                                    targets: new List<string>(listeners.Keys).ToArray());
+                            }
+                            break;
+                        default:
                             lock (taskQueue) {
-                                threadStop = true;
+                                taskQueue.Enqueue(task);
                                 Monitor.PulseAll(taskQueue);
                             }
-                        }
-                        break;
-                    default:
-                        lock (taskQueue) {
-                            taskQueue.Enqueue(task);
-                            Monitor.PulseAll(taskQueue);
-                        }
-                        break;
+                            break;
+                    }
                 }
+            } catch (Exception e) {
+                UnityEngine.Debug.LogError(e.Message + e.StackTrace);
             }
         }
 

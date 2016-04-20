@@ -12,6 +12,11 @@ namespace Grammars {
             get { return null; }
         }
 
+        public override string LinkType {
+            get { return "class"; }
+            set { }
+        }
+
         public AttributeClass(string name) : base() {
             this.name = name;
             if (name == null) this.name = "";

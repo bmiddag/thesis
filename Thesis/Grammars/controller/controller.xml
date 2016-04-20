@@ -4,7 +4,14 @@
     <!-- Voorlopig geen enkele -->
   </Constraints>
   <Rules>
-    <!-- Voorlopig geen enkele -->
+    <Rule name="start">
+      <Query>start_query</Query>
+      <Target>start_target</Target>
+    </Rule>
+    <Rule name="taskcompleted_mission">
+      <Query>taskcompleted_mission_query</Query>
+      <Target>taskcompleted_mission_target</Target>
+    </Rule>
   </Rules>
   <StopConditions>
     <!-- Voorlopig geen enkele -->

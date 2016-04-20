@@ -5,7 +5,7 @@
   </Constraints>
   <Rules>
     <Initial probability="1" name="initial_startroom">
-      <RuleCondition>TraverserMatch("mission_traverser","startroom")</RuleCondition>
+      <RuleCondition>TraverserMatch("mission_traverser","start")</RuleCondition>
       <Target>initial_startroom</Target>
       <RuleAction>TraverserNext("mission_traverser",,,)</RuleAction>
     </Initial>

@@ -10,9 +10,7 @@ namespace Grammars.Graphs {
 
 		private bool active = false;
         public bool Active {
-            get {
-                return active;
-            }
+            get { return active; }
             set {
                 active = value;
                 // Spread active state to adjacent nodes
@@ -24,9 +22,12 @@ namespace Grammars.Graphs {
         }
 
         public override IElementContainer Container {
-            get {
-                return graph;
-            }
+            get { return graph; }
+        }
+
+        public override string LinkType {
+            get { return graph.LinkType; }
+            set { }
         }
 
         public Node(Graph graph, int id) : base() {
