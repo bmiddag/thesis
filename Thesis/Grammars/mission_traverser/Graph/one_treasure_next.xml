@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Graph>
+  <Nodes>
+    <Node id="0" hashCode="-1906939648" active="True">
+      <Attributes>
+        <Attribute key="_link_graphspace" value="true" />
+      </Attributes>
+    </Node>
+    <Node id="1" hashCode="1738971136" active="True">
+      <AttributeClasses>
+        <AttributeClass name="treasure" />
+      </AttributeClasses>
+      <Attributes>
+        <Attribute key="_grammar_current" value="true" />
+        <Attribute key="_link_graphspace" value="false" />
+      </Attributes>
+    </Node>
+  </Nodes>
+  <Edges>
+    <Edge node1="-1906939648" node2="1738971136" directed="True" />
+  </Edges>
+</Graph>

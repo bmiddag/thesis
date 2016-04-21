@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Traverser name="graphspace_traverser" type="graph">
+  <Queries>
+    <!-- None yet -->
+  </Queries>
+  <TaskProcessors>
+    <TaskProcessor event="Next">GraphTraverser_NextElement("tilespace")</TaskProcessor>
+  </TaskProcessors>
+  <Listeners>
+    <Listener alias="origin">graphspace</Listener>
+    <Listener>controller</Listener>
+  </Listeners>
+</Traverser>

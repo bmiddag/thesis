@@ -1,14 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Graph>
   <Nodes>
-    <Node id="0" hashCode="2106776320" active="True">
-      <AttributeClasses>
-        <AttributeClass name="room" />
-		<AttributeClass name="start" />
+    <Node id="0" hashCode="1780930048" active="True">
+	  <AttributeClasses>
+        <AttributeClass name="treasure" />
       </AttributeClasses>
       <Attributes>
         <Attribute key="link$mission" value="rule.mission_traverser_query_0" />
-		<Attribute key="doors" value="from$rule.mission_traverser_query_0$_edges" />
+        <Attribute key="link$mission$2" value="rule.mission_traverser_query_1" />
       </Attributes>
     </Node>
   </Nodes>

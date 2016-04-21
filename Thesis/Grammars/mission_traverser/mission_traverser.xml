@@ -4,6 +4,8 @@
     <Query name="start">start</Query>
     <Query name="one_enemy_next">one_enemy_next</Query>
     <Query name="two_enemies_next">two_enemies_next</Query>
+    <Query name="one_treasure_next">one_treasure_next</Query>
+    <Query name="two_treasures_next">two_treasures_next</Query>
     <Query name="boss_next">boss_next</Query>
     <Query name="lock_next">lock_next</Query>
     <Query name="normal">normal</Query>

@@ -15,6 +15,18 @@
       <Target>boss_next_target</Target>
       <RuleAction>TraverserNext("mission_traverser",mission_traverser_query_1,,)</RuleAction>
     </Rule>
+    <Rule priority="1" probability="0.1" name="two_treasures_next">
+      <RuleCondition>TraverserMatch("mission_traverser","two_treasures_next")</RuleCondition>
+      <Query>two_treasures_next_query</Query>
+      <Target>two_treasures_next_target</Target>
+      <RuleAction>TraverserNext("mission_traverser",mission_traverser_query_2,,)</RuleAction>
+    </Rule>
+    <Rule priority="1" probability="0.1" name="one_treasure_next">
+      <RuleCondition>TraverserMatch("mission_traverser","one_treasure_next")</RuleCondition>
+      <Query>one_treasure_next_query</Query>
+      <Target>one_treasure_next_target</Target>
+      <RuleAction>TraverserNext("mission_traverser",mission_traverser_query_1,,)</RuleAction>
+    </Rule>
     <Rule priority="1" probability="0.1" name="one_enemy_next">
       <RuleCondition>TraverserMatch("mission_traverser","one_enemy_next")</RuleCondition>
       <Query>one_enemy_next_query</Query>
