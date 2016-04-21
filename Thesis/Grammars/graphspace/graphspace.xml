@@ -9,23 +9,41 @@
       <Target>initial_startroom</Target>
       <RuleAction>TraverserNext("mission_traverser",,,)</RuleAction>
     </Initial>
-    <Rule probability="0.1" name="boss_next">
+    <Rule priority="1" probability="0.1" name="boss_next">
       <RuleCondition>TraverserMatch("mission_traverser","boss_next")</RuleCondition>
       <Query>boss_next_query</Query>
       <Target>boss_next_target</Target>
       <RuleAction>TraverserNext("mission_traverser",mission_traverser_query_1,,)</RuleAction>
     </Rule>
-    <Rule probability="0.1" name="one_enemy_next">
+    <Rule priority="1" probability="0.1" name="one_enemy_next">
       <RuleCondition>TraverserMatch("mission_traverser","one_enemy_next")</RuleCondition>
       <Query>one_enemy_next_query</Query>
       <Target>one_enemy_next_target</Target>
       <RuleAction>TraverserNext("mission_traverser",mission_traverser_query_1,,)</RuleAction>
     </Rule>
-    <Rule probability="0.1" name="two_enemies_next">
+    <Rule priority="1" probability="0.5" name="two_enemies_next">
       <RuleCondition>TraverserMatch("mission_traverser","two_enemies_next")</RuleCondition>
       <Query>two_enemies_next_query</Query>
       <Target>two_enemies_next_target</Target>
       <RuleAction>TraverserNext("mission_traverser",mission_traverser_query_2,,)</RuleAction>
+    </Rule>
+    <Rule priority="1" probability="0.5" name="two_enemies_next_corridor">
+      <RuleCondition>TraverserMatch("mission_traverser","two_enemies_next")</RuleCondition>
+      <Query>two_enemies_next_query</Query>
+      <Target>two_enemies_next_corridor_target</Target>
+      <RuleAction>TraverserNext("mission_traverser",mission_traverser_query_2,,)</RuleAction>
+    </Rule>
+    <Rule priority="1" probability="0.1" name="lock_next">
+      <RuleCondition>TraverserMatch("mission_traverser","lock_next")</RuleCondition>
+      <Query>lock_next_query</Query>
+      <Target>lock_next_target</Target>
+      <RuleAction>TraverserNext("mission_traverser",mission_traverser_query_1,,)</RuleAction>
+    </Rule>
+    <Rule priority="0" probability="0.1" name="normal">
+      <RuleCondition>TraverserMatch("mission_traverser","normal")</RuleCondition>
+      <Query>normal_query</Query>
+      <Target>normal_target</Target>
+      <RuleAction>TraverserNext("mission_traverser",mission_traverser_query_1,,)</RuleAction>
     </Rule>
   </Rules>
   <Listeners>

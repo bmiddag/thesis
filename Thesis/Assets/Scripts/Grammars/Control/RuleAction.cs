@@ -81,5 +81,13 @@ namespace Grammars {
                     objectParameters: objectParams);
             }
         }
+
+        public static void ApplyRule<T>(Rule<T> rule, string ruleName) where T : StructureModel {
+            Grammar<T> grammar = rule.Grammar;
+            Rule<T> newRule = grammar.GetRule(ruleName);
+            if (grammar != null && newRule != null && newRule.CheckCondition() && rule.Find(grammar.Source)) {
+                rule.Apply(grammar.Source);
+            }
+        }
     }
 }

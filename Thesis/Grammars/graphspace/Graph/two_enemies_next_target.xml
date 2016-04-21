@@ -13,6 +13,7 @@
       <Attributes>
         <Attribute key="link$mission$1" value="rule.mission_traverser_query_1" />
         <Attribute key="link$mission$2" value="rule.mission_traverser_query_2" />
+		<Attribute key="doors" value="@_ReadAttribute(rule.mission_traverser_query_1,_edges) + ReadAttribute(rule.mission_traverser_query_2,_edges) + Constant(-1)" />
       </Attributes>
     </Node>
   </Nodes>

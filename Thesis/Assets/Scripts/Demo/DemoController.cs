@@ -91,6 +91,24 @@ namespace Demo {
                 if (Input.GetKeyDown(KeyCode.P)) {
                     StartCoroutine("LoadAttributeClasses");
                 }
+                if (Input.GetKeyDown(KeyCode.Keypad6)) {
+                    if (structureRenderers.Contains(currentStructureRenderer)) {
+                        int index = structureRenderers.IndexOf(currentStructureRenderer);
+                        index = (index + 1) % structureRenderers.Count;
+                        currentStructureRenderer = structureRenderers[index];
+                    }
+                }
+                if (Input.GetKeyDown(KeyCode.Keypad4)) {
+                    if (structureRenderers.Contains(currentStructureRenderer)) {
+                        int index = structureRenderers.IndexOf(currentStructureRenderer);
+                        if (index == 0) {
+                            index = structureRenderers.Count - 1;
+                        } else {
+                            index--;
+                        }
+                        currentStructureRenderer = structureRenderers[index];
+                    }
+                }
             }
             if (currentStructureRenderer == null) return;
             if (currentStructureRenderer.CurrentElement != null && !paused && currentPopUp == null) {
@@ -219,6 +237,7 @@ namespace Demo {
                 graphRen.cameraControl = FindObjectOfType<CameraControl>();
                 if (canvas != null) graphRen.transform.SetParent(canvas.transform);
                 graphRen.gameObject.name = grammar.Name;
+                graphRen.transform.localPosition = new Vector3(structureRenderers.Count * 1000, 0);
                 SetGrammar(graphRen, grammar);
                 structureRenderers.Add(graphRen);
             } else if (typeof(Grammar<TileGrid>).IsAssignableFrom(eventHandler.GetType())) {

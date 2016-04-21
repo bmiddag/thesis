@@ -41,11 +41,12 @@ namespace Grammars {
         }
 
         // Example task processor methods are below
-        public static void TileTraverser_NextElement(IGrammarEventHandler container, Task task, string linkName) {
+        public static void TileTraverser_NextElement(IGrammarEventHandler container, Task task, string myName) {
             if (task == null) return;
             AttributedElement currentElement = null;
             Traverser<TileGrid> traverser = (Traverser<TileGrid>)container;
             TileGrid source = traverser.Source;
+            string traversedName = traverser.Source.LinkType;
 
             AttributedElement startEl = null;
             if (task.HasObjectAttribute("start")) {
@@ -58,8 +59,8 @@ namespace Grammars {
                 if (startEl != null) {
                     if (startEl.Container == traverser.Source) {
                         traverser.CurrentElement = startEl;
-                    } else if (startEl.HasLink(linkName)) {
-                        List<AttributedElement> possibleStarts = startEl.GetLinkedElements(linkName);
+                    } else if (startEl.HasLink(traversedName)) {
+                        List<AttributedElement> possibleStarts = startEl.GetLinkedElements(traversedName);
                         Random rand = new Random();
                         traverser.CurrentElement = possibleStarts[rand.Next(0, possibleStarts.Count)];
                     }
@@ -75,7 +76,7 @@ namespace Grammars {
                         currentElement = traverser.CurrentElement;
                     }
                     if (currentElement == null || currentElement.HasAttribute("placeholder")) {
-                        TileTraverser_NextElement(container, task, linkName);
+                        TileTraverser_NextElement(container, task, myName);
                         return;
                     } else {
                         // Go one step further
@@ -88,7 +89,7 @@ namespace Grammars {
                                 string sel = task.GetAttribute("neighborSelector");
                                 if (sel != null && !sel.Contains(pair.Key)) continue;
                             }
-                            if (!pair.Value.HasLink(linkName) || pair.Value.HasAttribute("placeholder")) targets.Add(pair.Value);
+                            if (!pair.Value.HasLink(myName) || pair.Value.HasAttribute("placeholder")) targets.Add(pair.Value);
                         }
                         if (task.HasAttribute("tileSelector")) {
                             List<AttributedElement> nextEls = StringEvaluator.SelectElementsFromList(targets, task["tileSelector"]);
@@ -96,14 +97,14 @@ namespace Grammars {
                         }
                         if (targets.Count == 0) {
                             traverser.GenerateMore();
-                            TileTraverser_NextElement(container, task, linkName);
+                            TileTraverser_NextElement(container, task, myName);
                             return;
                         } else {
                             Random rand = new Random();
                             currentElement = targets[rand.Next(0, targets.Count)];
                             traverser.CurrentElement = currentElement;
                             if (currentElement == null || currentElement.HasAttribute("placeholder")) {
-                                TileTraverser_NextElement(container, task, linkName);
+                                TileTraverser_NextElement(container, task, myName);
                                 return;
                             }
                         }
@@ -113,11 +114,12 @@ namespace Grammars {
             task.AddReply(currentElement);
         }
 
-        public static void GraphTraverser_NextElement(IGrammarEventHandler container, Task task, string linkName) {
+        public static void GraphTraverser_NextElement(IGrammarEventHandler container, Task task, string myName) {
             if (task == null) return;
             AttributedElement currentElement = null;
             Traverser<Graph> traverser = (Traverser<Graph>)container;
             Graph source = traverser.Source;
+            string traversedName = traverser.Source.LinkType;
 
             AttributedElement startEl = null;
             if (task.HasObjectAttribute("start")) {
@@ -130,8 +132,8 @@ namespace Grammars {
                 if (startEl != null) {
                     if (startEl.Container == traverser.Source) {
                         traverser.CurrentElement = startEl;
-                    } else if (startEl.HasLink(linkName)) {
-                        List<AttributedElement> possibleStarts = startEl.GetLinkedElements(linkName);
+                    } else if (startEl.HasLink(traversedName)) {
+                        List<AttributedElement> possibleStarts = startEl.GetLinkedElements(traversedName);
                         Random rand = new Random();
                         traverser.CurrentElement = possibleStarts[rand.Next(0, possibleStarts.Count)];
                     }
@@ -142,46 +144,65 @@ namespace Grammars {
                     currentElement = traverser.CurrentElement;
                 }
                 if (currentElement != null) {
+                    // If current element is placeholder, ask origin to generate more
                     if (currentElement.HasAttribute("placeholder")) {
                         traverser.GenerateMore();
                         currentElement = traverser.CurrentElement;
                     }
+                    // If it is still placeholder or actually deleted this time, execute this algorithm again.
                     if (currentElement == null || currentElement.HasAttribute("placeholder")) {
-                        GraphTraverser_NextElement(container, task, linkName);
+                        GraphTraverser_NextElement(container, task, myName);
                         return;
-                    } else {
-                        // Go one step further
-                        // We assume current element is a node
-                        Node currentNode = (Node)currentElement;
-                        IDictionary<Node, Edge> edges = currentNode.GetEdges();
-                        List<AttributedElement> targets = new List<AttributedElement>();
-                        foreach (KeyValuePair<Node, Edge> pair in edges) {
-                            if ((pair.Value.IsDirected() && currentElement == pair.Value.GetNode1()) || !pair.Value.IsDirected()) {
-                                if (task.HasAttribute("edgeSelector")) {
-                                    List<AttributedElement> edgeEls = new List<AttributedElement>();
-                                    edgeEls.Add(pair.Value);
-                                    edgeEls = StringEvaluator.SelectElementsFromList(edgeEls, task["edgeSelector"]);
-                                    if (edgeEls.Count == 0) continue;
+                    }
+                    // If current element is yet unlinked, then return this.
+                    if (!currentElement.HasLink(myName)) {
+                        task.AddReply(currentElement);
+                        return;
+                    }
+                    // Go one step further
+                    // We assume current element is a node
+                    Node currentNode = (Node)currentElement;
+                    IDictionary<Node, Edge> edges = currentNode.GetEdges();
+                    List<AttributedElement> targets = new List<AttributedElement>();
+                    foreach (KeyValuePair<Node, Edge> pair in edges) {
+                        if ((pair.Value.IsDirected() && currentElement == pair.Value.GetNode1()) || !pair.Value.IsDirected()) {
+                            if (task.HasAttribute("edgeSelector")) {
+                                List<AttributedElement> edgeEls = new List<AttributedElement>();
+                                edgeEls.Add(pair.Value);
+                                edgeEls = StringEvaluator.SelectElementsFromList(edgeEls, task["edgeSelector"]);
+                                if (edgeEls.Count == 0) continue;
+                            }
+                            if (!pair.Key.HasLink(myName) || pair.Key.HasAttribute("placeholder")) targets.Add(pair.Key);
+                        }
+                    }
+                    if (task.HasAttribute("nodeSelector")) {
+                        List<AttributedElement> nextEls = StringEvaluator.SelectElementsFromList(targets, task["nodeSelector"]);
+                        if (nextEls.Count > 0) targets = nextEls;
+                    }
+                    if (targets.Count == 0) {
+                        //traverser.GenerateMore();
+                        // No targets? Then the next element should be any unlinked element accessible from a linked one
+                        List<Node> possibleStarts = source.GetNodes().Where(n => n.HasLink(myName)).ToList();
+                        foreach (Node node in possibleStarts) {
+                            IDictionary<Node, Edge> nodeEdges = node.GetEdges();
+                            foreach (KeyValuePair<Node, Edge> pair in nodeEdges) {
+                                if ((pair.Value.IsDirected() && node == pair.Value.GetNode1()) || !pair.Value.IsDirected()) {
+                                    if (!pair.Key.HasLink(myName) || pair.Key.HasAttribute("placeholder")) {
+                                        targets.Add(pair.Key);
+                                    }
                                 }
-                                if (!pair.Key.HasLink(linkName) || pair.Key.HasAttribute("placeholder")) targets.Add(pair.Key);
                             }
                         }
-                        if (task.HasAttribute("nodeSelector")) {
-                            List<AttributedElement> nextEls = StringEvaluator.SelectElementsFromList(targets, task["nodeSelector"]);
-                            if (nextEls.Count > 0) targets = nextEls;
-                        }
-                        if (targets.Count == 0) {
-                            traverser.GenerateMore();
-                            GraphTraverser_NextElement(container, task, linkName);
+                        //GraphTraverser_NextElement(container, task, myName);
+                        //return;
+                    }
+                    if(targets.Count > 0) {
+                        Random rand = new Random();
+                        currentElement = targets[rand.Next(0, targets.Count)];
+                        traverser.CurrentElement = currentElement;
+                        if (currentElement == null || currentElement.HasAttribute("placeholder")) {
+                            GraphTraverser_NextElement(container, task, myName);
                             return;
-                        } else {
-                            Random rand = new Random();
-                            currentElement = targets[rand.Next(0, targets.Count)];
-                            traverser.CurrentElement = currentElement;
-                            if (currentElement == null || currentElement.HasAttribute("placeholder")) {
-                                GraphTraverser_NextElement(container, task, linkName);
-                                return;
-                            }
                         }
                     }
                 }

@@ -1,20 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Graph>
   <Nodes>
-    <Node id="0" hashCode="-270775296" active="True">
+    <Node id="0" hashCode="1780930048" active="True">
       <Attributes>
         <Attribute key="link$mission" value="rule.mission_traverser_query_0" />
       </Attributes>
     </Node>
-    <Node id="1" hashCode="-992901632" active="True">
+    <Node id="1" hashCode="1099395584" active="True">
       <AttributeClasses>
-        <AttributeClass name="corridor" />
-      </AttributeClasses>
-      <Attributes />
-    </Node>
-    <Node id="2" hashCode="1614812160" active="True">
-      <AttributeClasses>
-        <AttributeClass name="bigroom" />
+        <AttributeClass name="room" />
       </AttributeClasses>
       <Attributes>
         <Attribute key="link$mission" value="rule.mission_traverser_query_1" />
@@ -23,7 +17,10 @@
     </Node>
   </Nodes>
   <Edges>
-    <Edge node1="-270775296" node2="-992901632" directed="True" />
-    <Edge node1="-992901632" node2="1614812160" directed="True" />
+    <Edge node1="1780930048" node2="1099395584" directed="False">
+	  <Attributes>
+        <Attribute key="_grammar_noEdge" value="true" />
+      </Attributes>
+	</Edge>
   </Edges>
 </Graph>

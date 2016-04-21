@@ -47,12 +47,13 @@ namespace Grammars.Control {
                     currentTask = taskQueue.Peek();
                 } else return;
             }
-
+            bool changedTarget = false;
             Task t = Source;
             if (t == null) return;
             if (t.Action != null && t.Action.Contains(".")) {
                 string subcontainerStr = t.Action.Substring(0, t.Action.IndexOf("."));
                 if (listeners.ContainsKey(subcontainerStr)) {
+                    changedTarget = true;
                     t.RemoveTarget(this);
                     t.AddTarget(listeners[subcontainerStr]);
                     t.Action = t.Action.Substring(t.Action.IndexOf(".") + 1);
@@ -81,7 +82,7 @@ namespace Grammars.Control {
                     selectedConstraint = CheckConstraints(checkedConstraints);
                 }
             }
-            noRuleFound = !foundAny;
+            noRuleFound = !foundAny && !changedTarget;
             /*bool stop = CheckStopCondition();
             if (stop) {
                 Task completedTask = taskQueue.Dequeue();
@@ -95,7 +96,7 @@ namespace Grammars.Control {
                 taskQueue.Dequeue();
             }
             Source = null;
-            SendGrammarEvent(translatedTask);
+            if(!noRuleFound) SendGrammarEvent(translatedTask);
             iteration++;
         }
 

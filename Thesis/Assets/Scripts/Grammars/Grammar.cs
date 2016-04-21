@@ -124,7 +124,7 @@ namespace Grammars {
             taskQueue = new Queue<Task>();
             taskProcessors = new Dictionary<string, TaskProcessor>();
             if (threaded) {
-                taskThread = new Thread(() => Loop(1000));
+                taskThread = new Thread(() => Loop(500));
                 taskThread.Start();
             } else taskThread = null;
         }

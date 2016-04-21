@@ -87,6 +87,19 @@
 	  <Attribute key="_demo_size" value="large" />
     </Attributes>
   </AttClass>
+  <AttClass name="lockroom">
+    <Attributes>
+	  <Attribute key="_demo_image" value="lock" />
+	  <Attribute key="space_element" value="room" />
+	  <Attribute key="space_size" value="normal" />
+    </Attributes>
+  </AttClass>
+  <AttClass name="locked_door">
+    <Attributes>
+	  <Attribute key="_demo_color" value="blue" />
+	  <Attribute key="locked" value="true" />
+    </Attributes>
+  </AttClass>
   
   <!-- TILE SPACE ATTRIBUTE CLASSES -->
   <AttClass name="tile_floor">

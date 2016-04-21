@@ -78,12 +78,49 @@ namespace Grammars {
         }
 
         // Example/test attribute modifiers are listed here
-        public static string Multiply(AttributedElement element, string attName, double number1, double number2) {
-            return (number1 * number2).ToString();
+        public static string Constant(AttributedElement element, string attName, string constant) {
+            return constant;
+        }
+
+        public static string Multiply(AttributedElement element, string attName, DynamicAttribute att1, DynamicAttribute att2) {
+            string str1 = att1.GetAttributeValue();
+            string str2 = att2.GetAttributeValue();
+            double d1, d2;
+            if (double.TryParse(str1, out d1) && double.TryParse(str2, out d2)) {
+                return (d1 * d2).ToString();
+            } else if (double.TryParse(str1, out d1)) {
+                return d1.ToString();
+            } else if (double.TryParse(str2, out d2)) {
+                return d2.ToString();
+            } else return "";
+        }
+
+        public static string Sum(AttributedElement element, string attName, DynamicAttribute att1, DynamicAttribute att2) {
+            string str1 = att1.GetAttributeValue();
+            string str2 = att2.GetAttributeValue();
+            double d1, d2;
+            if (double.TryParse(str1, out d1) && double.TryParse(str2, out d2)) {
+                return (d1 + d2).ToString();
+            } else if (double.TryParse(str1, out d1)) {
+                return d1.ToString();
+            } else if (double.TryParse(str2, out d2)) {
+                return d2.ToString();
+            } else return "";
+        }
+
+        public static string ReadAttribute(AttributedElement element, string attName, string elSel, string attribute) {
+            List<AttributedElement> elements = element.GetElements(elSel);
+            if (elements.Count > 0) {
+                foreach (AttributedElement el in elements) {
+                    string att = el.GetAttribute(attribute);
+                    if (att != null) return att;
+                }
+            }
+            return "";
         }
 
         public static string NumberOfAttributes(AttributedElement element, string attName) {
-            return (element.GetAttributes(raw: true).Count-1).ToString();
+            return (element.GetAttributes(raw: true).Count).ToString();
         }
 
         public static string PartOfGroup(AttributedElement element, string attName, string groupSelector, string groupName) {

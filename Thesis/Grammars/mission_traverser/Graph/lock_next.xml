@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Graph>
+  <Nodes>
+    <Node id="0" hashCode="1250525184" active="True">
+      <Attributes>
+        <Attribute key="_link_graphspace" value="true" />
+      </Attributes>
+    </Node>
+    <Node id="1" hashCode="2003589888" active="True">
+      <AttributeClasses>
+        <AttributeClass name="lock" />
+      </AttributeClasses>
+      <Attributes>
+        <Attribute key="_grammar_current" value="true" />
+        <Attribute key="_link_graphspace" value="false" />
+      </Attributes>
+    </Node>
+  </Nodes>
+  <Edges>
+    <Edge node1="1250525184" node2="2003589888" directed="True" />
+  </Edges>
+</Graph>

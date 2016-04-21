@@ -21,6 +21,7 @@
       <Attributes>
         <Attribute key="_grammar_current" value="true" />
         <Attribute key="_link_graphspace" value="false" />
+        <Attribute key="_edges" value="2" />
       </Attributes>
     </Node>
   </Nodes>

@@ -5,6 +5,8 @@
     <Query name="one_enemy_next">one_enemy_next</Query>
     <Query name="two_enemies_next">two_enemies_next</Query>
     <Query name="boss_next">boss_next</Query>
+    <Query name="lock_next">lock_next</Query>
+    <Query name="normal">normal</Query>
   </Queries>
   <TaskProcessors>
     <TaskProcessor event="Next">GraphTraverser_NextElement("graphspace")</TaskProcessor>

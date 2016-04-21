@@ -89,10 +89,14 @@ namespace Demo {
                 }
 
                 // Pan
-                cameraControl.cameraPanBlocked = draggingNode || controller.paused;
+                if ((object)controller.currentStructureRenderer == this) {
+                    cameraControl.cameraPanBlocked = draggingNode || controller.paused;
+                } else {
+                    drawingEdge = false;
+                }
 
                 // Add nodes or edges
-                if (Input.GetMouseButtonDown(1) && !controller.paused) {
+                if ((object)controller.currentStructureRenderer == this && Input.GetMouseButtonDown(1) && !controller.paused) {
                     if (currentNode == null) {
                         if (drawingEdge) {
                             startNode = null;
@@ -122,7 +126,7 @@ namespace Demo {
                 }
 
                 // Remove nodes
-                if (Input.GetKey(KeyCode.X) && !controller.paused) {
+                if ((object)controller.currentStructureRenderer == this && Input.GetKey(KeyCode.X) && !controller.paused) {
                     if (currentNode != null) {
                         currentNode.GetNode().Destroy();
                         //graph.RemoveNode(currentNode.GetNode());
@@ -132,7 +136,7 @@ namespace Demo {
                 }
 
                 // Handle temporary line renderer (before actual edge creation)
-                if (drawingEdge && !controller.paused) {
+                if ((object)controller.currentStructureRenderer == this && drawingEdge && !controller.paused) {
                     Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                     Vector3 corrMousePos = new Vector3(mousePos.x, mousePos.y);
                     if (drawingEdgeRenderer == null) {
@@ -188,7 +192,7 @@ namespace Demo {
             return edge;
         }
 
-        public void AddNodeRenderer(Node node, float x = 0f, float y = 0f) {
+        public void AddNodeRenderer(Node node) {
             NodeRenderer obj = new GameObject().AddComponent<NodeRenderer>();
             obj.gameObject.name = "Node " + node.GetID().ToString();
             obj.graphRenderer = this;
@@ -197,7 +201,7 @@ namespace Demo {
                 obj.gameObject.transform.position = new Vector3(newPos.x, newPos.y);
                 snapToMouse = false;
             } else {
-                obj.gameObject.transform.position = new Vector3(x, y);
+                obj.gameObject.transform.position = transform.localPosition;
             }
             obj.SetNode(node);
             nodeRenderers[node] = obj;

@@ -92,6 +92,7 @@ namespace Grammars {
             this.dynamicProbability = dynamicProbability;
             this.matchSelector = matchSelector;
             this.active = active;
+            this.priority = priority;
             actions = new List<RuleAction>();
             hasSelected = false;
         }
