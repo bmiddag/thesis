@@ -128,8 +128,11 @@ namespace Grammars {
         protected IDictionary<string, AttributedElement> Find(T query) {
             IStructureTransformer<T> transformer = Transformer;
             if (CurrentElement == null) {
-                SetFirstElement();
+                Task t = new Task("First");
+                GetTaskProcessor("Next").Process(t);
+                //SetFirstElement();
             }
+            //UnityEngine.MonoBehaviour.print(CurrentElement);
             bool found = transformer.Find(query);
             if (found) {
                 //UnityEngine.MonoBehaviour.print("Traverser found a match!");

@@ -69,6 +69,29 @@ namespace Demo {
             foreach (KeyValuePair<string, string> att in attDict) {
                 textString += "\t" + att.Key + ": <i>" + att.Value + "</i>\n";
             }
+
+            IDictionary<string, List<AttributedElement>> links = el.GetLinks();
+            if (links.Count > 0) {
+                textString += "\n";
+                textString += "<b>Links:</b>\n";
+                foreach (KeyValuePair<string, List<AttributedElement>> linkList in links) {
+                    textString += "\t" + linkList.Key + ":\n";
+                    foreach (AttributedElement linkEl in linkList.Value) {
+                        List<AttributeClass> cls = new List<AttributeClass>(linkEl.GetAttributeClasses());
+                        if (cls.Count > 0) {
+                            textString += "\t<i>- " + linkEl.GetType().Name + ": ";
+                            for(int i = 0; i < cls.Count; i++) {
+                                AttributeClass cl = cls[i];
+                                textString += cl.GetName();
+                                if (i < cls.Count - 1) textString += ", ";
+                            }
+                            textString += "</i>\n";
+                        } else {
+                            textString += "\t<i>- " + linkEl.GetType().Name + "</i>\n";
+                        }
+                    }
+                }
+            }
             text.text = textString;
         }
 	}

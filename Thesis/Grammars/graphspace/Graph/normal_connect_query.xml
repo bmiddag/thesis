@@ -12,5 +12,11 @@
       </Attributes>
     </Node>
   </Nodes>
-  <Edges />
+  <Edges>
+    <Edge node1="1780930048" node2="1099395584" directed="True">
+	  <Attributes>
+	    <Attribute key="_grammar_noEdge" value="true" />
+	  </Attributes>
+	</Edge>
+  </Edges>
 </Graph>

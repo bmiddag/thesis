@@ -280,6 +280,7 @@ namespace Grammars {
                         }
                         // If current element is yet unlinked, then return this.
                         if (!currentElement.HasLink(myName)) {
+                            traverser.CurrentElement = currentElement;
                             task.AddReply(currentElement);
                             return;
                         }
@@ -296,7 +297,7 @@ namespace Grammars {
                             IDictionary<Node, Edge> edges = node.GetEdges();
                             foreach (KeyValuePair<Node, Edge> pair in edges) {
                                 if ((pair.Value.IsDirected() && node == pair.Value.GetNode1()) || !pair.Value.IsDirected()) {
-                                    if (!pair.Value.HasLink(myName) || pair.Value.HasAttribute("placeholder") || pair.Key.HasAttribute("placeholder")) {
+                                    if (!pair.Value.HasLink(myName) || !pair.Key.HasLink(myName) || pair.Value.HasAttribute("placeholder") || pair.Key.HasAttribute("placeholder")) {
                                         if (task.HasAttribute("edgeSelector")) {
                                             List<AttributedElement> edgeEls = new List<AttributedElement>();
                                             edgeEls.Add(pair.Value);

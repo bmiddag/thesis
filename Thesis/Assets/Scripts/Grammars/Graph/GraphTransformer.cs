@@ -48,10 +48,10 @@ namespace Grammars.Graphs {
                     if (dict.ContainsKey("query_" + node1) && dict.ContainsKey("query_" + node2)) {
                         Node sn1 = (Node)dict["query_" + node1];
                         Node sn2 = (Node)dict["query_" + node2];
-                        if (sn1.GetEdges().ContainsKey(edge.GetNode1())) {
-                            dict.Add("query_" + node1 + "-" + node2, sn1.GetEdges()[edge.GetNode1()]);
+                        if (sn1.GetEdges().ContainsKey(sn2)) {
+                            dict.Add("query_" + node1 + "-" + node2, sn1.GetEdges()[sn2]);
                             if (!edge.IsDirected()) {
-                                dict.Add("query_" + node2 + "-" + node1, sn1.GetEdges()[edge.GetNode1()]);
+                                dict.Add("query_" + node2 + "-" + node1, sn1.GetEdges()[sn2]);
                             }
                         }
                     }
