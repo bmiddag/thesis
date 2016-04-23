@@ -93,7 +93,15 @@ namespace Grammars.Graphs {
             this.query = query;
             List<Node> queryNodes = null;
             if (Traverser != null) {
-                queryNodes = query.GetNodes().OrderByDescending(n => n.HasAttribute("_grammar_current") ? int.MaxValue : n.GetAttributes().Count).ToList(); // start with most specific node
+                IEnumerable<Edge> currentEdges = query.GetEdges().Where(e => e.HasAttribute("_grammar_current"));
+                if (currentEdges.Count() > 0) {
+                    queryNodes = new List<Node>();
+                    Edge currentEdge = currentEdges.First();
+                    queryNodes.Add(currentEdge.GetNode1());
+                    queryNodes.Add(currentEdge.GetNode2());
+                } else {
+                    queryNodes = query.GetNodes().OrderByDescending(n => n.GetAttributes().Count).ToList(); // start with most specific node
+                }
             } else {
                 queryNodes = query.GetNodes().OrderByDescending(n => n.GetAttributes().Count).ToList(); // start with most specific node
             }
@@ -106,7 +114,6 @@ namespace Grammars.Graphs {
             foreach (Node startNode in source.GetNodes()) {
                 if (findFirst && matches.Count > 0) continue;
                 if (!MatchAttributes(startNode, queryNodes[0])) continue;
-                if (Traverser != null && Traverser.CurrentElement != null && queryNodes[0].HasAttribute("_grammar_current") && startNode != Traverser.CurrentElement) continue;
                 if (startNode.GetEdges().Count < queryNodes[0].GetEdges().Count) continue;
                 // Is node already marked? (useful when using multiple graph transformers)
                 if (startNode.HasAttribute("_grammar_query_id")) continue;
@@ -144,13 +151,20 @@ namespace Grammars.Graphs {
             }
 
             // Determine the most specific node(s) that will be best for querying first
-            List<Node> queryNodes = new HashSet<Node>(currentQueryNode.GetEdges().Keys).Except(selection.Values)
+            List<Node> queryNodes;
+            if (Traverser != null && Traverser.CurrentElement != null && selection.Count == 1) {
+                queryNodes = new HashSet<Node>(currentQueryNode.GetEdges().Keys).Except(selection.Values)
+                .OrderByDescending(n => currentQueryNode.GetEdges()[n].HasAttribute("_grammar_current") ? int.MaxValue : n.GetAttributes().Count).ToList();
+            } else {
+                queryNodes = new HashSet<Node>(currentQueryNode.GetEdges().Keys).Except(selection.Values)
                 .OrderByDescending(n => n.GetAttributes().Count).ToList();
+            }
             List<Node> sourceNodes = new HashSet<Node>(currentSourceNode.GetEdges().Keys).Except(selection.Keys)
                 .OrderByDescending(n => n.GetAttributes().Count).ToList();
             if (sourceNodes.Count < queryNodes.Count) return false;
             if (queryNodes.Count == 0) return true; // Nothing else to query along this path => dead end
             Node queryNode = queryNodes.First();
+            Edge queryEdge = currentQueryNode.GetEdges()[queryNode];
             //bool noEdge = false;
             if (currentQueryNode.GetEdges()[queryNode].HasAttribute("_grammar_noEdge")) {
                 //noEdge = true;
@@ -162,6 +176,12 @@ namespace Grammars.Graphs {
                 if (findFirst && matches.Count > 0) continue;
                 // Is node already marked? (useful when using multiple graph transformers)
                 if (node.HasAttribute("_grammar_query_id")) continue;
+                // Compare edge
+                Edge sourceEdge = currentSourceNode.GetEdges()[node];
+                if (Traverser != null && Traverser.CurrentElement != null) {
+                    if (queryEdge.HasAttribute("_grammar_current") && sourceEdge != Traverser.CurrentElement) continue;
+                }
+                if (!MatchAttributes(sourceEdge, queryEdge)) continue; // Compare edge attributes
                 // Compare node at the other end
                 if (!MatchAttributes(node, queryNode)) continue; // Compare node attributes
                 if (node.GetEdges().Count < queryNode.GetEdges().Values.Where(e => !e.HasAttribute("_grammar_noEdge")).Count()) continue; // Compare edge count
@@ -176,18 +196,18 @@ namespace Grammars.Graphs {
                 foreach (Node markedNode in adjacentMarkedNodes) {
                     // Get the query node that matches this marked source node
                     Node markedQueryNode = selection.Values.Where(n => (n.GetID().ToString() == markedNode["_grammar_query_id"])).First();
-                    Edge sourceEdge = node.GetEdges()[markedNode];
-                    Edge queryEdge = queryNode.GetEdges().ContainsKey(markedQueryNode) ? queryNode.GetEdges()[markedQueryNode] : null;
-                    if (queryEdge == null || queryEdge.HasAttribute("_grammar_noEdge")) {
+                    Edge markedSourceEdge = node.GetEdges()[markedNode];
+                    Edge markedQueryEdge = queryNode.GetEdges().ContainsKey(markedQueryNode) ? queryNode.GetEdges()[markedQueryNode] : null;
+                    if (markedQueryEdge == null || markedQueryEdge.HasAttribute("_grammar_noEdge")) {
                         edgesValid = false;
                         break;
                     }
-                    if (sourceEdge.IsDirected() != queryEdge.IsDirected()) {
+                    if (markedSourceEdge.IsDirected() != markedQueryEdge.IsDirected()) {
                         edgesValid = false;
                         break;
                     }
-                    if (sourceEdge.IsDirected()) { // If directed, same direction?
-                        if ((sourceEdge.GetNode1() == node) != (queryEdge.GetNode1() == queryNode)) {
+                    if (markedSourceEdge.IsDirected()) { // If directed, same direction?
+                        if ((markedSourceEdge.GetNode1() == node) != (markedQueryEdge.GetNode1() == queryNode)) {
                             edgesValid = false;
                             break;
                         }

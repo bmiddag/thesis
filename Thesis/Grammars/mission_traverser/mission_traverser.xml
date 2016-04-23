@@ -11,7 +11,7 @@
     <Query name="normal">normal</Query>
   </Queries>
   <TaskProcessors>
-    <TaskProcessor event="Next">GraphTraverser_NextElement("graphspace")</TaskProcessor>
+    <TaskProcessor event="Next">GraphTraverser_NextEdge("graphspace")</TaskProcessor>
   </TaskProcessors>
   <Listeners>
     <Listener alias="origin">mission</Listener>

@@ -114,7 +114,7 @@ namespace Grammars {
             task.AddReply(currentElement);
         }
 
-        public static void GraphTraverser_NextElement(IGrammarEventHandler container, Task task, string myName) {
+        public static void GraphTraverser_NextNode(IGrammarEventHandler container, Task task, string myName) {
             if (task == null) return;
             AttributedElement currentElement = null;
             Traverser<Graph> traverser = (Traverser<Graph>)container;
@@ -151,7 +151,7 @@ namespace Grammars {
                     }
                     // If it is still placeholder or actually deleted this time, execute this algorithm again.
                     if (currentElement == null || currentElement.HasAttribute("placeholder")) {
-                        GraphTraverser_NextElement(container, task, myName);
+                        GraphTraverser_NextNode(container, task, myName);
                         return;
                     }
                     // If current element is yet unlinked, then return this.
@@ -201,9 +201,149 @@ namespace Grammars {
                         currentElement = targets[rand.Next(0, targets.Count)];
                         traverser.CurrentElement = currentElement;
                         if (currentElement == null || currentElement.HasAttribute("placeholder")) {
-                            GraphTraverser_NextElement(container, task, myName);
+                            GraphTraverser_NextNode(container, task, myName);
                             return;
                         }
+                    }
+                }
+            }
+            task.AddReply(currentElement);
+        }
+
+        public static void GraphTraverser_NextEdge(IGrammarEventHandler container, Task task, string myName) {
+            if (task == null) return;
+            AttributedElement currentElement = null;
+            Traverser<Graph> traverser = (Traverser<Graph>)container;
+            Graph source = traverser.Source;
+            string traversedName = traverser.Source.LinkType;
+
+            AttributedElement startEl = null;
+            if (task.HasObjectAttribute("start")) {
+                startEl = (AttributedElement)task.GetObjectAttribute("start");
+            } else if (task.HasAttribute("start")) {
+                startEl = source.GetElement(task.GetAttribute("start"));
+            }
+
+            if (source != null) {
+                if (startEl != null) {
+                    if (startEl.Container == traverser.Source && startEl.GetType() == typeof(Edge)) {
+                        currentElement = startEl;
+                    } else if (startEl.Container == traverser.Source && startEl.GetType() == typeof(Node)) {
+                        currentElement = startEl;
+                    } else if (startEl.HasLink(traversedName)) {
+                        List<AttributedElement> possibleStarts = startEl.GetLinkedElements(traversedName);
+                        Random rand = new Random();
+                        currentElement = possibleStarts[rand.Next(0, possibleStarts.Count)];
+                    }
+                }
+                if (currentElement != null) {
+                    traverser.CurrentElement = currentElement;
+                } else {
+                    currentElement = traverser.CurrentElement;
+                }
+                if (currentElement == null) {
+                    traverser.SetFirstElement();
+                    currentElement = traverser.CurrentElement;
+                }
+                if (currentElement != null) {
+                    if (currentElement.GetType() == typeof(Node)) {
+                        Node currentNode = ((Node)currentElement);
+                        IDictionary<Node, Edge> currentEdges = currentNode.GetEdges();
+                        foreach (KeyValuePair<Node, Edge> edge in currentEdges) {
+                            if ((edge.Value.IsDirected() && currentNode == edge.Value.GetNode1()) || !edge.Value.IsDirected()) {
+                                if (!edge.Value.HasLink(myName) || edge.Value.HasAttribute("placeholder")) {
+                                    currentElement = edge.Value;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    Edge currentEdge;
+                    Node node1;
+                    Node node2;
+                    List<Edge> targets = new List<Edge>();
+
+                    if (currentElement.GetType() == typeof(Edge)) {
+                        currentEdge = (Edge)currentElement;
+                        node1 = currentEdge.GetNode1();
+                        node2 = currentEdge.GetNode2();
+
+                        // If current element is placeholder, ask origin to generate more
+                        if (currentElement.HasAttribute("placeholder") || node1.HasAttribute("placeholder") || node2.HasAttribute("placeholder")) {
+                            traverser.GenerateMore();
+                            currentElement = traverser.CurrentElement;
+                        }
+                        // If it is still placeholder or actually deleted this time, execute this algorithm again.
+                        if (currentElement == null || currentElement.GetType() != typeof(Edge) || currentElement.HasAttribute("placeholder")) {
+                            GraphTraverser_NextEdge(container, task, myName);
+                            return;
+                        }
+                        // If current element is yet unlinked, then return this.
+                        if (!currentElement.HasLink(myName)) {
+                            task.AddReply(currentElement);
+                            return;
+                        }
+
+                        currentEdge = (Edge)currentElement;
+                        node1 = currentEdge.GetNode1();
+                        node2 = currentEdge.GetNode2();
+                        List<Node> nodeTargets = new List<Node>();
+                        nodeTargets.Add(node2);
+                        if (!currentEdge.IsDirected()) {
+                            nodeTargets.Add(node1);
+                        }
+                        foreach (Node node in nodeTargets) {
+                            IDictionary<Node, Edge> edges = node.GetEdges();
+                            foreach (KeyValuePair<Node, Edge> pair in edges) {
+                                if ((pair.Value.IsDirected() && node == pair.Value.GetNode1()) || !pair.Value.IsDirected()) {
+                                    if (!pair.Value.HasLink(myName) || pair.Value.HasAttribute("placeholder") || pair.Key.HasAttribute("placeholder")) {
+                                        if (task.HasAttribute("edgeSelector")) {
+                                            List<AttributedElement> edgeEls = new List<AttributedElement>();
+                                            edgeEls.Add(pair.Value);
+                                            edgeEls = StringEvaluator.SelectElementsFromList(edgeEls, task["edgeSelector"]);
+                                            if (edgeEls.Count == 0) continue;
+                                        }
+                                        if (task.HasAttribute("nodeSelector")) {
+                                            List<AttributedElement> nodeEls = new List<AttributedElement>();
+                                            nodeEls.Add(pair.Key);
+                                            nodeEls = StringEvaluator.SelectElementsFromList(nodeEls, task["nodeSelector"]);
+                                            if (nodeEls.Count == 0) continue;
+                                        }
+                                        targets.Add(pair.Value);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (targets.Count == 0) {
+                        // If not already returned, then no adjacent edges were found that weren't linked.
+                        // Next strategy is: choose edge at random (but make sure node has been linked).
+                        List<Node> possibleStarts = source.GetNodes().Where(n => n.HasLink(myName)).ToList();
+                        foreach (Node node in possibleStarts) {
+                            IDictionary<Node, Edge> nodeEdges = node.GetEdges();
+                            foreach (KeyValuePair<Node, Edge> pair in nodeEdges) {
+                                if ((pair.Value.IsDirected() && node == pair.Value.GetNode1()) || !pair.Value.IsDirected()) {
+                                    if (!pair.Value.HasLink(myName) || !pair.Key.HasLink(myName) || pair.Key.HasAttribute("placeholder")) {
+                                        targets.Add(pair.Value);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (targets.Count > 0) {
+                        Random rand = new Random();
+                        currentEdge = targets[rand.Next(0, targets.Count)];
+                        currentElement = currentEdge;
+                        node1 = currentEdge.GetNode1();
+                        node2 = currentEdge.GetNode2();
+                        traverser.CurrentElement = currentElement;
+                        if (currentEdge == null || currentEdge.HasAttribute("placeholder")
+                            || node1.HasAttribute("placeholder") || node2.HasAttribute("placeholder")) {
+                            GraphTraverser_NextEdge(container, task, myName);
+                            return;
+                        }
+                        task.AddReply(currentElement);
+                        return;
                     }
                 }
             }
