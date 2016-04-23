@@ -10,7 +10,9 @@
       <AttributeClasses>
         <AttributeClass name="corridor" />
       </AttributeClasses>
-      <Attributes />
+      <Attributes>
+        <Attribute key="link$mission" value="rule.mission_traverser_query_0-1" />
+	  </Attributes>
     </Node>
     <Node id="2" hashCode="1614812160" active="True">
       <AttributeClasses>

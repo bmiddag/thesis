@@ -42,6 +42,20 @@ namespace Grammars.Graphs {
                 foreach (KeyValuePair<Node, Node> pair in selectedMatch) {
                     dict.Add("query_" + pair.Value.GetID(), pair.Key);
                 }
+                foreach (Edge edge in query.GetEdges()) {
+                    int node1 = edge.GetNode1().GetID();
+                    int node2 = edge.GetNode2().GetID();
+                    if (dict.ContainsKey("query_" + node1) && dict.ContainsKey("query_" + node2)) {
+                        Node sn1 = (Node)dict["query_" + node1];
+                        Node sn2 = (Node)dict["query_" + node2];
+                        if (sn1.GetEdges().ContainsKey(edge.GetNode1())) {
+                            dict.Add("query_" + node1 + "-" + node2, sn1.GetEdges()[edge.GetNode1()]);
+                            if (!edge.IsDirected()) {
+                                dict.Add("query_" + node2 + "-" + node1, sn1.GetEdges()[edge.GetNode1()]);
+                            }
+                        }
+                    }
+                }
                 return dict;
             }
         }
@@ -166,7 +180,7 @@ namespace Grammars.Graphs {
             Node queryNode = queryNodes.First();
             Edge queryEdge = currentQueryNode.GetEdges()[queryNode];
             //bool noEdge = false;
-            if (currentQueryNode.GetEdges()[queryNode].HasAttribute("_grammar_noEdge")) {
+            if (queryEdge.HasAttribute("_grammar_noEdge")) {
                 //noEdge = true;
                 sourceNodes = source.GetNodes().Except(currentSourceNode.GetEdges().Keys).Except(selection.Keys)
                 .OrderByDescending(n => n.GetAttributes().Count).ToList();
@@ -177,11 +191,13 @@ namespace Grammars.Graphs {
                 // Is node already marked? (useful when using multiple graph transformers)
                 if (node.HasAttribute("_grammar_query_id")) continue;
                 // Compare edge
-                Edge sourceEdge = currentSourceNode.GetEdges()[node];
-                if (Traverser != null && Traverser.CurrentElement != null) {
-                    if (queryEdge.HasAttribute("_grammar_current") && sourceEdge != Traverser.CurrentElement) continue;
+                if (!queryEdge.HasAttribute("_grammar_noEdge")) {
+                    Edge sourceEdge = currentSourceNode.GetEdges()[node];
+                    if (Traverser != null && Traverser.CurrentElement != null) {
+                        if (queryEdge.HasAttribute("_grammar_current") && sourceEdge != Traverser.CurrentElement) continue;
+                    }
+                    if (!MatchAttributes(sourceEdge, queryEdge)) continue; // Compare edge attributes
                 }
-                if (!MatchAttributes(sourceEdge, queryEdge)) continue; // Compare edge attributes
                 // Compare node at the other end
                 if (!MatchAttributes(node, queryNode)) continue; // Compare node attributes
                 if (node.GetEdges().Count < queryNode.GetEdges().Values.Where(e => !e.HasAttribute("_grammar_noEdge")).Count()) continue; // Compare edge count

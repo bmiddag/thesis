@@ -9,7 +9,6 @@
     <Query name="boss_next">boss_next</Query>
     <Query name="lock_next">lock_next</Query>
     <Query name="normal">normal</Query>
-    <Query name="normal_connect">normal_connect</Query>
   </Queries>
   <TaskProcessors>
     <TaskProcessor event="Next">GraphTraverser_NextEdge("graphspace")</TaskProcessor>

@@ -7,7 +7,7 @@
     <Initial probability="1" name="initial_startroom">
       <RuleCondition>TraverserMatch("mission_traverser","start")</RuleCondition>
       <Target>initial_startroom</Target>
-      <RuleAction>TraverserNext("mission_traverser",,,)</RuleAction>
+      <!-- <RuleAction>TraverserNext("mission_traverser",,,)</RuleAction> -->
     </Initial>
     <Rule priority="1" probability="0.1" name="boss_next">
       <RuleCondition>TraverserMatch("mission_traverser","boss_next")</RuleCondition>
@@ -49,6 +49,12 @@
       <RuleCondition>TraverserMatch("mission_traverser","lock_next")</RuleCondition>
       <Query>lock_next_query</Query>
       <Target>lock_next_target</Target>
+      <RuleAction>TraverserNext("mission_traverser",mission_traverser_query_1,,)</RuleAction>
+    </Rule>
+    <Rule priority="0" probability="0.1" name="normal_connect">
+      <RuleCondition>TraverserMatch("mission_traverser","normal_connect")</RuleCondition>
+      <Query>normal_connect_query</Query>
+      <Target>normal_connect_target</Target>
       <RuleAction>TraverserNext("mission_traverser",mission_traverser_query_1,,)</RuleAction>
     </Rule>
     <Rule priority="0" probability="0.1" name="normal">

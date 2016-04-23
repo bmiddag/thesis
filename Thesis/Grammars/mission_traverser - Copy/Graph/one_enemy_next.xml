@@ -11,15 +11,12 @@
         <AttributeClass name="enemy" />
       </AttributeClasses>
       <Attributes>
+        <Attribute key="_grammar_current" value="true" />
         <Attribute key="_link_graphspace" value="false" />
       </Attributes>
     </Node>
   </Nodes>
   <Edges>
-    <Edge node1="-1693735424" node2="-830860544" directed="True">
-	  <Attributes>
-        <Attribute key="_grammar_current" value="true" />
-      </Attributes>
-	</Edge>
+    <Edge node1="-1693735424" node2="-830860544" directed="True" />
   </Edges>
 </Graph>

@@ -7,12 +7,8 @@
       </Attributes>
     </Node>
     <Node id="1" hashCode="1099395584" active="True">
-      <AttributeClasses>
-        <AttributeClass name="room" />
-      </AttributeClasses>
       <Attributes>
         <Attribute key="link$mission" value="rule.mission_traverser_query_1" />
-		<Attribute key="doors" value="from$rule.mission_traverser_query_1$_edges" />
       </Attributes>
     </Node>
   </Nodes>

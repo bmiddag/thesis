@@ -11,15 +11,21 @@
         <AttributeClass name="treasure" />
       </AttributeClasses>
       <Attributes>
+        <Attribute key="_grammar_current" value="true" />
+        <Attribute key="_link_graphspace" value="false" />
+      </Attributes>
+    </Node>
+    <Node id="2" hashCode="-1635023360" active="True">
+      <AttributeClasses>
+        <AttributeClass name="treasure" />
+      </AttributeClasses>
+      <Attributes>
         <Attribute key="_link_graphspace" value="false" />
       </Attributes>
     </Node>
   </Nodes>
   <Edges>
-    <Edge node1="-1906939648" node2="1738971136" directed="True">
-	  <Attributes>
-        <Attribute key="_grammar_current" value="true" />
-      </Attributes>
-	</Edge>
+    <Edge node1="-1906939648" node2="1738971136" directed="True" />
+    <Edge node1="1738971136" node2="-1635023360" directed="True" />
   </Edges>
 </Graph>

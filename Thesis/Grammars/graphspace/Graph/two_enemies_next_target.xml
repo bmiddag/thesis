@@ -18,6 +18,11 @@
     </Node>
   </Nodes>
   <Edges>
-    <Edge node1="-270775296" node2="-1446415872" directed="True" />
+    <Edge node1="-270775296" node2="-1446415872" directed="True">
+	  <Attributes>
+	    <Attribute key="link$mission" value="rule.mission_traverser_query_0-1" />
+	    <Attribute key="link$mission$2" value="rule.mission_traverser_query_1-2" />
+	  </Attributes>
+	</Edge>
   </Edges>
 </Graph>

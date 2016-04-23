@@ -8,15 +8,12 @@
     </Node>
     <Node id="1" hashCode="29067776" active="True">
       <Attributes>
+        <Attribute key="_grammar_current" value="true" />
         <Attribute key="_link_graphspace" value="false" />
       </Attributes>
     </Node>
   </Nodes>
   <Edges>
-    <Edge node1="678124288" node2="29067776" directed="True">
-	  <Attributes>
-        <Attribute key="_grammar_current" value="true" />
-      </Attributes>
-	</Edge>
+    <Edge node1="678124288" node2="29067776" directed="True" />
   </Edges>
 </Graph>

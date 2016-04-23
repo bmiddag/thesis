@@ -8,7 +8,7 @@
     </Node>
     <Node id="1" hashCode="29067776" active="True">
       <Attributes>
-        <Attribute key="_link_graphspace" value="false" />
+        <Attribute key="_link_graphspace" value="true" />
       </Attributes>
     </Node>
   </Nodes>
