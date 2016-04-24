@@ -83,14 +83,12 @@ namespace Demo {
                     SyncGraphStructure();                    
                 }
 
-                // Optimize layout
-                if (Input.GetKeyDown(KeyCode.K) && !controller.paused) {
-                    optimizeLayout = !optimizeLayout;
-                }
-
                 // Pan
                 if ((object)controller.currentStructureRenderer == this) {
                     cameraControl.cameraPanBlocked = draggingNode || controller.paused;
+                    if (Input.GetKeyDown(KeyCode.K) && !controller.paused) {
+                        optimizeLayout = !optimizeLayout;
+                    }
                 } else {
                     drawingEdge = false;
                 }

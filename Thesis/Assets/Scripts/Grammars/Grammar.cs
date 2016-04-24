@@ -232,7 +232,7 @@ namespace Grammars {
                 while (!threadStop) {
                     lock (taskQueue) {
                         while (taskQueue.Count == 0) Monitor.Wait(taskQueue);
-                        Update();
+                        if(!threadStop) Update();
                     }
                     if (wait > 0) Thread.Sleep(wait);
                 }

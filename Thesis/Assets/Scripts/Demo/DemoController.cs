@@ -91,14 +91,14 @@ namespace Demo {
                 if (Input.GetKeyDown(KeyCode.P)) {
                     StartCoroutine("LoadAttributeClasses");
                 }
-                if (Input.GetKeyDown(KeyCode.Keypad6)) {
+                if (Input.GetKeyDown(KeyCode.RightArrow)) {
                     if (structureRenderers.Contains(currentStructureRenderer)) {
                         int index = structureRenderers.IndexOf(currentStructureRenderer);
                         index = (index + 1) % structureRenderers.Count;
                         currentStructureRenderer = structureRenderers[index];
                     }
                 }
-                if (Input.GetKeyDown(KeyCode.Keypad4)) {
+                if (Input.GetKeyDown(KeyCode.LeftArrow)) {
                     if (structureRenderers.Contains(currentStructureRenderer)) {
                         int index = structureRenderers.IndexOf(currentStructureRenderer);
                         if (index == 0) {
@@ -247,6 +247,7 @@ namespace Demo {
                 gridRen.cameraControl = FindObjectOfType<CameraControl>();
                 if (canvas != null) gridRen.transform.SetParent(canvas.transform);
                 gridRen.gameObject.name = grammar.Name;
+                gridRen.transform.localPosition = new Vector3(structureRenderers.Count * 1000, 0);
                 SetGrammar(gridRen, grammar);
                 structureRenderers.Add(gridRen);
             }

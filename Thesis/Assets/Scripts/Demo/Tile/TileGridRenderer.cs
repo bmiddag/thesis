@@ -60,6 +60,11 @@ namespace Demo {
         // Use this for initialization
         void Start() {
             if (controller.currentStructureRenderer == null) controller.RegisterStructureRenderer(this);
+            if (gridLineObject == null) {
+                gridLineObject = new GameObject("Gridlines");
+                gridLineObject.transform.SetParent(transform);
+                gridLineObject.transform.localPosition = new Vector3(0, 0);
+            }
             gridLines = new List<LineRenderer>();
             InitGridLines();
 
@@ -78,10 +83,12 @@ namespace Demo {
                 }
 
                 // Pan
-                cameraControl.cameraPanBlocked = controller.paused;
+                if ((object)controller.currentStructureRenderer == this) {
+                    cameraControl.cameraPanBlocked = controller.paused;
+                }
 
                 // Add tiles
-                if (Input.GetMouseButtonDown(1) && !controller.paused) {
+                if ((object)controller.currentStructureRenderer == this && Input.GetMouseButtonDown(1) && !controller.paused) {
                     if (currentTile == null) {
                         Vector3 newPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                         Vector3 tilePos = RendererToTilePosition(newPos.x, newPos.y);
@@ -95,22 +102,24 @@ namespace Demo {
                 }
 
                 // Remove tiles
-                if (Input.GetKey(KeyCode.X) && !controller.paused) {
+                if ((object)controller.currentStructureRenderer == this && Input.GetKey(KeyCode.X) && !controller.paused) {
                     if (currentTile != null) {
                         currentTile.GetTile().Destroy();
                     }
                 }
 
-                int w = grid.GetGridSize().x;
-                int h = grid.GetGridSize().y;
-                if (Input.GetKeyDown(KeyCode.Keypad6)) {
-                    grid.SetGridSize(w + 1, h, 0, 0);
-                } else if (Input.GetKeyDown(KeyCode.Keypad4)) {
-                    grid.SetGridSize(w - 1, h, 0, 0);
-                } else if (Input.GetKeyDown(KeyCode.Keypad8)) {
-                    grid.SetGridSize(w, h+1, 0, 0);
-                } else if (Input.GetKeyDown(KeyCode.Keypad2)) {
-                    grid.SetGridSize(w, h-1, 0, 0);
+                if ((object)controller.currentStructureRenderer == this) {
+                    int w = grid.GetGridSize().x;
+                    int h = grid.GetGridSize().y;
+                    if (Input.GetKeyDown(KeyCode.Keypad6)) {
+                        grid.SetGridSize(w + 1, h, 0, 0);
+                    } else if (Input.GetKeyDown(KeyCode.Keypad4)) {
+                        grid.SetGridSize(w - 1, h, 0, 0);
+                    } else if (Input.GetKeyDown(KeyCode.Keypad8)) {
+                        grid.SetGridSize(w, h + 1, 0, 0);
+                    } else if (Input.GetKeyDown(KeyCode.Keypad2)) {
+                        grid.SetGridSize(w, h - 1, 0, 0);
+                    }
                 }
 
                 /*if (!controller.paused) {
@@ -125,13 +134,13 @@ namespace Demo {
             Tile tile = grid.GetTile(x, y);
             if (tile == null) return;
             TileRenderer obj = new GameObject().AddComponent<TileRenderer>();
+            obj.transform.SetParent(transform);
             obj.gameObject.name = "Tile X" + x + " Y" + y;
             obj.gridRenderer = this;
-            obj.gameObject.transform.position = TileToRendererPosition(x, y);
+            obj.gameObject.transform.localPosition = TileToRendererPosition(x, y);
             obj.SetTile(tile);
             if (tileRenderers == null) SyncGridSize();
             tileRenderers[x, y] = obj;
-            obj.transform.SetParent(transform);
         }
 
         public Vector3 TileToRendererPosition(int x, int y) {
@@ -206,15 +215,15 @@ namespace Demo {
                     LineRenderer line = new GameObject("Line").AddComponent<LineRenderer>();
                     InitLineRenderer(line);
                     gridLines.Add(line);
-                    line.SetPosition(0, TileToRendererPosition(x, 0) - new Vector3(30, 30));
-                    line.SetPosition(1, TileToRendererPosition(x, h) - new Vector3(30, 30));
+                    line.SetPosition(0, gridLineObject.transform.position + TileToRendererPosition(x, 0) - new Vector3(30, 30));
+                    line.SetPosition(1, gridLineObject.transform.position + TileToRendererPosition(x, h) - new Vector3(30, 30));
                 }
                 for (int y = 0; y <= h; y++) {
                     LineRenderer line = new GameObject("Line").AddComponent<LineRenderer>();
                     InitLineRenderer(line);
                     gridLines.Add(line);
-                    line.SetPosition(0, TileToRendererPosition(0, y) - new Vector3(30, 30));
-                    line.SetPosition(1, TileToRendererPosition(w, y) - new Vector3(30, 30));
+                    line.SetPosition(0, gridLineObject.transform.position + TileToRendererPosition(0, y) - new Vector3(30, 30));
+                    line.SetPosition(1, gridLineObject.transform.position + TileToRendererPosition(w, y) - new Vector3(30, 30));
                 }
             }
         }

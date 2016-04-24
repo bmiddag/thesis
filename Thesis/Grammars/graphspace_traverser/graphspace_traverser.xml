@@ -4,7 +4,7 @@
     <!-- None yet -->
   </Queries>
   <TaskProcessors>
-    <TaskProcessor event="Next">GraphTraverser_NextElement("tilespace")</TaskProcessor>
+    <TaskProcessor event="Next">GraphTraverser_NextEdge("tilespace")</TaskProcessor>
   </TaskProcessors>
   <Listeners>
     <Listener alias="origin">graphspace</Listener>
