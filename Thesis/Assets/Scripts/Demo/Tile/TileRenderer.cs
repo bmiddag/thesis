@@ -14,9 +14,7 @@ namespace Demo {
         bool updateRenderer = false; // If true, sprite & text will be updated during the next call of Update(). Prevents chaining of renderer updates.
 
         public AttributedElement Element {
-            get {
-                return tile;
-            }
+            get { return tile; }
         }
 
         // Use this for initialization
@@ -139,7 +137,11 @@ namespace Demo {
                             break;
                     }
                 } else {
-                    spriteRender.color = Color.gray;
+                    if (tile.HasAttribute("_demo_image")) {
+                        spriteRender.color = Color.white;
+                    } else {
+                        spriteRender.color = Color.gray;
+                    }
                 }
 			}
 		}

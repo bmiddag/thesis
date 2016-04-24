@@ -104,22 +104,41 @@
   <!-- TILE SPACE ATTRIBUTE CLASSES -->
   <AttClass name="tile_floor">
     <Attributes>
-	  <Attribute key="_demo_image" value="tile_floor" />
+	  <Attribute key="_demo_image" value="tileFloor" />
 	  <Attribute key="empty" value="true" />
+	  <Attribute key="walkable" value="true" />
     </Attributes>
   </AttClass>
   <AttClass name="tile_wall">
     <Attributes>
-	  <Attribute key="_demo_image" value="tile_wall" />
-	  <Attribute key="wall" value="true" />
+	  <Attribute key="_demo_image" value="tileWall" />
 	  <Attribute key="empty" value="false" />
+	  <Attribute key="element" value="wall" />
+	  <Attribute key="walkable" value="false" />
     </Attributes>
   </AttClass>
   <AttClass name="tile_enemy">
     <Attributes>
-	  <Attribute key="_demo_image" value="tile_enemy" />
+	  <Attribute key="_demo_image" value="tileEnemy" />
 	  <Attribute key="empty" value="false" />
-	  <Attribute key="enemy" value="true" />
+	  <Attribute key="element" value="enemy" />
+	  <Attribute key="walkable" value="true" />
+    </Attributes>
+  </AttClass>
+  <AttClass name="tile_treasure">
+    <Attributes>
+	  <Attribute key="_demo_image" value="tileTreasure" />
+	  <Attribute key="empty" value="false" />
+	  <Attribute key="element" value="treasure" />
+	  <Attribute key="walkable" value="true" />
+    </Attributes>
+  </AttClass>
+  <AttClass name="tile_key">
+    <Attributes>
+	  <Attribute key="_demo_image" value="tileKey" />
+	  <Attribute key="empty" value="false" />
+	  <Attribute key="element" value="key" />
+	  <Attribute key="walkable" value="true" />
     </Attributes>
   </AttClass>
 </AttributeClasses>
