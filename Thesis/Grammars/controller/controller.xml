@@ -12,6 +12,10 @@
       <Query>taskcompleted_mission_query</Query>
       <Target>taskcompleted_mission_target</Target>
     </Rule>
+    <Rule name="taskcompleted_graphspace">
+      <Query>taskcompleted_graphspace_query</Query>
+      <Target>taskcompleted_graphspace_target</Target>
+    </Rule>
   </Rules>
   <StopConditions>
     <!-- Voorlopig geen enkele -->
