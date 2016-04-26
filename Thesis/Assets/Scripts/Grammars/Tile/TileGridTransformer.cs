@@ -82,7 +82,7 @@ namespace Grammars.Tiles {
 		}
 
         public bool Find(TileGrid query) {
-            bool rotate = query != null && query.GetAttribute("_grammar_rotate") != "false";
+            bool rotate = (query != null) && (query.GetAttribute("_grammar_rotate") != "false");
             if (query == null || query.GetElements().Count == 0) {
                 if (source != null && source.GetElements().Count == 0) {
                     if (query != null) {
@@ -164,10 +164,14 @@ namespace Grammars.Tiles {
                                 case 3: sourceTile = source.GetTile(sX + queryPos.y, sY - queryPos.x); break;
                             }
                             if (queryTile != null && sourceTile == null) {
-                                matched = false;
-                                break;
+                                if (!queryTile.HasAttribute("_grammar_noTile")) {
+                                    matched = false;
+                                    break;
+                                }
                             } else if (sourceTile != null) {
-                                if (sourceTile.HasAttribute("_grammar_transformer_id") || (queryTile != null && !MatchAttributes(sourceTile, queryTile))) {
+                                if (sourceTile.HasAttribute("_grammar_transformer_id")
+                                    || (queryTile != null && queryTile.HasAttribute("_grammar_noTile"))
+                                    || (queryTile != null && !MatchAttributes(sourceTile, queryTile))) {
                                     matched = false;
                                     break;
                                 }
@@ -218,14 +222,21 @@ namespace Grammars.Tiles {
                         // Select random rotation
                         Random r = new Random();
                         int rotation = r.Next(0, 4);
-                        int x = 0, y = 0;
+                        UnityEngine.MonoBehaviour.print("Rotation: " + rotation);
+                        int middleX, middleY;
+                        int sGridX, sGridY;
+                        sGridX = source.GetGridSize().x;
+                        sGridY = source.GetGridSize().y;
+                        middleX = (int)Math.Round(sGridX / 4f) + r.Next(0,(int)Math.Round(sGridX / 2f));
+                        middleY = (int)Math.Round(sGridY / 4f) + r.Next(0, (int)Math.Round(sGridY / 2f));
+                        /*int x = 0, y = 0;
                         switch (rotation) {
                             case 0: x = 0; y = 0; break;
                             case 1: x = source.GetGridSize().x - 1; y = 0; break;
                             case 2: x = source.GetGridSize().x - 1; y = source.GetGridSize().y - 1; break;
                             case 3: x = 0; y = source.GetGridSize().y - 1; break;
-                        }
-                        selectedOffset = new TilePos(x, y, r.Next(0,4));
+                        }*/
+                        selectedOffset = new TilePos(middleX, middleY, rotation);
                     }
                 } else selectedOffset = null;
             }
@@ -241,7 +252,18 @@ namespace Grammars.Tiles {
             int sX = selectedOffset.x;
             int sY = selectedOffset.y;
             int rot = selectedOffset.Rotation;
-
+            
+            if (query == null || (query != null && query.GetElements().Count == 0)) {
+                // Position in the middle of the chosen position
+                int hW = (int)Math.Round(w / 2f);
+                int hH = (int)Math.Round(h / 2f);
+                switch (rot) {
+                    case 0: sX -= hW; sY -= hH; break;
+                    case 1: sX += hH; sY -= hW; break;
+                    case 2: sX += hW; sY += hH; break;
+                    case 3: sX -= hH; sY += hW; break;
+                }
+            }
             for (int x = 0; x < w; x++) {
                 for (int y = 0; y < h; y++) {
                     int curSX = sX + x; int curSY = sY + y;
@@ -254,6 +276,10 @@ namespace Grammars.Tiles {
                     Tile sourceTile = source.GetTile(curSX, curSY);
                     Tile queryTile = query == null ? null : query.GetTile(x, y);
                     Tile targetTile = target.GetTile(x, y);
+
+                    if (queryTile != null && queryTile.HasAttribute("_grammar_noTile")) {
+                        queryTile = null;
+                    }
 
                     if(sourceTile != null) sourceTile.PostponeAttributeChanged(true);
                     if (targetTile != null) {

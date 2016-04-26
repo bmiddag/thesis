@@ -102,11 +102,10 @@ namespace Demo {
                         } else {
                             // Vector3 newPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                             snapToMouse = true;
-                            new Node(graph, graph.GetNodes().Count);
-
-                            //controller.AddAttributeClass(node, "white_circles");
-                            //node.SetAttribute("_demo_x", newPos.x.ToString());
-                            //node.SetAttribute("_demo_y", newPos.y.ToString());
+                            Node node = new Node(graph, graph.GetNodes().Count);
+                            if (controller.defaultClass != null) {
+                                node.AddAttributeClass(controller.defaultClass);
+                            }
                         }
                     } else {
                         if (drawingEdge) {

@@ -17,6 +17,8 @@ namespace Demo {
         bool updateRenderer = false; // If true, tilerenderers will be updated during the next call of Update(). Prevents chaining of renderer updates.
         public DemoController controller;
         Grammar<TileGrid> grammar = null;
+        public int gridWidth = 70;
+        public int gridHeight = 70;
 
         public IElementRenderer CurrentElement {
             get {
@@ -27,7 +29,7 @@ namespace Demo {
         public StructureModel Source {
             get {
                 if (grid == null) {
-                    grid = new TileGrid(30, 30);
+                    grid = new TileGrid(gridWidth, gridHeight);
                 }
                 return grid;
             }
@@ -69,7 +71,7 @@ namespace Demo {
             InitGridLines();
 
             // Create the graph
-            if(grid == null) grid = new TileGrid(30, 30);
+            if(grid == null) grid = new TileGrid(gridWidth, gridHeight);
             grid.StructureChanged += TileGridStructureChanged;
             updateRenderer = true;
         }
@@ -85,6 +87,11 @@ namespace Demo {
                 // Pan
                 if ((object)controller.currentStructureRenderer == this) {
                     cameraControl.cameraPanBlocked = controller.paused;
+                    if (Input.GetKeyDown(KeyCode.K) && !controller.paused) {
+                        if (gridLineObject != null) {
+                            gridLineObject.SetActive(!gridLineObject.activeSelf);
+                        }
+                    }
                 }
 
                 // Add tiles
@@ -96,8 +103,10 @@ namespace Demo {
                         int y = (int)Math.Round(tilePos.y, 0);
                         if (x < 0 || x >= grid.GetGridSize().x) return;
                         if (y < 0 || y >= grid.GetGridSize().y) return;
-                        new Tile(grid, x, y);
-                        //controller.AddAttributeClass(tile, "white_circles");
+                        Tile tile = new Tile(grid, x, y);
+                        if (controller.defaultClass != null) {
+                            tile.AddAttributeClass(controller.defaultClass);
+                        }
                     }
                 }
 

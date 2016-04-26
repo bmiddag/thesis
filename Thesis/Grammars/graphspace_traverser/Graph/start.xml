@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Graph>
+  <Nodes>
+    <Node id="0" hashCode="1213916416" active="True">
+      <AttributeClasses>
+        <AttributeClass name="start" />
+      </AttributeClasses>
+      <Attributes>
+        <Attribute key="_link_tilespace" value="false" />
+      </Attributes>
+    </Node>
+    <Node id="1" hashCode="1854224896" active="True">
+      <Attributes>
+        <Attribute key="_link_tilespace" value="false" />
+      </Attributes>
+    </Node>
+  </Nodes>
+  <Edges>
+    <Edge node1="1213916416" node2="1854224896" directed="True">
+      <Attributes>
+        <Attribute key="_grammar_current" value="true" />
+      </Attributes>
+    </Edge>
+  </Edges>
+</Graph>

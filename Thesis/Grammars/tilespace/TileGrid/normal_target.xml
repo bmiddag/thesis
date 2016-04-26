@@ -1,0 +1,321 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TileGrid width="6" height="8">
+  <Tile x="0" y="3">
+    <AttributeClasses>
+      <AttributeClass name="tile_wall" />
+    </AttributeClasses>
+    <Attributes>
+	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
+    </Attributes>
+  </Tile>
+  <Tile x="0" y="4">
+    <AttributeClasses>
+      <AttributeClass name="tile_wall" />
+    </AttributeClasses>
+    <Attributes>
+      <Attribute key="passage" value="closed" />
+	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
+    </Attributes>
+  </Tile>
+  <Tile x="0" y="5">
+    <AttributeClasses>
+      <AttributeClass name="tile_wall" />
+    </AttributeClasses>
+    <Attributes>
+      <Attribute key="passage" value="closed" />
+	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
+    </Attributes>
+  </Tile>
+  <Tile x="0" y="6">
+    <AttributeClasses>
+      <AttributeClass name="tile_wall" />
+    </AttributeClasses>
+    <Attributes>
+	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
+    </Attributes>
+  </Tile>
+  <Tile x="1" y="0">
+    <AttributeClasses>
+      <AttributeClass name="tile_wall" />
+    </AttributeClasses>
+    <Attributes />
+  </Tile>
+  <Tile x="1" y="1">
+    <AttributeClasses>
+      <AttributeClass name="tile_wall" />
+    </AttributeClasses>
+    <Attributes>
+	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_0-1" />
+    </Attributes>
+  </Tile>
+  <Tile x="1" y="2">
+    <AttributeClasses>
+      <AttributeClass name="tile_wall" />
+    </AttributeClasses>
+    <Attributes>
+	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
+    </Attributes>
+  </Tile>
+  <Tile x="1" y="3">
+    <AttributeClasses>
+      <AttributeClass name="tile_floor" />
+    </AttributeClasses>
+    <Attributes>
+	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
+    </Attributes>
+  </Tile>
+  <Tile x="1" y="4">
+    <AttributeClasses>
+      <AttributeClass name="tile_floor" />
+    </AttributeClasses>
+    <Attributes>
+	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
+    </Attributes>
+  </Tile>
+  <Tile x="1" y="5">
+    <AttributeClasses>
+      <AttributeClass name="tile_floor" />
+    </AttributeClasses>
+    <Attributes>
+	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
+    </Attributes>
+  </Tile>
+  <Tile x="1" y="6">
+    <AttributeClasses>
+      <AttributeClass name="tile_floor" />
+    </AttributeClasses>
+    <Attributes>
+	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
+    </Attributes>
+  </Tile>
+  <Tile x="1" y="7">
+    <AttributeClasses>
+      <AttributeClass name="tile_wall" />
+    </AttributeClasses>
+    <Attributes>
+	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
+    </Attributes>
+  </Tile>
+  <Tile x="2" y="0">
+    <AttributeClasses>
+      <AttributeClass name="tile_floor" />
+    </AttributeClasses>
+    <Attributes />
+  </Tile>
+  <Tile x="2" y="1">
+    <AttributeClasses>
+      <AttributeClass name="tile_floor" />
+    </AttributeClasses>
+    <Attributes>
+	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_0-1" />
+    </Attributes>
+  </Tile>
+  <Tile x="2" y="2">
+    <AttributeClasses>
+      <AttributeClass name="tile_floor" />
+    </AttributeClasses>
+    <Attributes>
+	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
+    </Attributes>
+  </Tile>
+  <Tile x="2" y="3">
+    <AttributeClasses>
+      <AttributeClass name="tile_floor" />
+    </AttributeClasses>
+    <Attributes>
+	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
+    </Attributes>
+  </Tile>
+  <Tile x="2" y="4">
+    <AttributeClasses>
+      <AttributeClass name="tile_floor" />
+    </AttributeClasses>
+    <Attributes>
+	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
+    </Attributes>
+  </Tile>
+  <Tile x="2" y="5">
+    <AttributeClasses>
+      <AttributeClass name="tile_floor" />
+    </AttributeClasses>
+    <Attributes>
+	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
+    </Attributes>
+  </Tile>
+  <Tile x="2" y="6">
+    <AttributeClasses>
+      <AttributeClass name="tile_floor" />
+    </AttributeClasses>
+    <Attributes>
+	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
+    </Attributes>
+  </Tile>
+  <Tile x="2" y="7">
+    <AttributeClasses>
+      <AttributeClass name="tile_wall" />
+    </AttributeClasses>
+    <Attributes>
+      <Attribute key="passage" value="closed" />
+	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
+    </Attributes>
+  </Tile>
+  <Tile x="3" y="0">
+    <AttributeClasses>
+      <AttributeClass name="tile_floor" />
+    </AttributeClasses>
+    <Attributes />
+  </Tile>
+  <Tile x="3" y="1">
+    <AttributeClasses>
+      <AttributeClass name="tile_floor" />
+    </AttributeClasses>
+    <Attributes>
+	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_0-1" />
+    </Attributes>
+  </Tile>
+  <Tile x="3" y="2">
+    <AttributeClasses>
+      <AttributeClass name="tile_floor" />
+    </AttributeClasses>
+    <Attributes>
+	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
+    </Attributes>
+  </Tile>
+  <Tile x="3" y="3">
+    <AttributeClasses>
+      <AttributeClass name="tile_floor" />
+    </AttributeClasses>
+    <Attributes>
+	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
+    </Attributes>
+  </Tile>
+  <Tile x="3" y="4">
+    <AttributeClasses>
+      <AttributeClass name="tile_floor" />
+    </AttributeClasses>
+    <Attributes>
+	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
+    </Attributes>
+  </Tile>
+  <Tile x="3" y="5">
+    <AttributeClasses>
+      <AttributeClass name="tile_floor" />
+    </AttributeClasses>
+    <Attributes>
+	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
+    </Attributes>
+  </Tile>
+  <Tile x="3" y="6">
+    <AttributeClasses>
+      <AttributeClass name="tile_floor" />
+    </AttributeClasses>
+    <Attributes>
+	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
+    </Attributes>
+  </Tile>
+  <Tile x="3" y="7">
+    <AttributeClasses>
+      <AttributeClass name="tile_wall" />
+    </AttributeClasses>
+    <Attributes>
+      <Attribute key="passage" value="closed" />
+	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
+    </Attributes>
+  </Tile>
+  <Tile x="4" y="0">
+    <AttributeClasses>
+      <AttributeClass name="tile_wall" />
+    </AttributeClasses>
+    <Attributes />
+  </Tile>
+  <Tile x="4" y="1">
+    <AttributeClasses>
+      <AttributeClass name="tile_wall" />
+    </AttributeClasses>
+    <Attributes>
+	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_0-1" />
+    </Attributes>
+  </Tile>
+  <Tile x="4" y="2">
+    <AttributeClasses>
+      <AttributeClass name="tile_wall" />
+    </AttributeClasses>
+    <Attributes>
+	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
+    </Attributes>
+  </Tile>
+  <Tile x="4" y="3">
+    <AttributeClasses>
+      <AttributeClass name="tile_floor" />
+    </AttributeClasses>
+    <Attributes>
+	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
+    </Attributes>
+  </Tile>
+  <Tile x="4" y="4">
+    <AttributeClasses>
+      <AttributeClass name="tile_floor" />
+    </AttributeClasses>
+    <Attributes>
+	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
+    </Attributes>
+  </Tile>
+  <Tile x="4" y="5">
+    <AttributeClasses>
+      <AttributeClass name="tile_floor" />
+    </AttributeClasses>
+    <Attributes>
+	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
+    </Attributes>
+  </Tile>
+  <Tile x="4" y="6">
+    <AttributeClasses>
+      <AttributeClass name="tile_floor" />
+    </AttributeClasses>
+    <Attributes>
+	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
+    </Attributes>
+  </Tile>
+  <Tile x="4" y="7">
+    <AttributeClasses>
+      <AttributeClass name="tile_wall" />
+    </AttributeClasses>
+    <Attributes>
+	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
+    </Attributes>
+  </Tile>
+  <Tile x="5" y="3">
+    <AttributeClasses>
+      <AttributeClass name="tile_wall" />
+    </AttributeClasses>
+    <Attributes>
+	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
+    </Attributes>
+  </Tile>
+  <Tile x="5" y="4">
+    <AttributeClasses>
+      <AttributeClass name="tile_wall" />
+    </AttributeClasses>
+    <Attributes>
+      <Attribute key="passage" value="closed" />
+	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
+    </Attributes>
+  </Tile>
+  <Tile x="5" y="5">
+    <AttributeClasses>
+      <AttributeClass name="tile_wall" />
+    </AttributeClasses>
+    <Attributes>
+      <Attribute key="passage" value="closed" />
+	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
+    </Attributes>
+  </Tile>
+  <Tile x="5" y="6">
+    <AttributeClasses>
+      <AttributeClass name="tile_wall" />
+    </AttributeClasses>
+    <Attributes>
+	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
+    </Attributes>
+  </Tile>
+</TileGrid>

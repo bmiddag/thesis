@@ -4,7 +4,23 @@
     <!-- None -->
   </Constraints>
   <Rules>
-    <!-- None -->
+    <Initial probability="1" name="initial_startroom">
+      <RuleCondition>TraverserMatch("graphspace_traverser","start")</RuleCondition>
+      <Target>initial_startroom</Target>
+      <!-- <RuleAction>TraverserNext("graphspace_traverser",,,)</RuleAction> -->
+    </Initial>
+    <Rule priority="1" probability="0.1" name="bigroom">
+      <RuleCondition>TraverserMatch("graphspace_traverser","bigroom")</RuleCondition>
+      <Query>bigroom_query</Query>
+      <Target>bigroom_target</Target>
+      <RuleAction>TraverserNext("graphspace_traverser",graphspace_traverser_query_1,,)</RuleAction>
+    </Rule>
+    <Rule priority="0" probability="0.1" name="normal">
+      <RuleCondition>TraverserMatch("graphspace_traverser","normal")</RuleCondition>
+      <Query>normal_query</Query>
+      <Target>normal_target</Target>
+      <RuleAction>TraverserNext("graphspace_traverser",graphspace_traverser_query_1,,)</RuleAction>
+    </Rule>
   </Rules>
   <Listeners>
     <Listener alias="controller">controller</Listener>

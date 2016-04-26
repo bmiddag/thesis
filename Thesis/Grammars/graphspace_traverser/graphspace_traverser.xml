@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Traverser name="graphspace_traverser" type="graph">
   <Queries>
-    <!-- None yet -->
+    <Query name="start">start</Query>
+    <Query name="bigroom">bigroom</Query>
+    <Query name="normal">normal</Query>
   </Queries>
   <TaskProcessors>
     <TaskProcessor event="Next">GraphTraverser_NextEdge("tilespace")</TaskProcessor>

@@ -37,6 +37,7 @@ namespace Demo {
         List<IStructureRenderer> structureRenderers = new List<IStructureRenderer>();
 
         IDictionary<string, AttributeClass> attributeClasses = new Dictionary<string, AttributeClass>(); // TODO: move to grammar
+        public AttributeClass defaultClass = null;
 
         public GameObject canvas;
 
@@ -172,6 +173,14 @@ namespace Demo {
                 }
             } else if (currentPopUp == classPopUp) {
                 string name = classNameField.text.Trim();
+                if (name.StartsWith("d$")) {
+                    name = name.Substring(2);
+                    if (name.Trim() != "" && attributeClasses.ContainsKey(name)) {
+                        defaultClass = attributeClasses[name];
+                    } else {
+                        defaultClass = null;
+                    }
+                }
                 if (name != "") {
                     AddAttributeClass(currentElement, name);
                 }
