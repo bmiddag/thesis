@@ -21,7 +21,9 @@
       <AttributeClasses>
         <AttributeClass name="open" />
       </AttributeClasses>
-      <Attributes />
+      <Attributes>
+        <Attribute key="_edges" value="2" />
+      </Attributes>
     </Node>
   </Nodes>
   <Edges>

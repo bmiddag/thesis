@@ -19,8 +19,8 @@ namespace Grammars {
         public bool Check() {
             // Check method signature
             int argCount = arguments.Count;
-            if (rule != null && method != null && method.ReturnType == typeof(bool) && method.GetParameters().Count() == 1+argCount) {
-                object[] parameters = new object[1+argCount];
+            if (rule != null && method != null && method.ReturnType == typeof(bool) && method.GetParameters().Count() == 1 + argCount) {
+                object[] parameters = new object[1 + argCount];
                 parameters[0] = rule;
                 for (int i = 0; i < argCount; i++) {
                     parameters[i + 1] = arguments[i];
@@ -58,6 +58,14 @@ namespace Grammars {
             return !cond.Check();
         }
 
+        public static bool False<T>(Rule<T> rule) where T : StructureModel {
+            return false;
+        }
+
+        public static bool True<T>(Rule<T> rule) where T : StructureModel {
+            return true;
+        }
+
         public static bool TraverserMatch<T>(Rule<T> rule, string traverser, string queryName) where T : StructureModel {
             Grammar<T> grammar = rule.Grammar;
             Dictionary<string, string> parameters = new Dictionary<string, string>();
@@ -80,7 +88,7 @@ namespace Grammars {
             if (replies != null && replies.Count > 0 && replies[0] != null) {
                 object match = replies[0];
                 rule.SetObjectAttribute(traverser, match);
-                if(typeof(IDictionary<string, AttributedElement>).IsAssignableFrom(match.GetType())) {
+                if (typeof(IDictionary<string, AttributedElement>).IsAssignableFrom(match.GetType())) {
                     IDictionary<string, AttributedElement> matchDict = (IDictionary<string, AttributedElement>)match;
                     foreach (KeyValuePair<string, AttributedElement> pair in matchDict) {
                         rule.SetObjectAttribute(traverser + "_" + pair.Key, pair.Value);
@@ -89,6 +97,7 @@ namespace Grammars {
                 return true;
             } else {
                 rule.RemoveAttribute(traverser);
+                //UnityEngine.MonoBehaviour.print("No match for: " + queryName);
                 return false;
             }
         }
@@ -96,6 +105,20 @@ namespace Grammars {
         public static bool TaskMatch<T>(Rule<T> rule, string taskName) where T : StructureModel {
             Grammar<T> grammar = rule.Grammar;
             return (grammar.CurrentTask != null && grammar.CurrentTask.Action == taskName);
+        }
+
+        public static bool RuleFound<T>(Rule<T> rule, string ruleName) where T : StructureModel {
+            Grammar<T> grammar = rule.Grammar;
+            Rule<T> newRule = grammar.GetRule(ruleName);
+            if (grammar != null && newRule != null && newRule.HasSelected()) {
+                return true;
+            } else return false;
+        }
+
+        public static bool CheckAttribute<T>(Rule<T> rule, string attName, string value) where T : StructureModel {
+            string att = rule.GetAttribute(attName);
+            if (att == value) return true;
+            return false;
         }
     }
 }

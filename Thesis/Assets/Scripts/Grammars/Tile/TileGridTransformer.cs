@@ -56,7 +56,7 @@ namespace Grammars.Tiles {
                         Tile sourceTile = source.GetTile(curSX, curSY);
                         Tile queryTile = query == null ? null : query.GetTile(x, y);
                         if (queryTile != null) {
-                            dict.Add(x + "#" + y, sourceTile);
+                            dict.Add(x + "_" + y, sourceTile);
                         }
                     }
                 }
@@ -227,8 +227,10 @@ namespace Grammars.Tiles {
                         int sGridX, sGridY;
                         sGridX = source.GetGridSize().x;
                         sGridY = source.GetGridSize().y;
-                        middleX = (int)Math.Round(sGridX / 4f) + r.Next(0,(int)Math.Round(sGridX / 2f));
-                        middleY = (int)Math.Round(sGridY / 4f) + r.Next(0, (int)Math.Round(sGridY / 2f));
+                        //middleX = (int)Math.Round(sGridX / 4f) + r.Next(0,(int)Math.Round(sGridX / 2f));
+                        //middleY = (int)Math.Round(sGridY / 4f) + r.Next(0, (int)Math.Round(sGridY / 2f));
+                        middleX = (int)Math.Round(sGridX / 2f);
+                        middleY = (int)Math.Round(sGridY / 2f);
                         /*int x = 0, y = 0;
                         switch (rotation) {
                             case 0: x = 0; y = 0; break;

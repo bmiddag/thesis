@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using Grammars;
 using Grammars.Graphs;
 using System.Collections.Generic;
+using Grammars.Tiles;
 
 namespace Demo {
     [RequireComponent(typeof(Text))]
@@ -56,6 +57,12 @@ namespace Demo {
                 Edge edge = (Edge)el;
                 
                 textString += "\t" + edge.GetNode1().GetID().ToString() + " - " + edge.GetNode2().GetID().ToString() + "\n";
+                textString += "\n";
+            } else if (el.GetType() == typeof(Tile)) {
+                textString += "<b>Position:</b>\n";
+                Tile tile = (Tile)el;
+
+                textString += "\t" + tile.GetIndices().x + " - " + tile.GetIndices().y + "\n";
                 textString += "\n";
             }
             textString += "<b>Classes:</b>\n";

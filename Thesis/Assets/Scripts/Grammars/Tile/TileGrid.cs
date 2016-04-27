@@ -128,5 +128,10 @@ namespace Grammars.Tiles {
             if (y < 0 || y >= grid.GetLength(1)) return null;
             return grid[x, y];
         }
+
+        public Tile GetTile(TilePos pos) {
+            if (pos == null) return null;
+            return GetTile(pos.x, pos.y);
+        }
     }
 }

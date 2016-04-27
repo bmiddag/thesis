@@ -97,8 +97,8 @@ namespace Grammars {
             hasSelected = false;
         }
 
-        public bool CheckCondition() {
-            if (!active) return false;
+        public bool CheckCondition(bool overrideActive=false) {
+            if (!active && !overrideActive) return false;
             if (condition != null) {
                 return condition.Check();
             } else {
@@ -106,8 +106,8 @@ namespace Grammars {
             }
         }
 
-        public double GetProbability(bool useDynamic = true) {
-            if (!active) return 0;
+        public double GetProbability(bool useDynamic = true, bool overrideActive = false) {
+            if (!active &&!overrideActive) return 0;
             if (dynamicProbability != null && useDynamic) {
                 double calculated = dynamicProbability.Calculate();
                 if (calculated >= 0) return calculated;
@@ -117,7 +117,10 @@ namespace Grammars {
 
         public bool Find(T source) {
             hasSelected = false;
-            if (query == null && target == null && actions.Count > 0) return true;
+            if (query == null && target == null && actions.Count > 0) {
+                hasSelected = true;
+                return true;
+            }
             InitStructureTransformer(source);
             bool found = transformer.Find(query);
             if (found) {
@@ -129,7 +132,7 @@ namespace Grammars {
 
         public bool Apply(T source, bool useExisting = true) {
             if (useExisting && transformer != null) {
-                transformer.Transform(target);
+                if(target != null) transformer.Transform(target);
                 foreach (RuleAction act in actions) {
                     act.Execute();
                 }
@@ -140,7 +143,7 @@ namespace Grammars {
                 if (transformer != null) {
                     //transformer.Select();
                     //hasSelected = true;
-                    transformer.Transform(target);
+                    if(target != null) transformer.Transform(target);
                 }
                 foreach (RuleAction act in actions) {
                     act.Execute();

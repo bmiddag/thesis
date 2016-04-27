@@ -4,6 +4,7 @@
     <Query name="start">start</Query>
     <Query name="bigroom">bigroom</Query>
     <Query name="normal">normal</Query>
+    <Query name="normal_connect">normal_connect</Query>
   </Queries>
   <TaskProcessors>
     <TaskProcessor event="Next">GraphTraverser_NextEdge("tilespace")</TaskProcessor>

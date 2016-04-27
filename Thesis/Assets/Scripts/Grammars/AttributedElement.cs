@@ -321,7 +321,12 @@ namespace Grammars {
         public virtual object GetObjectAttribute(string key) {
             if (objectAttributes.ContainsKey(key)) {
                 return objectAttributes[key];
-            } else return null;
+            } else {
+                switch (key) {
+                    case "this": return this;
+                    default: return null;
+                }
+            }
         }
 
         public void SetObjectAttribute(string key, object value, bool notify = true) {

@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TileGrid width="4" height="2">
+  <Tile x="0" y="0">
+    <AttributeClasses>
+      <AttributeClass name="tile_wall" />
+    </AttributeClasses>
+    <Attributes />
+  </Tile>
+  <Tile x="1" y="0">
+    <AttributeClasses>
+      <AttributeClass name="tile_floor" />
+    </AttributeClasses>
+    <Attributes>
+	  <Attribute key="link$graphspace" value="grammar.normal_connect.graphspace_traverser_query_0-1" />
+    </Attributes>
+  </Tile>
+  <Tile x="2" y="0">
+    <AttributeClasses>
+      <AttributeClass name="tile_floor" />
+    </AttributeClasses>
+    <Attributes>
+	  <Attribute key="link$graphspace" value="grammar.normal_connect.graphspace_traverser_query_0-1" />
+    </Attributes>
+  </Tile>
+  <Tile x="3" y="0">
+    <AttributeClasses>
+      <AttributeClass name="tile_wall" />
+    </AttributeClasses>
+    <Attributes />
+  </Tile>
+</TileGrid>

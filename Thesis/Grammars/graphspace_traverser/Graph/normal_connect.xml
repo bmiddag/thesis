@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Graph>
+  <Nodes>
+    <Node id="0" hashCode="678124288" active="True">
+      <Attributes>
+        <Attribute key="_link_tilespace" value="true" />
+      </Attributes>
+    </Node>
+    <Node id="1" hashCode="29067776" active="True">
+      <Attributes>
+        <Attribute key="_link_tilespace" value="true" />
+      </Attributes>
+    </Node>
+  </Nodes>
+  <Edges>
+    <Edge node1="678124288" node2="29067776" directed="True">
+	  <Attributes>
+        <Attribute key="_grammar_current" value="true" />
+      </Attributes>
+	</Edge>
+  </Edges>
+</Graph>

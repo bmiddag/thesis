@@ -2,10 +2,8 @@
 <Graph>
   <Nodes>
     <Node id="0" hashCode="1213916416" active="True">
-      <AttributeClasses>
-        <AttributeClass name="start" />
-      </AttributeClasses>
       <Attributes>
+        <Attribute key="start" value="true" />
         <Attribute key="_link_tilespace" value="false" />
       </Attributes>
     </Node>
