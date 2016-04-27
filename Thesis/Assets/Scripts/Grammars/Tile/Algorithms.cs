@@ -130,35 +130,38 @@ namespace Grammars.Tiles {
                 TilePos newPos = null;
                 bool widthCheck = true;
                 if (rRot == 0) {
-                    TilePos newRPos = ConvertRot(new TilePos(0, 1, rotation: 0), rot);
+                    TilePos newRPos = ConvertRot(new TilePos(0, 1, rotation: 0), rot, back: true);
                     newPos = new TilePos(curTile.x + newRPos.x, curTile.y + newRPos.y, rot);
                     if (!IsInBounds(grid, newPos)) continue;
                     for (int i = 0; i < width; i++) {
-                        TilePos tempRPos = ConvertRot(new TilePos(i, 0, rotation: 0), rot);
+                        TilePos tempRPos = ConvertRot(new TilePos(i, 0, rotation: 0), rot, back: true);
                         TilePos tempPos = new TilePos(newPos.x + tempRPos.x, newPos.y + tempRPos.y, rot);
+                        if (i == 0 && rot == endRot && tempPos.Equals(end)) break;
                         if (!IsInBounds(grid, tempPos) || grid.GetTile(tempPos) != null) widthCheck = false;
                     }
                 } else if (rRot == 1) {
-                    TilePos newRPos = ConvertRot(new TilePos(0, width, rotation: 0), rot);
+                    TilePos newRPos = ConvertRot(new TilePos(0, width, rotation: 0), rot, back: true);
                     newPos = new TilePos(curTile.x + newRPos.x, curTile.y + newRPos.y, rot + rRot);
                     UnityEngine.MonoBehaviour.print("Rotate right? " + newPos.x + "#" + newPos.y + " - rot: " + (rot + rRot));
                     if (!IsInBounds(grid, newPos)) continue;
                     for (int j = 0; j < width; j++) {
                         for (int i = 0; i < width; i++) {
-                            TilePos tempRPos = ConvertRot(new TilePos(i, j, rotation: 0), rot + rRot);
+                            TilePos tempRPos = ConvertRot(new TilePos(i, j, rotation: 0), rot + rRot, back: true);
                             TilePos tempPos = new TilePos(newPos.x + tempRPos.x, newPos.y + tempRPos.y, rot + rRot);
+                            if (i == 0 && j == 0 && GetRot(rot + rRot) == endRot && tempPos.Equals(end)) break;
                             if (!IsInBounds(grid, tempPos) || grid.GetTile(tempPos) != null) widthCheck = false;
                         }
                     }
                 } else if (rRot == -1) {
-                    TilePos newRPos = ConvertRot(new TilePos(width-1, 1, rotation: 0), rot);
+                    TilePos newRPos = ConvertRot(new TilePos(width-1, 1, rotation: 0), rot, back: true);
                     newPos = new TilePos(curTile.x + newRPos.x, curTile.y + newRPos.y, rot + rRot);
                     UnityEngine.MonoBehaviour.print("Rotate left? " + newPos.x + "#" + newPos.y + " - rot: " + (rot + rRot));
                     if (!IsInBounds(grid, newPos)) continue;
                     for (int j = 0; j < width; j++) {
                         for (int i = 0; i < width; i++) {
-                            TilePos tempRPos = ConvertRot(new TilePos(i, j, rotation: 0), rot + rRot);
+                            TilePos tempRPos = ConvertRot(new TilePos(i, j, rotation: 0), rot + rRot, back: true);
                             TilePos tempPos = new TilePos(newPos.x + tempRPos.x, newPos.y + tempRPos.y, rot + rRot);
+                            if (i == 0 && j == 0 && GetRot(rot + rRot) == endRot && tempPos.Equals(end)) break;
                             if (!IsInBounds(grid, tempPos) || grid.GetTile(tempPos) != null) widthCheck = false;
                         }
                     }
@@ -177,10 +180,20 @@ namespace Grammars.Tiles {
                         visited[newPos] = moves;
                         curPath.Add(newPos);
                         Thread.Sleep(250);
-                        Tile t = new Tile(grid, newPos.x, newPos.y);
+                        for (int i = 0; i < width; i++) {
+                            TilePos tempRPos = ConvertRot(new TilePos(i, 0, rotation: 0), rot + rRot, back: true);
+                            TilePos tempPos = new TilePos(newPos.x + tempRPos.x, newPos.y + tempRPos.y, rot + rRot);
+                            new Tile(grid, tempPos.x, tempPos.y);
+                        }
+                        //Tile t = new Tile(grid, newPos.x, newPos.y);
                         List<TilePos> newShortest = _ShortestFreePath(grid, curPath, end, null, visited, width, maxLen: maxLen);
                         if (newShortest != null && (shortestPath == null || newShortest.Count < shortestPath.Count)) shortestPath = newShortest;
-                        t.Destroy();
+                        for (int i = 0; i < width; i++) {
+                            TilePos tempRPos = ConvertRot(new TilePos(i, 0, rotation: 0), rot + rRot, back: true);
+                            TilePos tempPos = new TilePos(newPos.x + tempRPos.x, newPos.y + tempRPos.y, rot + rRot);
+                            grid.GetTile(tempPos).Destroy();
+                        }
+                        //t.Destroy();
                         curPath.Remove(newPos);
                     }
                 }
@@ -192,17 +205,26 @@ namespace Grammars.Tiles {
             return (rot % 4 + 4) % 4;
         }
 
-        private static TilePos ConvertRot(TilePos pos, int rot) {
+        private static TilePos ConvertRot(TilePos pos, int rot, bool back = false) {
             if (pos == null) return null;
             if (rot < 0 || rot > 3) rot = GetRot(rot);
             int x = pos.x;
             int y = pos.y;
             int newX = x, newY = y;
-            switch (rot) {
-                case 0: newX = x; newY = y; break;
-                case 1: newX = -y; newY = x; break;
-                case 2: newX = -x; newY = -y; break;
-                case 3: newX = y; newY = -x; break;
+            if (!back) {
+                switch (rot) {
+                    case 0: newX = x; newY = y; break;
+                    case 1: newX = -y; newY = x; break;
+                    case 2: newX = -x; newY = -y; break;
+                    case 3: newX = y; newY = -x; break;
+                }
+            } else {
+                switch (rot) {
+                    case 0: newX = x; newY = y; break;
+                    case 1: newX = y; newY = -x; break;
+                    case 2: newX = -x; newY = -y; break;
+                    case 3: newX = -y; newY = x; break;
+                }
             }
             return new TilePos(newX, newY, rot);
         }

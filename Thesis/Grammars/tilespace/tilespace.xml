@@ -39,9 +39,9 @@
     </Rule>
     <Rule priority="-1" probability="0.1" name="normal_connect_3" active="false">
       <RuleAction>CopyAttribute(grammar.normal_connect_1.matches.0_0, this,,startpoint)</RuleAction>
-      <RuleAction>CopyAttribute(grammar.normal_connect_2.matches.0_0, this,,endpoint)</RuleAction>
+      <RuleAction>CopyAttribute(grammar.normal_connect_2.matches.3_0, this,,endpoint)</RuleAction>
       <RuleAction>CopyAttribute(grammar.normal_connect_1.matches.1_0, this,,startpoint_2)</RuleAction>
-      <RuleAction>CopyAttribute(grammar.normal_connect_2.matches.1_0, this,,endpoint_2)</RuleAction>
+      <RuleAction>CopyAttribute(grammar.normal_connect_2.matches.2_0, this,,endpoint_2)</RuleAction>
       <RuleAction>RuleTransform("normal_connect_1")</RuleAction>
       <RuleAction>RuleTransform("normal_connect_2")</RuleAction>
       <RuleAction>CreatePath(startpoint, endpoint, startpoint_2, endpoint_2, 4)</RuleAction>
