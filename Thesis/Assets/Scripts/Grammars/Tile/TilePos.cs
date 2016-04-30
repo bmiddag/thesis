@@ -3,13 +3,19 @@
         public int x { get; private set; }
         public int y { get; private set; }
         private int rotation;
+        private bool rotImportant;
         public int Rotation {
             get { return rotation; }
             set { rotation = (value % 4 + 4) % 4; }
         }
-        internal TilePos(int x, int y, int rotation=0) {
+        public bool RotImportant {
+            get { return rotImportant; }
+            set { rotImportant = value; }
+        }
+        public TilePos(int x, int y, int rotation=0, bool rotImportant=false) {
             this.x = x;
             this.y = y;
+            this.rotImportant = rotImportant;
             Rotation = rotation;
         }
 
@@ -21,11 +27,20 @@
             if (instance == null) {
                 return false;
             }
-            return (x == instance.x && y == instance.y);
+            if (rotImportant != instance.rotImportant) return false;
+            if (rotImportant) {
+                return (x == instance.x && y == instance.y && rotation == instance.Rotation);
+            } else {
+                return (x == instance.x && y == instance.y);
+            }
         }
 
         public override int GetHashCode() {
-            return x.GetHashCode() ^ y.GetHashCode();
+            if (rotImportant) {
+                return x.GetHashCode() ^ y.GetHashCode() ^ rotation.GetHashCode();
+            } else {
+                return x.GetHashCode() ^ y.GetHashCode();
+            }
         }
     }
 }

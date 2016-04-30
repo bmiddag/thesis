@@ -1,7 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Grammar name="tilespace" type="tilegrid" findFirst="true">
   <Constraints>
-    <!-- None -->
+    <Constraint name="constraint_tempCorridor" active="true" findFirst="false">
+      <GrammarCondition>CountElements("Has(#tempCorridor)","==",0)</GrammarCondition>
+      <Rules>
+        <Rule priority="3" probability="1" name="fillInWalls">
+          <Query>constraint_tempCorridor_wall_query</Query>
+          <Target>constraint_tempCorridor_wall_target</Target>
+        </Rule>
+        <Rule priority="2" probability="1" name="fillInCorners">
+          <Query>constraint_tempCorridor_corner_query</Query>
+          <Target>constraint_tempCorridor_corner_target</Target>
+        </Rule>
+        <Rule priority="1" probability="1" name="fillInCorners2">
+          <Query>constraint_tempCorridor_corner_2_query</Query>
+          <Target>constraint_tempCorridor_corner_2_target</Target>
+        </Rule>
+        <Rule priority="0" probability="1" name="fillInFloor">
+          <Query>constraint_tempCorridor_floor_query</Query>
+          <Target>constraint_tempCorridor_floor_target</Target>
+        </Rule>
+      </Rules>
+    </Constraint>
   </Constraints>
   <Rules>
     <Initial probability="1" name="initial_startroom">
@@ -44,7 +64,7 @@
       <RuleAction>CopyAttribute(grammar.normal_connect_2.matches.2_0, this,,endpoint_2)</RuleAction>
       <RuleAction>RuleTransform("normal_connect_1")</RuleAction>
       <RuleAction>RuleTransform("normal_connect_2")</RuleAction>
-      <RuleAction>CreatePath(startpoint, endpoint, startpoint_2, endpoint_2, 4)</RuleAction>
+      <RuleAction>CreatePath(startpoint, endpoint, startpoint_2, endpoint_2, 4, tempCorridor, true)</RuleAction>
       <RuleAction>TraverserNext("graphspace_traverser",grammar.normal_connect.graphspace_traverser_query_1,,)</RuleAction>
     </Rule>
   </Rules>

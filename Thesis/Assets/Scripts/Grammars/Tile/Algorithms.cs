@@ -13,6 +13,11 @@ namespace Grammars.Tiles {
             return Math.Abs(t1Pos.x - t2Pos.x) + Math.Abs(t1Pos.y - t2Pos.y);
         }
 
+        public static int Distance(TilePos t1, TilePos t2) {
+            if (t1 == null || t2 == null) return -1;
+            return Math.Abs(t1.x - t2.x) + Math.Abs(t1.y - t2.y);
+        }
+
         public static List<Tile> ShortestPath(Tile start, Tile end, int maxLen = 0, string tileCondition = null) {
             if (start == null || end == null) return null;
             if (tileCondition != null && tileCondition.Trim() != "") {
@@ -69,8 +74,9 @@ namespace Grammars.Tiles {
             Dictionary<TilePos, int> visited = new Dictionary<TilePos, int>();
             TilePos curTile = start;
             int rot = curTile.Rotation;
-            curTile.Rotation = rot;
-            visited.Add(start, 0);
+            //curTile.Rotation = rot;
+            TilePos rotPos = new TilePos(start.x, start.y, rot, rotImportant: true);
+            visited.Add(rotPos, 0);
             path.Add(start);
             List<TilePos> shortestPath = _ShortestFreePath(grid, path, end, null, visited, width, maxLen: maxLen);
             if (!returnAll || shortestPath == null) {
@@ -82,7 +88,7 @@ namespace Grammars.Tiles {
                 foreach (TilePos pos in shortestPath) {
                     int rota = pos.Rotation;
                     for (int i = 0; i < width; i++) {
-                        TilePos tempRPos = ConvertRot(new TilePos(i, 0, rotation: 0), rota);
+                        TilePos tempRPos = ConvertRot(new TilePos(i, 0, rotation: 0), rota, back: true);
                         TilePos tempPos = new TilePos(pos.x + tempRPos.x, pos.y + tempRPos.y, rota);
                         allTilePos.Add(tempPos);
                     }
@@ -94,17 +100,17 @@ namespace Grammars.Tiles {
         private static List<TilePos> _ShortestFreePath(TileGrid grid, List<TilePos> curPath, TilePos end, List<TilePos> shortestPath, Dictionary<TilePos, int> visited, int width, int maxLen = 0) {
             if (curPath == null || curPath.Count == 0) return null;
             int moves = curPath.Count;
-            if (maxLen > 0 && moves >= maxLen) return null;
             TilePos curTile = curPath.Last();
             int xDist = end.x - curTile.x;
             int yDist = end.y - curTile.y;
+            if (maxLen > 0 && moves + xDist + yDist >= maxLen) return null;
             int rot = curTile.Rotation;
             int endRot = end.Rotation;
             TilePos rotDist = ConvertRot(new TilePos(xDist, yDist, 0), rot);
 
 
-            UnityEngine.MonoBehaviour.print("looking at: " + curTile.x + "#" + curTile.y + " - rot: " + rot);
-            UnityEngine.MonoBehaviour.print("rotdist: " + rotDist.x + "#" + rotDist.y + " - rot: " + rot);
+            //UnityEngine.MonoBehaviour.print("looking at: " + curTile.x + "#" + curTile.y + " - rot: " + rot);
+            //UnityEngine.MonoBehaviour.print("rotdist: " + rotDist.x + "#" + rotDist.y + " - rot: " + rot);
 
             List<int> rotations = new List<int>();
             //rotations.Add(rot);
@@ -139,10 +145,11 @@ namespace Grammars.Tiles {
                         if (i == 0 && rot == endRot && tempPos.Equals(end)) break;
                         if (!IsInBounds(grid, tempPos) || grid.GetTile(tempPos) != null) widthCheck = false;
                     }
+                    if (maxLen > 0 && moves + 1 + Distance(newPos, end) >= maxLen) continue;
                 } else if (rRot == 1) {
                     TilePos newRPos = ConvertRot(new TilePos(0, width, rotation: 0), rot, back: true);
                     newPos = new TilePos(curTile.x + newRPos.x, curTile.y + newRPos.y, rot + rRot);
-                    UnityEngine.MonoBehaviour.print("Rotate right? " + newPos.x + "#" + newPos.y + " - rot: " + (rot + rRot));
+                    //UnityEngine.MonoBehaviour.print("Rotate right? " + newPos.x + "#" + newPos.y + " - rot: " + (rot + rRot));
                     if (!IsInBounds(grid, newPos)) continue;
                     for (int j = 0; j < width; j++) {
                         for (int i = 0; i < width; i++) {
@@ -150,12 +157,13 @@ namespace Grammars.Tiles {
                             TilePos tempPos = new TilePos(newPos.x + tempRPos.x, newPos.y + tempRPos.y, rot + rRot);
                             if (i == 0 && j == 0 && GetRot(rot + rRot) == endRot && tempPos.Equals(end)) break;
                             if (!IsInBounds(grid, tempPos) || grid.GetTile(tempPos) != null) widthCheck = false;
+                            if (j == width && i == 0 && maxLen > 0 && moves + width + Distance(tempPos, end) >= maxLen) widthCheck = false;
                         }
                     }
                 } else if (rRot == -1) {
                     TilePos newRPos = ConvertRot(new TilePos(width-1, 1, rotation: 0), rot, back: true);
                     newPos = new TilePos(curTile.x + newRPos.x, curTile.y + newRPos.y, rot + rRot);
-                    UnityEngine.MonoBehaviour.print("Rotate left? " + newPos.x + "#" + newPos.y + " - rot: " + (rot + rRot));
+                    //UnityEngine.MonoBehaviour.print("Rotate left? " + newPos.x + "#" + newPos.y + " - rot: " + (rot + rRot));
                     if (!IsInBounds(grid, newPos)) continue;
                     for (int j = 0; j < width; j++) {
                         for (int i = 0; i < width; i++) {
@@ -163,12 +171,15 @@ namespace Grammars.Tiles {
                             TilePos tempPos = new TilePos(newPos.x + tempRPos.x, newPos.y + tempRPos.y, rot + rRot);
                             if (i == 0 && j == 0 && GetRot(rot + rRot) == endRot && tempPos.Equals(end)) break;
                             if (!IsInBounds(grid, tempPos) || grid.GetTile(tempPos) != null) widthCheck = false;
+                            if (j == width && i == 0 && maxLen > 0 && moves + width + Distance(tempPos, end) >= maxLen) widthCheck = false;
                         }
                     }
                 }
+                TilePos rotPos = new TilePos(newPos.x, newPos.y, newPos.Rotation, rotImportant: true);
                 if (end.Equals(newPos) && GetRot(rot + rRot) == endRot) {
                     // end code here
-                    if ((!visited.ContainsKey(end) || visited[end] > moves)) {
+                    if ((!visited.ContainsKey(rotPos) || visited[rotPos] > moves)) {
+                        visited[rotPos] = moves;
                         //curPath.Add(end);
                         shortestPath = new List<TilePos>(curPath);
                         //curPath.Remove(end);
@@ -176,25 +187,55 @@ namespace Grammars.Tiles {
                     }
                 } else if (widthCheck == true) {
                     // this is a good target
-                    if (!curPath.Contains(newPos) && (!visited.ContainsKey(newPos) || visited[newPos] > moves)) {
-                        visited[newPos] = moves;
-                        curPath.Add(newPos);
-                        Thread.Sleep(250);
-                        for (int i = 0; i < width; i++) {
-                            TilePos tempRPos = ConvertRot(new TilePos(i, 0, rotation: 0), rot + rRot, back: true);
-                            TilePos tempPos = new TilePos(newPos.x + tempRPos.x, newPos.y + tempRPos.y, rot + rRot);
-                            new Tile(grid, tempPos.x, tempPos.y);
+                    if (!curPath.Contains(newPos) && (!visited.ContainsKey(rotPos) || visited[rotPos] > moves)) {
+                        if (rRot != 0) {
+                            for (int j = 0; j < width; j++) {
+                                TilePos newRPos = ConvertRot(new TilePos(0, j, rotation: 0), rot + rRot, back: true);
+                                TilePos newPos2 = new TilePos(newPos.x + newRPos.x, newPos.y + newRPos.y, rot + rRot);
+                                curPath.Add(newPos2);
+                                TilePos rotPos2 = new TilePos(newPos.x + newRPos.x, newPos.y + newRPos.y, rot + rRot, rotImportant: true);
+                                visited[rotPos2] = moves;
+                                /*for (int i = 0; i < width; i++) {
+                                    TilePos tempRPos = ConvertRot(new TilePos(i, j, rotation: 0), rot + rRot, back: true);
+                                    TilePos tempPos = new TilePos(newPos.x + tempRPos.x, newPos.y + tempRPos.y, rot + rRot);
+                                    new Tile(grid, tempPos.x, tempPos.y);
+                                }*/
+                            }
+                        } else {
+                            curPath.Add(newPos);
+                            visited[rotPos] = moves;
+                            /*for (int i = 0; i < width; i++) {
+                                TilePos tempRPos = ConvertRot(new TilePos(i, 0, rotation: 0), rot + rRot, back: true);
+                                TilePos tempPos = new TilePos(newPos.x + tempRPos.x, newPos.y + tempRPos.y, rot + rRot);
+                                new Tile(grid, tempPos.x, tempPos.y);
+                            }*/
                         }
+                        Thread.Sleep(2);
                         //Tile t = new Tile(grid, newPos.x, newPos.y);
                         List<TilePos> newShortest = _ShortestFreePath(grid, curPath, end, null, visited, width, maxLen: maxLen);
-                        if (newShortest != null && (shortestPath == null || newShortest.Count < shortestPath.Count)) shortestPath = newShortest;
-                        for (int i = 0; i < width; i++) {
-                            TilePos tempRPos = ConvertRot(new TilePos(i, 0, rotation: 0), rot + rRot, back: true);
-                            TilePos tempPos = new TilePos(newPos.x + tempRPos.x, newPos.y + tempRPos.y, rot + rRot);
-                            grid.GetTile(tempPos).Destroy();
+                        if (newShortest != null && (shortestPath == null || newShortest.Count < shortestPath.Count)) {
+                            shortestPath = newShortest;
+                            maxLen = newShortest.Count;
                         }
-                        //t.Destroy();
-                        curPath.Remove(newPos);
+                        if (rRot != 0) {
+                            for (int j = 0; j < width; j++) {
+                                TilePos newRPos = ConvertRot(new TilePos(0, j, rotation: 0), rot + rRot, back: true);
+                                TilePos newPos2 = new TilePos(newPos.x + newRPos.x, newPos.y + newRPos.y, rot + rRot);
+                                curPath.Remove(newPos2);
+                                /*for (int i = 0; i < width; i++) {
+                                    TilePos tempRPos = ConvertRot(new TilePos(i, j, rotation: 0), rot + rRot, back: true);
+                                    TilePos tempPos = new TilePos(newPos.x + tempRPos.x, newPos.y + tempRPos.y, rot + rRot);
+                                    grid.GetTile(tempPos).Destroy();
+                                }*/
+                            }
+                        } else {
+                            curPath.Remove(newPos);
+                            /*for (int i = 0; i < width; i++) {
+                                TilePos tempRPos = ConvertRot(new TilePos(i, 0, rotation: 0), rot + rRot, back: true);
+                                TilePos tempPos = new TilePos(newPos.x + tempRPos.x, newPos.y + tempRPos.y, rot + rRot);
+                                grid.GetTile(tempPos).Destroy();
+                            }*/
+                        }
                     }
                 }
             }

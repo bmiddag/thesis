@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TileGrid width="1" height="1">
+  <Tile x="0" y="0">
+    <AttributeClasses>
+      <AttributeClass name="tile_floor" />
+    </AttributeClasses>
+    <Attributes>
+      <Attribute key="corridor" value="true" />
+    </Attributes>
+  </Tile>
+</TileGrid>

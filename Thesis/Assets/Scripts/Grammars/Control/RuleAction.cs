@@ -156,7 +156,7 @@ namespace Grammars {
             }
         }
 
-        public static void CreatePath<T>(Rule<T> rule, string startAtt, string endAtt, string startAtt2, string endAtt2, int width) where T : StructureModel {
+        public static void CreatePath<T>(Rule<T> rule, string startAtt, string endAtt, string startAtt2, string endAtt2, int width, string attName, string attValue) where T : StructureModel {
             try {
                 if (startAtt == null || endAtt == null || startAtt.Trim() == "" || endAtt.Trim() == "") return;
                 if (startAtt2 == null || endAtt2 == null || startAtt2.Trim() == "" || endAtt2.Trim() == "") return;
@@ -209,9 +209,11 @@ namespace Grammars {
 
                 TileGrid grid = (TileGrid)start.Container;
                 List<TilePos> poss = Tiles.Algorithms.ShortestFreePath(grid, startPos, endPos, width, returnAll: true);
-                foreach (TilePos pos in poss) {
-                    Tile t = new Tile(grid, pos.x, pos.y);
-                    t.SetAttribute("IT", "WORKS");
+                if (poss != null) {
+                    foreach (TilePos pos in poss) {
+                        Tile t = new Tile(grid, pos.x, pos.y);
+                        t.SetAttribute(attName, attValue);
+                    }
                 }
             } catch (Exception e) {
                 UnityEngine.Debug.LogError(e.Message + e.StackTrace);
