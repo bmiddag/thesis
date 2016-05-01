@@ -468,7 +468,7 @@ namespace Grammars {
             if (!newAtts.ContainsKey("_grammar_keep")) {
                 tempNewAtts = new Dictionary<string, string>(newAtts);
                 foreach (KeyValuePair<string, string> entry in tempNewAtts) {
-                    if (entry.Key.StartsWith("_grammar_") || entry.Key.StartsWith("copy$")) newAtts.Remove(entry.Key);
+                    if (entry.Key.StartsWith("_grammar_") || entry.Key.StartsWith("copy$") || entry.Value.StartsWith("_grammar_")) newAtts.Remove(entry.Key);
                 }
             }
             return newAtts;
@@ -486,6 +486,11 @@ namespace Grammars {
                 remAtts.ExceptWith(attributes.Keys);
             } else {
                 remAtts = new HashSet<string>();
+            }
+            foreach (KeyValuePair<string, string> entry in attributes) {
+                if (entry.Value == "_grammar_remove") {
+                    remAtts.Add(entry.Key);
+                }
             }
             return remAtts;
         }

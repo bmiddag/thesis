@@ -152,10 +152,13 @@ namespace Grammars {
             } else return false;
         }
 
-        public static bool CheckAttribute<T>(Rule<T> rule, string attName, string value) where T : StructureModel {
-            string att = rule.GetAttribute(attName);
-            if (att == value) return true;
-            return false;
+        public static bool CheckAttribute<T>(Rule<T> rule, string selector, string attName, string value) where T : StructureModel {
+            List<AttributedElement> els = rule.GetElements(selector);
+            foreach (AttributedElement el in els) {
+                string att = el.GetAttribute(attName);
+                if (att != value) return false;
+            }
+            return true;
         }
     }
 }

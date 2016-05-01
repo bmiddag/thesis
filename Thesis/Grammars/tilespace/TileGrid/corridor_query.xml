@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TileGrid width="4" height="14">
+  <Tile x="0" y="0">
+    <AttributeClasses>
+      <AttributeClass name="tile_wall" />
+    </AttributeClasses>
+    <Attributes />
+  </Tile>
+  <Tile x="0" y="1"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="0" y="2"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="0" y="3"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="0" y="4"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="0" y="5"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="0" y="6"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="0" y="7"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="0" y="8"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="0" y="9"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="0" y="10"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="0" y="11"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="0" y="12"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="0" y="13"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="1" y="0">
+    <AttributeClasses>
+      <AttributeClass name="tile_wall" />
+    </AttributeClasses>
+    <Attributes>
+      <Attribute key="passage" value="closed" />
+      <Attribute key="door_out" value="true" />
+	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_0" />
+    </Attributes>
+  </Tile>
+  <Tile x="1" y="1"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="1" y="2"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="1" y="3"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="1" y="4"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="1" y="5"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="1" y="6"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="1" y="7"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="1" y="8"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="1" y="9"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="1" y="10"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="1" y="11"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="1" y="12"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="1" y="13"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="2" y="0">
+    <AttributeClasses>
+      <AttributeClass name="tile_wall" />
+    </AttributeClasses>
+    <Attributes>
+      <Attribute key="passage" value="closed" />
+      <Attribute key="door_out" value="true" />
+	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_0" />
+    </Attributes>
+  </Tile>
+  <Tile x="2" y="1"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="2" y="2"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="2" y="3"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="2" y="4"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="2" y="5"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="2" y="6"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="2" y="7"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="2" y="8"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="2" y="9"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="2" y="10"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="2" y="11"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="2" y="12"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="2" y="13"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="3" y="0">
+    <AttributeClasses>
+      <AttributeClass name="tile_wall" />
+    </AttributeClasses>
+    <Attributes />
+  </Tile>
+  <Tile x="3" y="1"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="3" y="2"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="3" y="3"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="3" y="4"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="3" y="5"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="3" y="6"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="3" y="7"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="3" y="8"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="3" y="9"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="3" y="10"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="3" y="11"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="3" y="12"><Attribute key="_grammar_noTile" value="true" /></Tile>
+  <Tile x="3" y="13"><Attribute key="_grammar_noTile" value="true" /></Tile>
+</TileGrid>

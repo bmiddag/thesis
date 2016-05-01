@@ -17,8 +17,8 @@ namespace Demo {
         bool updateRenderer = false; // If true, tilerenderers will be updated during the next call of Update(). Prevents chaining of renderer updates.
         public DemoController controller;
         Grammar<TileGrid> grammar = null;
-        public int gridWidth = 70;
-        public int gridHeight = 70;
+        public int gridWidth = 120;
+        public int gridHeight = 120;
 
         public IElementRenderer CurrentElement {
             get {

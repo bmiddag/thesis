@@ -48,11 +48,13 @@
   <AttClass name="key">
     <Attributes>
 	  <Attribute key="_demo_image" value="key" />
+	  <Attribute key="key" value="true" />
     </Attributes>
   </AttClass>
   <AttClass name="lock">
     <Attributes>
 	  <Attribute key="_demo_image" value="lock" />
+	  <Attribute key="lock" value="true" />
     </Attributes>
   </AttClass>
   <AttClass name="start">

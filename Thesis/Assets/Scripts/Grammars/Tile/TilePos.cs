@@ -36,10 +36,12 @@
         }
 
         public override int GetHashCode() {
-            if (rotImportant) {
-                return x.GetHashCode() ^ y.GetHashCode() ^ rotation.GetHashCode();
-            } else {
-                return x.GetHashCode() ^ y.GetHashCode();
+            unchecked {
+                int hash = 17;
+                hash = hash * 31 + x.GetHashCode();
+                hash = hash * 31 + y.GetHashCode();
+                if (rotImportant) hash = hash * 31 + rotation.GetHashCode();
+                return hash;
             }
         }
     }

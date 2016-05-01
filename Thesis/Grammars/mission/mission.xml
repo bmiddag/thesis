@@ -66,8 +66,14 @@
       <Query>improve_pacing_query</Query>
       <Target>improve_pacing_target</Target>
     </Rule>
-    <Rule probability="0.32" name="endbranch">
+    <Rule probability="0.1" name="endbranch">
+      <RuleProbability>Attribute(from [grammar.source],) / Constant(30)</RuleProbability>
       <Query>endbranch_query</Query>
+      <Target>endbranch_target</Target>
+    </Rule>
+    <Rule probability="0.1" name="endbranch_edge">
+      <RuleProbability>Attribute(from [grammar.source],) / Constant(30)</RuleProbability>
+      <Query>endbranch_edge_query</Query>
       <Target>endbranch_target</Target>
     </Rule>
     <Rule probability="0.7" name="merge_open">

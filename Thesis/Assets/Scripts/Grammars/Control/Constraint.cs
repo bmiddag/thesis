@@ -160,6 +160,32 @@ namespace Grammars {
             if (subcontainer != null) {
                 return subcontainer.GetElements(passSpecifier);
             } else {
+                List<AttributedElement> attrList = new List<AttributedElement>();
+                if (rules.ContainsKey(specifier)) {
+                    attrList.Add(rules[specifier]);
+                } else {
+                    switch (specifier) {
+                        case "task":
+                            if (grammar.CurrentTask != null) return grammar.CurrentTask.GetElements(); break;
+                        case "task_structure":
+                            if (grammar.CurrentTask != null) {
+                                attrList.Add(grammar.CurrentTask);
+                                return attrList;
+                            }
+                            break;
+                        case "source":
+                            if (grammar.Source != null) return grammar.Source.GetElements(); break;
+                        case "source_structure":
+                            if (grammar.Source != null) {
+                                attrList.Add(grammar.Source);
+                                return attrList;
+                            }
+                            break;
+                        case "grammar":
+                            attrList.Add(grammar);
+                            return attrList;
+                    }
+                }
                 return base.GetElements(specifier);
             }
         }

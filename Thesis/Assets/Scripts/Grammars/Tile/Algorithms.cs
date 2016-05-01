@@ -83,9 +83,11 @@ namespace Grammars.Tiles {
                 if(shortestPath != null && shortestPath.Count > 0) shortestPath.RemoveAt(0);
                 return shortestPath;
             } else {
-                if (shortestPath.Count > 0) shortestPath.RemoveAt(0);
+                //if (shortestPath.Count > 0) shortestPath.RemoveAt(0);
                 List<TilePos> allTilePos = new List<TilePos>();
-                foreach (TilePos pos in shortestPath) {
+                for(int j = 0; j < shortestPath.Count; j++) {
+                    if (j == 0) continue;
+                    TilePos pos = shortestPath[j];
                     int rota = pos.Rotation;
                     for (int i = 0; i < width; i++) {
                         TilePos tempRPos = ConvertRot(new TilePos(i, 0, rotation: 0), rota, back: true);
@@ -210,7 +212,7 @@ namespace Grammars.Tiles {
                                 new Tile(grid, tempPos.x, tempPos.y);
                             }*/
                         }
-                        Thread.Sleep(2);
+                        //Thread.Sleep(1);
                         //Tile t = new Tile(grid, newPos.x, newPos.y);
                         List<TilePos> newShortest = _ShortestFreePath(grid, curPath, end, null, visited, width, maxLen: maxLen);
                         if (newShortest != null && (shortestPath == null || newShortest.Count < shortestPath.Count)) {

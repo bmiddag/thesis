@@ -124,7 +124,7 @@ namespace Grammars {
             taskQueue = new Queue<Task>();
             taskProcessors = new Dictionary<string, TaskProcessor>();
             if (threaded) {
-                taskThread = new Thread(() => Loop(500));
+                taskThread = new Thread(() => Loop(100));
                 taskThread.Start();
             } else taskThread = null;
         }
@@ -395,8 +395,8 @@ namespace Grammars {
                 return subcontainer.GetElements(passSpecifier);
             } else {
                 List<AttributedElement> attrList = new List<AttributedElement>();
-                if (rules.ContainsKey("rule_" + specifier)) {
-                    attrList.Add(rules["rule_" + specifier]);
+                if (rules.ContainsKey(specifier)) {
+                    attrList.Add(rules[specifier]);
                 } else {
                     switch (specifier) {
                         case "task":

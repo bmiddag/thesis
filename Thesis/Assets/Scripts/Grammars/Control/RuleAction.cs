@@ -208,13 +208,13 @@ namespace Grammars {
                 endPos.Rotation = endRot;
 
                 TileGrid grid = (TileGrid)start.Container;
-                List<TilePos> poss = Tiles.Algorithms.ShortestFreePath(grid, startPos, endPos, width, returnAll: true);
+                int maxLen = (int)Math.Ceiling(width * 4 + Tiles.Algorithms.Distance(startPos, endPos) * 2.5);
+                List<TilePos> poss = Tiles.Algorithms.ShortestFreePath(grid, startPos, endPos, width, maxLen: maxLen, returnAll: true);
                 if (poss != null) {
                     for(int i=0; i < poss.Count; i++) {
                         TilePos pos = poss[i];
                         Tile t = new Tile(grid, pos.x, pos.y);
                         t.SetAttribute(attName, attValue);
-                        t.SetAttribute("index", i.ToString());
                     }
                 }
             } catch (Exception e) {

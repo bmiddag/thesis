@@ -5,20 +5,26 @@
       <GrammarCondition>CountElements("Has(#tempCorridor)","==",0)</GrammarCondition>
       <Rules>
         <Rule priority="3" probability="1" name="fillInWalls">
+          <RuleCondition>Not(CheckAttribute(grammar.constraint_tempCorridor, stage, floor) || CheckAttribute(grammar.constraint_tempCorridor, stage, corners))</RuleCondition>
           <Query>constraint_tempCorridor_wall_query</Query>
           <Target>constraint_tempCorridor_wall_target</Target>
         </Rule>
         <Rule priority="2" probability="1" name="fillInCorners">
+          <RuleCondition>Not(CheckAttribute(grammar.constraint_tempCorridor, stage, floor))</RuleCondition>
           <Query>constraint_tempCorridor_corner_query</Query>
           <Target>constraint_tempCorridor_corner_target</Target>
+          <RuleAction>SetAttribute(grammar.constraint_tempCorridor, stage, corners)</RuleAction>
         </Rule>
         <Rule priority="1" probability="1" name="fillInCorners2">
+          <RuleCondition>Not(CheckAttribute(grammar.constraint_tempCorridor, stage, floor))</RuleCondition>
           <Query>constraint_tempCorridor_corner_2_query</Query>
           <Target>constraint_tempCorridor_corner_2_target</Target>
+          <RuleAction>SetAttribute(grammar.constraint_tempCorridor, stage, corners)</RuleAction>
         </Rule>
         <Rule priority="0" probability="1" name="fillInFloor">
           <Query>constraint_tempCorridor_floor_query</Query>
           <Target>constraint_tempCorridor_floor_target</Target>
+          <RuleAction>SetAttribute(grammar.constraint_tempCorridor, stage, floor)</RuleAction>
         </Rule>
       </Rules>
     </Constraint>
@@ -33,6 +39,12 @@
       <RuleCondition>TraverserMatch("graphspace_traverser","bigroom")</RuleCondition>
       <Query>bigroom_query</Query>
       <Target>bigroom_target</Target>
+      <RuleAction>TraverserNext("graphspace_traverser",graphspace_traverser_query_1,,)</RuleAction>
+    </Rule>
+    <Rule priority="1" probability="0.1" name="corridor">
+      <RuleCondition>TraverserMatch("graphspace_traverser","corridor")</RuleCondition>
+      <Query>corridor_query</Query>
+      <Target>corridor_target</Target>
       <RuleAction>TraverserNext("graphspace_traverser",graphspace_traverser_query_1,,)</RuleAction>
     </Rule>
     <Rule priority="1" probability="0.9" name="lock_one_way">
@@ -95,7 +107,7 @@
       <RuleAction>RuleFind("normal_connect_1")</RuleAction>
       <RuleAction>RuleFind("normal_connect_2")</RuleAction>
       <RuleAction>SetConditionResult("endsFound", RuleFound("normal_connect_1") &amp;&amp; RuleFound("normal_connect_2"))</RuleAction>
-      <RuleAction>ConditionedAction(CheckAttribute("endsFound", "true"), RuleApply("normal_connect_3"))</RuleAction>
+      <RuleAction>ConditionedAction(CheckAttribute(,"endsFound", "true"), RuleApply("normal_connect_3"))</RuleAction>
     </Rule>
     <Rule priority="-1" probability="0.1" name="normal_connect_1" active="false">
       <Query>normal_connect_query_1</Query>
@@ -113,6 +125,7 @@
       <RuleAction>RuleTransform("normal_connect_1")</RuleAction>
       <RuleAction>RuleTransform("normal_connect_2")</RuleAction>
       <RuleAction>CreatePath(startpoint, endpoint, startpoint_2, endpoint_2, 4, tempCorridor, true)</RuleAction>
+      <RuleAction>SetAttribute(grammar.constraint_tempCorridor, stage, walls)</RuleAction>
       <RuleAction>TraverserNext("graphspace_traverser",grammar.normal_connect.graphspace_traverser_query_1,,)</RuleAction>
     </Rule>
   </Rules>

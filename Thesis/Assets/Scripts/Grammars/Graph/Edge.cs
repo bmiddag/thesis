@@ -103,11 +103,13 @@ namespace Grammars.Graphs {
 		}
 
 		public override int GetHashCode() {
-			int hash = 12345678;
-			if (node1 != null) hash = node1.GetHashCode();
-			if (node2 != null) hash ^= node2.GetHashCode();
-            //if (directed) hash++;
-			return hash;
+            unchecked {
+                int hash = 17;
+                if (node1 != null) hash = hash * 31 + node1.GetHashCode();
+                if (node2 != null) hash = hash * 31 + node2.GetHashCode();
+                //if (directed) hash++;
+                return hash;
+            }
 		}
 
         public bool EqualsOtherGraphEdge(Edge e, bool thisAttribute = false, bool otherAttribute = false) {

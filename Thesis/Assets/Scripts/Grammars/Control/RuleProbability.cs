@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace Grammars {
@@ -38,6 +39,83 @@ namespace Grammars {
             } else return null;
         }
 
-        // Example rule probability methods are listed here
+        // ********************************************************************************************************************
+        // Example fitness / probability condition methods are listed here
+        // ********************************************************************************************************************
+
+        public static double Multiply<T>(Rule<T> rule, RuleProbability prob1, RuleProbability prob2) where T : StructureModel {
+            return prob1.Calculate() * prob2.Calculate();
+        }
+
+        public static double And<T>(Rule<T> rule, RuleProbability prob1, RuleProbability prob2) where T : StructureModel {
+            return Multiply(rule, prob1, prob2);
+        }
+
+        public static double Divide<T>(Rule<T> rule, RuleProbability prob1, RuleProbability prob2) where T : StructureModel {
+            return prob1.Calculate() / prob2.Calculate();
+        }
+
+        public static double Sum<T>(Rule<T> rule, RuleProbability prob1, RuleProbability prob2) where T : StructureModel {
+            return prob1.Calculate() + prob2.Calculate();
+        }
+
+        public static double Or<T>(Rule<T> rule, RuleProbability prob1, RuleProbability prob2) where T : StructureModel {
+            return Sum(rule, prob1, prob2);
+        }
+
+        public static double Difference<T>(Rule<T> rule, RuleProbability prob1, RuleProbability prob2) where T : StructureModel {
+            return prob1.Calculate() - prob2.Calculate();
+        }
+
+        public static double Min<T>(Rule<T> rule, RuleProbability prob1, RuleProbability prob2) where T : StructureModel {
+            return System.Math.Min(prob1.Calculate(), prob2.Calculate());
+        }
+
+        public static double Max<T>(Rule<T> rule, RuleProbability prob1, RuleProbability prob2) where T : StructureModel {
+            return System.Math.Max(prob1.Calculate(), prob2.Calculate());
+        }
+
+        public static double Inverse<T>(Rule<T> rule, RuleProbability prob) where T : StructureModel {
+            return 1 - prob.Calculate();
+        }
+
+        public static double Not<T>(Rule<T> rule, RuleProbability prob) where T : StructureModel {
+            return Inverse(rule, prob);
+        }
+
+        public static double Constant<T>(Rule<T> rule, double constant) where T : StructureModel {
+            return constant;
+        }
+
+        public static double Bounds<T>(Rule<T> rule, RuleProbability prob, double lower, double upper) where T : StructureModel {
+            return System.Math.Min(System.Math.Max(lower, prob.Calculate()), upper);
+        }
+
+        public static double NormalBounds<T>(Rule<T> rule, RuleProbability prob) where T : StructureModel {
+            return System.Math.Min(System.Math.Max(0, prob.Calculate()), 1);
+        }
+
+        public static double AggregateOperation<T>(Rule<T> rule, string selector, string attrName, string aggOperation) where T : StructureModel {
+            List<AttributedElement> elements = StringEvaluator.SelectElements(rule, selector);
+            double result;
+            if (attrName == null || attrName.Trim() == "") {
+                result = elements.Count;
+            } else {
+                result = StringEvaluator.AggregateAttribute(aggOperation, elements, attrName);
+            }
+            return result;
+        }
+
+        public static double SumAttribute<T>(Rule<T> rule, string selector, string attrName) where T : StructureModel {
+            return AggregateOperation(rule, selector, attrName, "SUM");
+        }
+
+        public static double Attribute<T>(Rule<T> rule, string selector, string attrName) where T : StructureModel {
+            return AggregateOperation(rule, selector, attrName, "SUM");
+        }
+
+        public static double ElementCount<T>(Rule<T> rule, string selector, string attrName) where T : StructureModel {
+            return AggregateOperation(rule, selector, attrName, "COUNT");
+        }
     }
 }

@@ -27,6 +27,7 @@
       <AttributeClass name="tile_lock" />
     </AttributeClasses>
     <Attributes>
+	  <Attribute key="link$graphspace" value="grammar.lock_one_way.graphspace_traverser_query_1" />
 	  <Attribute key="link$graphspace" value="grammar.lock_one_way.graphspace_traverser_query_0-1" />
     </Attributes>
   </Tile>
@@ -54,6 +55,7 @@
       <AttributeClass name="tile_lock" />
     </AttributeClasses>
     <Attributes>
+	  <Attribute key="link$graphspace" value="grammar.lock_one_way.graphspace_traverser_query_1" />
 	  <Attribute key="link$graphspace" value="grammar.lock_one_way.graphspace_traverser_query_0-1" />
     </Attributes>
   </Tile>

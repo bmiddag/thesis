@@ -3,42 +3,26 @@
   <Nodes>
     <Node id="0" hashCode="1259273216" active="True" />
     <Node id="1" hashCode="-1755077120" active="False">
-      <AttributeClasses>
-        <AttributeClass name="open" />
-      </AttributeClasses>
-      <Attributes>
-        <Attribute key="const_shortpath" value="1" />
-      </Attributes>
+      <AttributeClass name="open" />
+      <Attribute key="const_shortpath" value="1" />
     </Node>
     <Node id="2" hashCode="2106890496" active="False" />
     <Node id="3" hashCode="-258403328" active="False">
-      <AttributeClasses>
-        <AttributeClass name="lock" />
-      </AttributeClasses>
-      <Attributes />
+      <AttributeClass name="lock" />
+	  <Attribute key="copy$source$rule.matches.query_1$const" value="true" />
     </Node>
     <Node id="4" hashCode="381905152" active="False">
-      <AttributeClasses>
-        <AttributeClass name="open" />
-      </AttributeClasses>
-      <Attributes>
-        <Attribute key="const_shortpath" value="1" />
-        <Attribute key="copy$source$rule.matches.query_1$const" value="true" />
-      </Attributes>
+      <AttributeClass name="open" />
+	  <Attribute key="const_shortpath" value="1" />
+	  <Attribute key="copy$source$rule.matches.query_1$const" value="true" />
     </Node>
     <Node id="5" hashCode="1022213632" active="False">
-      <AttributeClasses>
-        <AttributeClass name="key" />
-      </AttributeClasses>
-      <Attributes />
+      <AttributeClass name="key" />
+	  <Attribute key="copy$source$rule.matches.query_1$const" value="true" />
     </Node>
     <Node id="6" hashCode="-1624692992" active="False">
-      <AttributeClasses>
-        <AttributeClass name="open" />
-      </AttributeClasses>
-      <Attributes>
-        <Attribute key="copy$source$rule.matches.query_1$const" value="true" />
-      </Attributes>
+      <AttributeClass name="open" />
+      <Attribute key="copy$source$rule.matches.query_1$const" value="true" />
     </Node>
   </Nodes>
   <Edges>
