@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TileGrid width="1" height="1">
+  <Tile x="0" y="0">
+    <AttributeClass name="tile_key" />
+    <Attribute key="link$mission" value="rule.mission_traverser_query_0" />
+  </Tile>
+</TileGrid>

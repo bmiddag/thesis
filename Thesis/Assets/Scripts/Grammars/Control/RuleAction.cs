@@ -210,9 +210,11 @@ namespace Grammars {
                 TileGrid grid = (TileGrid)start.Container;
                 List<TilePos> poss = Tiles.Algorithms.ShortestFreePath(grid, startPos, endPos, width, returnAll: true);
                 if (poss != null) {
-                    foreach (TilePos pos in poss) {
+                    for(int i=0; i < poss.Count; i++) {
+                        TilePos pos = poss[i];
                         Tile t = new Tile(grid, pos.x, pos.y);
                         t.SetAttribute(attName, attValue);
+                        t.SetAttribute("index", i.ToString());
                     }
                 }
             } catch (Exception e) {

@@ -125,9 +125,9 @@ namespace Grammars {
             }
         }
 
-        protected IDictionary<string, AttributedElement> Find(T query) {
+        protected IDictionary<string, AttributedElement> Find(T query, bool nextIfNull=true) {
             IStructureTransformer<T> transformer = Transformer;
-            if (CurrentElement == null) {
+            if (nextIfNull && CurrentElement == null) {
                 Task t = new Task("First");
                 GetTaskProcessor("Next").Process(t);
                 //SetFirstElement();
@@ -155,7 +155,9 @@ namespace Grammars {
                 case "Match":
                 case "Find":
                     if (task.HasAttribute("query") && GetQuery(task["query"]) != null) {
-                        IDictionary<string, AttributedElement> matches = Find(GetQuery(task["query"]));
+                        bool nextIfNull = true;
+                        if (task.HasAttribute("noCurrent")) nextIfNull = false;
+                        IDictionary<string, AttributedElement> matches = Find(GetQuery(task["query"]), nextIfNull: nextIfNull);
                         task.AddReply(matches);
                     } else {
                         task.AddReply(null);

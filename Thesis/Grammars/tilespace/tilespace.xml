@@ -35,11 +35,59 @@
       <Target>bigroom_target</Target>
       <RuleAction>TraverserNext("graphspace_traverser",graphspace_traverser_query_1,,)</RuleAction>
     </Rule>
+    <Rule priority="1" probability="0.9" name="lock_one_way">
+      <RuleCondition>TraverserMatch("graphspace_traverser","lock_one_way")</RuleCondition>
+      <Query>lock_one_way_query</Query>
+      <Target>lock_one_way_target</Target>
+      <RuleAction>TraverserNext("graphspace_traverser",graphspace_traverser_query_1,,)</RuleAction>
+    </Rule>
+    <Rule priority="1" probability="0.1" name="lockroom">
+      <RuleCondition>TraverserMatch("graphspace_traverser","lockroom")</RuleCondition>
+      <Query>bigroom_query</Query>
+      <Target>lockroom_target</Target>
+      <RuleAction>TraverserNext("graphspace_traverser",graphspace_traverser_query_1,,)</RuleAction>
+    </Rule>
     <Rule priority="0" probability="0.1" name="normal">
       <RuleCondition>TraverserMatch("graphspace_traverser","normal")</RuleCondition>
       <Query>normal_query</Query>
       <Target>normal_target</Target>
       <RuleAction>TraverserNext("graphspace_traverser",graphspace_traverser_query_1,,)</RuleAction>
+    </Rule>
+    <!-- Mission element rules -->
+    <Rule priority="3" probability="0.1" name="mission_enemy">
+      <RuleCondition>TraverserFreeMatch("mission_traverser","t_enemy")</RuleCondition>
+      <Query>mission_query</Query>
+      <Target>mission_enemy_target</Target>
+    </Rule>
+    <Rule priority="3" probability="0.1" name="mission_treasure">
+      <RuleCondition>TraverserFreeMatch("mission_traverser","t_treasure")</RuleCondition>
+      <Query>mission_query</Query>
+      <Target>mission_treasure_target</Target>
+    </Rule>
+    <Rule priority="3" probability="0.1" name="mission_key">
+      <RuleCondition>TraverserFreeMatch("mission_traverser","t_key")</RuleCondition>
+      <Query>mission_query</Query>
+      <Target>mission_key_target</Target>
+    </Rule>
+    <Rule priority="3" probability="0.1" name="mission_lock">
+      <RuleCondition>TraverserFreeMatch("mission_traverser","t_lock")</RuleCondition>
+      <Query>mission_lock_query</Query>
+      <Target>mission_lock_target</Target>
+    </Rule>
+    <Rule priority="3" probability="0.1" name="mission_boss">
+      <RuleCondition>TraverserFreeMatch("mission_traverser","t_boss")</RuleCondition>
+      <Query>mission_query</Query>
+      <Target>mission_boss_target</Target>
+    </Rule>
+    <Rule priority="3" probability="0.1" name="mission_start">
+      <RuleCondition>TraverserFreeMatch("mission_traverser","t_start")</RuleCondition>
+      <Query>mission_door_query</Query>
+      <Target>mission_start_target</Target>
+    </Rule>
+    <Rule priority="3" probability="0.1" name="mission_end">
+      <RuleCondition>TraverserFreeMatch("mission_traverser","t_end")</RuleCondition>
+      <Query>mission_door_query</Query>
+      <Target>mission_end_target</Target>
     </Rule>
     <!-- Connection rules -->
     <Rule priority="2" probability="0.1" name="normal_connect">
@@ -71,5 +119,6 @@
   <Listeners>
     <Listener alias="controller">controller</Listener>
     <Listener>graphspace_traverser</Listener>
+    <Listener>mission_traverser</Listener>
   </Listeners>
 </Grammar>

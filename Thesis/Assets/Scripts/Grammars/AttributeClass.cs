@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Grammars {
     /// <summary>
@@ -27,6 +28,41 @@ namespace Grammars {
         }
 
         // Setter isn't necessary since we won't be changing the name at runtime
+
+        // ************************** CLASSES DICTIONARY ************************** \\
+
+        private static Dictionary<string, AttributeClass> allClasses = null;
+        public static Dictionary<string, AttributeClass> AllClasses {
+            get {
+                if (allClasses == null) {
+                    allClasses = new Dictionary<string, AttributeClass>();
+                }
+                return allClasses;
+            }
+            set { allClasses = value; }
+        }
+        public static void Add(AttributeClass cl) {
+            if (cl == null) return;
+            string name = cl.GetName();
+            if (allClasses == null) {
+                allClasses = new Dictionary<string, AttributeClass>();
+            }
+            if (!allClasses.ContainsKey(name)) {
+                allClasses.Add(name, cl);
+            }
+        }
+        public static AttributeClass Get(string name) {
+            if (name == null || name.Trim() == "") return null;
+            if (AllClasses.ContainsKey(name)) {
+                return allClasses[name];
+            } else return null;
+        }
+        public static void Remove(string name) {
+            if (name == null || name.Trim() == "") return;
+            if (AllClasses.ContainsKey(name)) {
+                allClasses.Remove(name);
+            }
+        }
 
         // ************************** EQUALITY TESTING ************************** \\
         public override bool Equals(object obj) {

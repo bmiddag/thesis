@@ -7,14 +7,7 @@
       </AttributeClasses>
       <Attributes />
     </Node>
-    <Node id="1" hashCode="1106730752" active="True">
-      <AttributeClasses>
-        <AttributeClass name="end" />
-      </AttributeClasses>
-      <Attributes>
-        <Attribute key="_grammar_nomatch" value="true" />
-      </Attributes>
-    </Node>
+    <Node id="1" hashCode="1106730752" active="True" />
     <Node id="2" hashCode="-1003841280" active="True">
       <AttributeClasses>
         <AttributeClass name="open" />

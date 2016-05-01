@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Traverser name="mission_traverser" type="graph">
   <Queries>
+    <!-- For graph space -->
     <Query name="start">start</Query>
     <Query name="one_enemy_next">one_enemy_next</Query>
     <Query name="two_enemies_next">two_enemies_next</Query>
@@ -10,6 +11,15 @@
     <Query name="lock_next">lock_next</Query>
     <Query name="normal">normal</Query>
     <Query name="normal_connect">normal_connect</Query>
+    
+    <!-- For tile space -->
+    <Query name="t_start">t_start</Query>
+    <Query name="t_enemy">t_enemy</Query>
+    <Query name="t_treasure">t_treasure</Query>
+    <Query name="t_key">t_key</Query>
+    <Query name="t_lock">t_lock</Query>
+    <Query name="t_boss">t_boss</Query>
+    <Query name="t_end">t_end</Query>
   </Queries>
   <TaskProcessors>
     <TaskProcessor event="Next">GraphTraverser_NextEdge("graphspace")</TaskProcessor>

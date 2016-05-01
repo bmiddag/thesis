@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TileGrid width="2" height="1">
+  <Tile x="0" y="0">
+    <Attribute key="link$mission" value="rule.mission_traverser_query_0" />
+	<Attribute key="element" value="lock" />
+  </Tile>
+  <Tile x="1" y="0">
+    <Attribute key="link$mission" value="rule.mission_traverser_query_0" />
+	<Attribute key="element" value="lock" />
+  </Tile>
+</TileGrid>

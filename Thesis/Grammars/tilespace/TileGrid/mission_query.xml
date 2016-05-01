@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TileGrid width="1" height="1">
+  <Tile x="0" y="0">
+    <Attribute key="link$graphspace" value="rule.mission_traverser_query_0.links_graphspace" />
+    <Attribute key="empty" value="true" />
+  </Tile>
+</TileGrid>

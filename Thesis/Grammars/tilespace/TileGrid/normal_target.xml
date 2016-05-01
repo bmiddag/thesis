@@ -14,6 +14,8 @@
     </AttributeClasses>
     <Attributes>
       <Attribute key="passage" value="closed" />
+      <Attribute key="door_in" value="true" />
+      <Attribute key="door_out" value="true" />
 	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
     </Attributes>
   </Tile>
@@ -23,6 +25,8 @@
     </AttributeClasses>
     <Attributes>
       <Attribute key="passage" value="closed" />
+      <Attribute key="door_in" value="true" />
+      <Attribute key="door_out" value="true" />
 	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
     </Attributes>
   </Tile>
@@ -156,6 +160,8 @@
     </AttributeClasses>
     <Attributes>
       <Attribute key="passage" value="closed" />
+      <Attribute key="door_in" value="true" />
+      <Attribute key="door_out" value="true" />
 	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
     </Attributes>
   </Tile>
@@ -219,6 +225,8 @@
     </AttributeClasses>
     <Attributes>
       <Attribute key="passage" value="closed" />
+      <Attribute key="door_in" value="true" />
+      <Attribute key="door_out" value="true" />
 	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
     </Attributes>
   </Tile>
@@ -298,6 +306,8 @@
     </AttributeClasses>
     <Attributes>
       <Attribute key="passage" value="closed" />
+      <Attribute key="door_in" value="true" />
+      <Attribute key="door_out" value="true" />
 	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
     </Attributes>
   </Tile>
@@ -307,6 +317,8 @@
     </AttributeClasses>
     <Attributes>
       <Attribute key="passage" value="closed" />
+      <Attribute key="door_in" value="true" />
+      <Attribute key="door_out" value="true" />
 	  <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
     </Attributes>
   </Tile>

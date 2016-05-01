@@ -35,8 +35,6 @@ namespace Demo {
 
         Dictionary<string, IGrammarEventHandler> listeners = new Dictionary<string, IGrammarEventHandler>();
         List<IStructureRenderer> structureRenderers = new List<IStructureRenderer>();
-
-        IDictionary<string, AttributeClass> attributeClasses = new Dictionary<string, AttributeClass>(); // TODO: move to grammar
         public AttributeClass defaultClass = null;
 
         public GameObject canvas;
@@ -54,8 +52,8 @@ namespace Demo {
 
         // TODO: Move to grammar
         public void AddAttributeClass(AttributedElement el, string className) {
-            if (el != null && className != null && className != "" && attributeClasses.ContainsKey(className)) {
-                el.AddAttributeClass(attributeClasses[className]);
+            if (el != null && className != null && className != "" && AttributeClass.Get(className) != null) {
+                el.AddAttributeClass(AttributeClass.Get(className));
             }
         }
 
@@ -175,8 +173,8 @@ namespace Demo {
                 string name = classNameField.text.Trim();
                 if (name.StartsWith("d$")) {
                     name = name.Substring(2);
-                    if (name.Trim() != "" && attributeClasses.ContainsKey(name)) {
-                        defaultClass = attributeClasses[name];
+                    if (name.Trim() != "" && AttributeClass.Get(name) != null) {
+                        defaultClass = AttributeClass.Get(name);
                     } else {
                         defaultClass = null;
                     }
@@ -296,7 +294,7 @@ namespace Demo {
         public IEnumerator SaveAttributeClasses() {
             string filename = "Grammars/AttributeClasses.xml";
             DemoIO serializer = new DemoIO(filename, this);
-            serializer.SerializeAttributeClasses(attributeClasses);
+            serializer.SerializeAttributeClasses();
             print("Attribute classes saved!");
             yield return null;
         }
@@ -304,7 +302,7 @@ namespace Demo {
         public IEnumerator LoadAttributeClasses() {
             string filename = "Grammars/AttributeClasses.xml";
             DemoIO serializer = new DemoIO(filename, this);
-            attributeClasses = serializer.DeserializeAttributeClasses();
+            serializer.DeserializeAttributeClasses();
             print("Attribute classes loaded!");
             yield return null;
         }

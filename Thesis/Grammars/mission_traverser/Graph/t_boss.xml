@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Graph>
+  <Nodes>
+    <Node id="0" hashCode="-404370432" active="True">
+      <AttributeClasses>
+        <AttributeClass name="boss" />
+      </AttributeClasses>
+      <Attributes>
+        <Attribute key="_link_graphspace" value="true" />
+        <Attribute key="_link_tilespace" value="false" />
+		<Attribute key="from$links_graphspace$_link_tilespace" value="true" />
+      </Attributes>
+    </Node>
+  </Nodes>
+  <Edges />
+</Graph>

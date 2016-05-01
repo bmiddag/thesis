@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TileGrid width="2" height="2">
+  <Tile x="0" y="0">
+    <Attribute key="element" value="wall" />
+    <Attribute key="link$graphspace" value="rule.mission_traverser_query_0.links_graphspace" />
+  </Tile>
+  <Tile x="0" y="1">
+    <Attribute key="empty" value="true" />
+    <Attribute key="link$graphspace" value="rule.mission_traverser_query_0.links_graphspace" />
+  </Tile>
+  <Tile x="1" y="0">
+    <Attribute key="element" value="wall" />
+    <Attribute key="link$graphspace" value="rule.mission_traverser_query_0.links_graphspace" />
+  </Tile>
+  <Tile x="1" y="1">
+    <Attribute key="empty" value="true" />
+    <Attribute key="link$graphspace" value="rule.mission_traverser_query_0.links_graphspace" />
+  </Tile>
+</TileGrid>

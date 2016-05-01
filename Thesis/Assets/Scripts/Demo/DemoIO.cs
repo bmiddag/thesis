@@ -304,11 +304,12 @@ namespace Demo {
             return task;
         }
 
-        public void SerializeAttributeClasses(IDictionary<string, AttributeClass> classesDict) {
+        public void SerializeAttributeClasses() {
             using (XmlWriter writer = XmlWriter.Create(filename, settings)) {
                 writer.WriteStartDocument();
                 writer.WriteStartElement("AttributeClasses");
-                foreach (AttributeClass cl in classesDict.Values) {
+                Dictionary<string, AttributeClass> allCl = AttributeClass.AllClasses;
+                foreach (AttributeClass cl in allCl.Values) {
                     writer.WriteStartElement("AttClass");
                     writer.WriteAttributeString("name", cl.GetName());
                     SerializeAttributedElement(writer, cl);
@@ -319,7 +320,7 @@ namespace Demo {
             }
         }
 
-        public Dictionary<string, AttributeClass> DeserializeAttributeClasses() {
+        public void DeserializeAttributeClasses() {
             // Create an XML reader for this file.
             AttributeClass currentClass = null;
             Dictionary<string, AttributeClass> classesDict = new Dictionary<string, AttributeClass>();
@@ -364,8 +365,7 @@ namespace Demo {
                     classesDict[name].SetAttribute(att.Key, att.Value);
                 }
             }
-
-            return classesDict;
+            AttributeClass.AllClasses = classesDict;
         }
 
         public List<string> GetSubDirectories() {

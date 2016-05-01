@@ -10,11 +10,8 @@
       </Attributes>
     </Node>
     <Node id="1" hashCode="1106730752" active="True">
-      <AttributeClasses>
-        <AttributeClass name="end" />
-      </AttributeClasses>
       <Attributes>
-        <Attribute key="_grammar_nomatch" value="true" />
+	    <Attribute key="end" value="_grammar_nomatch" />
         <Attribute key="_edges" value="2" />
       </Attributes>
     </Node>

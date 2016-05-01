@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TileGrid width="4" height="2">
+<TileGrid width="4" height="5">
   <Tile x="0" y="0">
     <AttributeClasses>
       <AttributeClass name="tile_wall" />

@@ -145,6 +145,13 @@ namespace Grammars {
                 string rest = key.Substring(6);
                 if (links.ContainsKey(rest) && links[rest] != null && links[rest].Count > 0) return "true";
                 return "false";
+            } else if (key.StartsWith("_links_")) {
+                string rest = key.Substring(7);
+                if (links.ContainsKey(rest) && links[rest] != null) {
+                    return links[rest].Count.ToString();
+                } else return "0";
+            } else if (key.StartsWith("from$")) {
+                return ParseRaw(key);
             } else return null;
 		}
 

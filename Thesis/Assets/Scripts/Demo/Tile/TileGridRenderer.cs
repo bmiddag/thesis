@@ -65,7 +65,7 @@ namespace Demo {
             if (gridLineObject == null) {
                 gridLineObject = new GameObject("Gridlines");
                 gridLineObject.transform.SetParent(transform);
-                gridLineObject.transform.localPosition = new Vector3(0, 0);
+                gridLineObject.transform.localPosition = new Vector3(0, 0, -2);
             }
             gridLines = new List<LineRenderer>();
             InitGridLines();

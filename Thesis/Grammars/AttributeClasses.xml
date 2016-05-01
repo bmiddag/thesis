@@ -28,7 +28,7 @@
   </AttClass>
   <AttClass name="boss">
     <Attributes>
-	  <Attribute key="_demo_image" value="enemy" />
+	  <Attribute key="_demo_image" value="boss" />
 	  <Attribute key="_demo_size" value="large" />
 	  <Attribute key="boss" value="true" />
     </Attributes>
@@ -64,6 +64,7 @@
   <AttClass name="end">
     <Attributes>
 	  <Attribute key="_demo_image" value="stop" />
+	  <Attribute key="end" value="true" />
     </Attributes>
   </AttClass>
   
@@ -85,6 +86,7 @@
 	  <Attribute key="space_element" value="room" />
 	  <Attribute key="space_size" value="large" />
 	  <Attribute key="_demo_size" value="large" />
+	  <Attribute key="bigroom" value="true" />
     </Attributes>
   </AttClass>
   <AttClass name="lockroom">
@@ -92,12 +94,7 @@
 	  <Attribute key="_demo_image" value="lock" />
 	  <Attribute key="space_element" value="room" />
 	  <Attribute key="space_size" value="normal" />
-    </Attributes>
-  </AttClass>
-  <AttClass name="locked_door">
-    <Attributes>
-	  <Attribute key="_demo_color" value="blue" />
-	  <Attribute key="locked" value="true" />
+	  <Attribute key="lockroom" value="true" />
     </Attributes>
   </AttClass>
   
@@ -119,15 +116,27 @@
   </AttClass>
   <AttClass name="tile_enemy">
     <Attributes>
-	  <Attribute key="_demo_image" value="tileEnemy" />
+	  <Attribute key="_demo_image" value="tileFloor" />
+	  <Attribute key="_demo_object" value="enemy" />
 	  <Attribute key="empty" value="false" />
 	  <Attribute key="element" value="enemy" />
 	  <Attribute key="walkable" value="true" />
     </Attributes>
   </AttClass>
+  <AttClass name="tile_boss">
+    <Attributes>
+	  <Attribute key="_demo_image" value="tileFloor" />
+	  <Attribute key="_demo_object" value="boss" />
+	  <Attribute key="empty" value="false" />
+	  <Attribute key="element" value="boss" />
+	  <Attribute key="walkable" value="true" />
+	  <Attribute key="_demo_size" value="huge" />
+    </Attributes>
+  </AttClass>
   <AttClass name="tile_treasure">
     <Attributes>
-	  <Attribute key="_demo_image" value="tileTreasure" />
+	  <Attribute key="_demo_image" value="tileFloor" />
+	  <Attribute key="_demo_object" value="treasure" />
 	  <Attribute key="empty" value="false" />
 	  <Attribute key="element" value="treasure" />
 	  <Attribute key="walkable" value="true" />
@@ -135,10 +144,35 @@
   </AttClass>
   <AttClass name="tile_key">
     <Attributes>
-	  <Attribute key="_demo_image" value="tileKey" />
+	  <Attribute key="_demo_image" value="tileFloor" />
+	  <Attribute key="_demo_object" value="key" />
 	  <Attribute key="empty" value="false" />
 	  <Attribute key="element" value="key" />
 	  <Attribute key="walkable" value="true" />
+    </Attributes>
+  </AttClass>
+  <AttClass name="tile_lock">
+    <Attributes>
+	  <Attribute key="_demo_image" value="tileLock" />
+	  <Attribute key="empty" value="false" />
+	  <Attribute key="element" value="lock" />
+	  <Attribute key="walkable" value="false" />
+    </Attributes>
+  </AttClass>
+  <AttClass name="tile_start">
+    <Attributes>
+	  <Attribute key="_demo_image" value="tileStart" />
+	  <Attribute key="empty" value="false" />
+	  <Attribute key="element" value="start" />
+	  <Attribute key="walkable" value="false" />
+    </Attributes>
+  </AttClass>
+  <AttClass name="tile_end">
+    <Attributes>
+	  <Attribute key="_demo_image" value="tileEnd" />
+	  <Attribute key="empty" value="false" />
+	  <Attribute key="element" value="end" />
+	  <Attribute key="walkable" value="false" />
     </Attributes>
   </AttClass>
 </AttributeClasses>

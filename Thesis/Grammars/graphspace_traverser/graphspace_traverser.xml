@@ -5,6 +5,8 @@
     <Query name="bigroom">bigroom</Query>
     <Query name="normal">normal</Query>
     <Query name="normal_connect">normal_connect</Query>
+    <Query name="lock_one_way">lock_one_way</Query>
+    <Query name="lockroom">lockroom</Query>
   </Queries>
   <TaskProcessors>
     <TaskProcessor event="Next">GraphTraverser_NextEdge("tilespace")</TaskProcessor>

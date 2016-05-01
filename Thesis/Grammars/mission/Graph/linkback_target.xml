@@ -1,12 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Graph>
   <Nodes>
-    <Node id="0" hashCode="1259273216" active="True">
-      <Attributes>
-        <Attribute key="_grammar_nomatch" value="true" />
-        <Attribute key="visited" value="true" />
-      </Attributes>
-    </Node>
+    <Node id="0" hashCode="1259273216" active="True" />
     <Node id="1" hashCode="-1755077120" active="False">
       <AttributeClasses>
         <AttributeClass name="open" />
