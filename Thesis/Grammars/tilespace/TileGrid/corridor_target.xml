@@ -45,11 +45,21 @@
   </Tile>
   <Tile x="0" y="11">
     <AttributeClass name="tile_wall" />
-    <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
+    <Attributes>
+      <Attribute key="passage" value="closed" />
+      <Attribute key="door_in" value="true" />
+      <Attribute key="door_out" value="true" />
+      <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
+    </Attributes>
   </Tile>
   <Tile x="0" y="12">
     <AttributeClass name="tile_wall" />
-    <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
+    <Attributes>
+      <Attribute key="passage" value="closed" />
+      <Attribute key="door_in" value="true" />
+      <Attribute key="door_out" value="true" />
+      <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
+    </Attributes>
   </Tile>
   <Tile x="0" y="13">
     <AttributeClass name="tile_wall" />
@@ -333,11 +343,21 @@
   </Tile>
   <Tile x="3" y="11">
     <AttributeClass name="tile_wall" />
-    <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
+    <Attributes>
+      <Attribute key="passage" value="closed" />
+      <Attribute key="door_in" value="true" />
+      <Attribute key="door_out" value="true" />
+      <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
+    </Attributes>
   </Tile>
   <Tile x="3" y="12">
     <AttributeClass name="tile_wall" />
-    <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
+    <Attributes>
+      <Attribute key="passage" value="closed" />
+      <Attribute key="door_in" value="true" />
+      <Attribute key="door_out" value="true" />
+      <Attribute key="link$graphspace" value="rule.graphspace_traverser_query_1" />
+    </Attributes>
   </Tile>
   <Tile x="3" y="13">
     <AttributeClass name="tile_wall" />
