@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Graph>
+  <Nodes>
+    <Node id="3" hashCode="-1680215296" active="True">
+      <AttributeClasses>
+        <AttributeClass name="enemy" />
+      </AttributeClasses>
+      <Attributes>
+	    <Attribute key="copy$source$rule.matches.query_1$const" value="true" />
+	  </Attributes>
+    </Node>
+    <Node id="2" hashCode="1574704128" active="True" />
+    <Node id="0" hashCode="-1625769472" active="True" />
+    <Node id="1" hashCode="1806705152" active="True">
+      <AttributeClasses>
+        <AttributeClass name="enemy" />
+      </AttributeClasses>
+      <Attributes />
+    </Node>
+    <Node id="4" hashCode="1690578944" active="True">
+      <AttributeClasses>
+        <AttributeClass name="treasure" />
+      </AttributeClasses>
+      <Attributes>
+	    <Attribute key="copy$source$rule.matches.query_1$const" value="true" />
+	  </Attributes>
+    </Node>
+    <Node id="5" hashCode="992156928" active="True">
+      <AttributeClasses>
+        <AttributeClass name="open" />
+      </AttributeClasses>
+      <Attributes>
+	    <Attribute key="copy$source$rule.matches.query_1$const" value="true" />
+	  </Attributes>
+    </Node>
+  </Nodes>
+  <Edges>
+    <Edge node1="-1680215296" node2="1690578944" directed="True" />
+    <Edge node1="1806705152" node2="-1680215296" directed="True" />
+    <Edge node1="-1625769472" node2="1806705152" directed="True" />
+    <Edge node1="1690578944" node2="992156928" directed="True" />
+    <Edge node1="992156928" node2="1574704128" directed="True" />
+  </Edges>
+</Graph>

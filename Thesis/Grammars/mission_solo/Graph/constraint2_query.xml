@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Graph>
+  <Nodes>
+    <Node id="2" hashCode="180801792" active="True">
+      <Attributes>
+		<Attribute key="key" value="_grammar_nomatch" />
+		<Attribute key="lock" value="_grammar_nomatch" />
+        <Attribute key="partOfGroup" value="@_PartOfGroup(grammar, constraint2_group)" />
+      </Attributes>
+    </Node>
+    <Node id="1" hashCode="693852928" active="True">
+      <Attributes>
+        <Attribute key="key" value="_grammar_nomatch" />
+		<Attribute key="lock" value="_grammar_nomatch" />
+        <Attribute key="partOfGroup" value="@_PartOfGroup(grammar, constraint2_group)" />
+        <Attribute key="_edges" value="2" />
+      </Attributes>
+    </Node>
+    <Node id="0" hashCode="1556345600" active="True" />
+  </Nodes>
+  <Edges>
+    <Edge node1="693852928" node2="180801792" directed="True" />
+    <Edge node1="1556345600" node2="693852928" directed="True" />
+  </Edges>
+</Graph>

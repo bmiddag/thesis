@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Grammar name="mission" type="graph" findFirst="true">
+  <Constraints>
+    <!-- Constraint 1: At least 2 sidepaths (if >= 5 elements exist) -->
+    <Constraint name="constraint1_10enemies" active="true">
+      <GrammarCondition>CountElements("Has(#enemy)","&lt;=",10)</GrammarCondition>
+      <Rules>
+        <Rule probability="1" name="CONSTRAINT1-RULE">
+          <Query>constraint1_query</Query>
+          <Target>constraint1_target</Target>
+        </Rule>
+      </Rules>
+    </Constraint>
+    <Constraint name="constraint2_branch" active="true">
+      <GrammarCondition>CountElementsGrouped("constraint2_group","Has(#const_branch)",,"&lt;=",5) &amp;&amp; (CountElementsGrouped("constraint2_group","Has(#const_branch)",,"&lt;=",3) || CountElementsGrouped("constraint2_group","Has(#const_branch)","Has(#treasure)","&gt;=",1))</GrammarCondition>
+      <Rules>
+        <Rule probability="1" name="CONSTRAINT2-RULE">
+          <Query>constraint2_query</Query>
+          <Target>constraint2_target</Target>
+        </Rule>
+      </Rules>
+    </Constraint>
+    <Constraint name="constraint3_shortpath" active="true">
+      <GrammarCondition>CountElementsGrouped("constraint3_group","Has(#const_shortpath)",,"&lt;=",3)</GrammarCondition>
+      <Rules>
+        <Rule probability="1" name="CONSTRAINT3-RULE">
+          <Query>constraint3_query</Query>
+          <Target>constraint3_target</Target>
+        </Rule>
+      </Rules>
+    </Constraint>
+  </Constraints>
+  <Rules>
+    <Initial probability="0.5" name="initial_1">
+      <Target>initial_1</Target>
+    </Initial>
+    <Initial probability="0.5" name="initial_2">
+      <Target>initial_2</Target>
+    </Initial>
+	<Rule probability="0.1" name="enemy_chain">
+      <Query>enemy_chain_query</Query>
+      <Target>enemy_chain_target</Target>
+    </Rule>
+	<Rule probability="0.08" name="insert_branch">
+	  <RuleProbability>(Attribute(from [grammar.source],) - Attribute(from [grammar.source] where [Has(#const_branch)],)) / Constant(2)</RuleProbability>
+      <Query>insert_branch_query</Query>
+      <Target>insert_branch_target</Target>
+    </Rule>
+	<Rule probability="0.05" name="generate_keylock">
+      <Query>generate_keylock_query</Query>
+      <Target>generate_keylock_target</Target>
+    </Rule>
+    <Rule probability="0.3" name="add_enemy">
+      <Query>add_enemy_query</Query>
+      <Target>add_enemy_target</Target>
+    </Rule>
+    <Rule probability="0.05" name="linkback">
+      <!-- TODO: Add condition for this, etc -->
+      <Query>linkback_query</Query>
+      <Target>linkback_target</Target>
+    </Rule>
+    <Rule probability="0.1" name="endlevel">
+      <Query>endlevel_query</Query>
+      <Target>endlevel_target</Target>
+    </Rule>
+    <Rule probability="0.25" name="improve_pacing">
+      <Query>improve_pacing_query</Query>
+      <Target>improve_pacing_target</Target>
+    </Rule>
+    <Rule probability="0.1" name="endbranch">
+      <RuleProbability>Attribute(from [grammar.source],) / Constant(30)</RuleProbability>
+      <Query>endbranch_query</Query>
+      <Target>endbranch_target</Target>
+    </Rule>
+    <Rule probability="0.1" name="endbranch_edge">
+      <RuleProbability>Attribute(from [grammar.source],) / Constant(30)</RuleProbability>
+      <Query>endbranch_edge_query</Query>
+      <Target>endbranch_target</Target>
+    </Rule>
+    <Rule probability="0.7" name="merge_open">
+      <Query>merge_open_query</Query>
+      <Target>merge_open_target</Target>
+    </Rule>
+  </Rules>
+</Grammar>

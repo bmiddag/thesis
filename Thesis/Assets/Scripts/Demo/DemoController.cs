@@ -284,8 +284,8 @@ namespace Demo {
             if (currentStructureRenderer == null) {
                 PrepareGrammar("Grammars/", "controller");
             } else if(currentStructureRenderer.GetType() == typeof(GraphRenderer)) {
-                PrepareGrammar("Grammars/", "mission");
-            } else if (currentStructureRenderer.GetType() == typeof(GraphRenderer)) {
+                PrepareGrammar("Grammars/", "mission_solo");
+            } else if (currentStructureRenderer.GetType() == typeof(TileGridRenderer)) {
                 PrepareGrammar("Grammars/", "tilespace");
             }
             yield return null;

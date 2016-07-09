@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Graph>
+  <Nodes>
+    <Node id="0" hashCode="785713920" active="True">
+      <AttributeClasses>
+        <AttributeClass name="enemy" />
+      </AttributeClasses>
+      <Attributes />
+    </Node>
+    <Node id="1" hashCode="-2023948288" active="True">
+      <AttributeClasses>
+        <AttributeClass name="enemy" />
+      </AttributeClasses>
+      <Attributes />
+    </Node>
+    <Node id="2" hashCode="450605056" active="True">
+      <AttributeClasses>
+        <AttributeClass name="open" />
+      </AttributeClasses>
+      <Attributes />
+    </Node>
+    <Node id="3" hashCode="-844832768" active="True" />
+  </Nodes>
+  <Edges>
+    <Edge node1="785713920" node2="-2023948288" directed="True" />
+    <Edge node1="450605056" node2="-844832768" directed="True" />
+    <Edge node1="-2023948288" node2="450605056" directed="True" />
+  </Edges>
+</Graph>
