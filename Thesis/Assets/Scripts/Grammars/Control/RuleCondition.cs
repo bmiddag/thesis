@@ -160,5 +160,25 @@ namespace Grammars {
             }
             return true;
         }
+
+        public static bool AggregateOperation<T>(Rule<T> rule, string selector, string attrName, string aggOperation, string cmpOperation, double number) where T : StructureModel {
+            List<AttributedElement> elements = StringEvaluator.SelectElements(rule, selector);
+            double result;
+            if (attrName == null || attrName.Trim() == "") {
+                result = elements.Count;
+            } else {
+                result = StringEvaluator.AggregateAttribute(aggOperation, elements, attrName);
+            }
+            return StringEvaluator.Compare(cmpOperation, result, number);
+        }
+
+        public static bool CountElements<T>(Rule<T> rule, string selector, string cmpOperation, double number) where T : StructureModel {
+            List<AttributedElement> elements = StringEvaluator.SelectElements(rule, selector);
+            return StringEvaluator.Compare(cmpOperation, elements.Count, number);
+        }
+
+        public static bool SumAttribute<T>(Rule<T> rule, string selector, string attrName, string cmpOperation, double number) where T : StructureModel {
+            return AggregateOperation(rule, selector, attrName, "SUM", cmpOperation, number);
+        }
     }
 }

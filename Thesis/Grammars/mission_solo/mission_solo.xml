@@ -55,11 +55,12 @@
       <Target>add_enemy_target</Target>
     </Rule>
     <Rule probability="0.05" name="linkback">
-      <!-- TODO: Add condition for this, etc -->
       <Query>linkback_query</Query>
       <Target>linkback_target</Target>
     </Rule>
     <Rule probability="0.1" name="endlevel">
+	  <RuleCondition>CountElements("from [grammar.source]","&gt;=",7)</RuleCondition>
+	  <RuleProbability>Attribute(from [grammar.source],) / Constant(30)</RuleProbability>
       <Query>endlevel_query</Query>
       <Target>endlevel_target</Target>
     </Rule>
@@ -68,11 +69,13 @@
       <Target>improve_pacing_target</Target>
     </Rule>
     <Rule probability="0.1" name="endbranch">
+	  <RuleCondition>CountElements("from [grammar.source]","&gt;=",5)</RuleCondition>
       <RuleProbability>Attribute(from [grammar.source],) / Constant(30)</RuleProbability>
       <Query>endbranch_query</Query>
       <Target>endbranch_target</Target>
     </Rule>
     <Rule probability="0.1" name="endbranch_edge">
+	  <RuleCondition>CountElements("from [grammar.source]","&gt;=",5)</RuleCondition>
       <RuleProbability>Attribute(from [grammar.source],) / Constant(30)</RuleProbability>
       <Query>endbranch_edge_query</Query>
       <Target>endbranch_target</Target>

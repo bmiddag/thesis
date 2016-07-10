@@ -17,13 +17,13 @@
       <AttributeClasses>
         <AttributeClass name="key" />
       </AttributeClasses>
-      <Attributes />
+      <Attribute key="keyID" value="from$grammar$_iteration" />
     </Node>
     <Node id="3" hashCode="1963571456" active="True">
       <AttributeClasses>
         <AttributeClass name="lock" />
       </AttributeClasses>
-      <Attributes />
+      <Attribute key="keyID" value="from$grammar$_iteration" />
     </Node>
     <Node id="4" hashCode="1603045888" active="True">
       <AttributeClasses>

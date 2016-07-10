@@ -8,10 +8,8 @@
       </Attributes>
     </Node>
     <Node id="1" hashCode="127909376" active="True">
-      <AttributeClasses>
-        <AttributeClass name="open" />
-      </AttributeClasses>
-      <Attributes />
+      <AttributeClass name="open" />
+      <Attribute key="const_shortpath" value="_grammar_nomatch" />
     </Node>
     <Node id="2" hashCode="728607744" active="True" />
   </Nodes>

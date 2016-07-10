@@ -207,14 +207,17 @@ namespace Grammars.Graphs {
                     if (node.GetEdges().Count < queryNode.GetEdges().Count) continue;
                 }*/
                 // For all edges that node has to nodes already selected (including currentNode): compare edge
-                HashSet<Node> adjacentMarkedNodes = new HashSet<Node>(node.GetEdges().Keys.Intersect(selection.Keys));
+                //HashSet<Node> adjacentMarkedNodes = new HashSet<Node>(node.GetEdges().Keys.Intersect(selection.Keys));
+                HashSet<Node> adjacentMarkedQueryNodes = new HashSet<Node>(queryNode.GetEdges().Keys.Intersect(selection.Values));
                 bool edgesValid = true;
-                foreach (Node markedNode in adjacentMarkedNodes) {
+                foreach (Node markedQueryNode in adjacentMarkedQueryNodes) {
                     // Get the query node that matches this marked source node
-                    Node markedQueryNode = selection.Values.Where(n => (n.GetID().ToString() == markedNode["_grammar_query_id"])).First();
-                    Edge markedSourceEdge = node.GetEdges()[markedNode];
-                    Edge markedQueryEdge = queryNode.GetEdges().ContainsKey(markedQueryNode) ? queryNode.GetEdges()[markedQueryNode] : null;
-                    if (markedQueryEdge == null || markedQueryEdge.HasAttribute("_grammar_noEdge")) {
+                    //Node markedNode = selection[markedNode];
+                    Node markedNode = selection.Keys.Where(n => n["_grammar_query_id"] == markedQueryNode.GetID().ToString()).First();
+                    Edge markedSourceEdge = node.GetEdges().ContainsKey(markedNode) ? node.GetEdges()[markedNode] : null;
+                    Edge markedQueryEdge = queryNode.GetEdges()[markedQueryNode];
+                    if (markedQueryEdge.HasAttribute("_grammar_noEdge") && markedSourceEdge == null) continue;
+                    if (markedSourceEdge == null) {
                         edgesValid = false;
                         break;
                     }
@@ -401,6 +404,17 @@ namespace Grammars.Graphs {
                     SetAttributesUsingDifference(edge, null, targetEdge);
                 }
             }
+
+            // Optional: check for errors
+            /*foreach (Node sNode in source.GetNodes()) {
+                if (sNode["_edges"] == "0") {
+                    string nodeID = sNode.GetID().ToString();
+                    if (selectedMatch.ContainsKey(sNode)) {
+                        nodeID = nodeID + " matching query node " + selectedMatch[sNode].GetID();
+                    }
+                    UnityEngine.MonoBehaviour.print("[GRAPH TRANSFORMER]: Node " + nodeID + " was disconnected while applying rule: " + rule.Name);
+                }
+            }*/
 
             /* Step 7: Remove "_grammar_query_id" attribute */
             foreach (Node sourceNode in selectedMatch.Keys) {
