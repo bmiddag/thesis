@@ -3,6 +3,7 @@
   <Nodes>
     <Node id="2" hashCode="180801792" active="True">
       <Attributes>
+        <Attribute key="const_shortpath" value="1" />
 		<Attribute key="key" value="_grammar_nomatch" />
 		<Attribute key="lock" value="_grammar_nomatch" />
         <Attribute key="partOfGroup" value="@_PartOfGroup(grammar, constraint2_group)" />
@@ -10,9 +11,7 @@
     </Node>
     <Node id="1" hashCode="693852928" active="True">
       <Attributes>
-        <Attribute key="key" value="_grammar_nomatch" />
-		<Attribute key="lock" value="_grammar_nomatch" />
-        <Attribute key="partOfGroup" value="@_PartOfGroup(grammar, constraint2_group)" />
+        <Attribute key="const_shortpath" value="1" />
         <Attribute key="_edges" value="2" />
       </Attributes>
     </Node>

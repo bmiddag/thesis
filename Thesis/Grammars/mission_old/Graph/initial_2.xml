@@ -5,10 +5,13 @@
       <AttributeClasses>
         <AttributeClass name="start" />
       </AttributeClasses>
+      <Attributes />
     </Node>
     <Node id="1" hashCode="-2003634176" active="True">
-      <AttributeClass name="lock" />
-	  <Attribute key="keyID" value="0" />
+      <AttributeClasses>
+        <AttributeClass name="lock" />
+      </AttributeClasses>
+      <Attributes />
     </Node>
     <Node id="2" hashCode="-1628127744" active="True">
       <AttributeClasses>
@@ -17,8 +20,10 @@
       <Attributes />
     </Node>
     <Node id="3" hashCode="1251892992" active="True">
-      <AttributeClass name="key" />
-	  <Attribute key="keyID" value="0" />
+      <AttributeClasses>
+        <AttributeClass name="key" />
+      </AttributeClasses>
+      <Attributes />
     </Node>
     <Node id="4" hashCode="821695488" active="True">
       <AttributeClasses>

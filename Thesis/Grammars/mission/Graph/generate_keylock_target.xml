@@ -9,28 +9,32 @@
     <Node id="2" hashCode="2106890496" active="False" />
     <Node id="3" hashCode="-258403328" active="False">
       <AttributeClass name="lock" />
-	  <Attribute key="copy$source$rule.matches.query_1$const" value="true" />
+	  <Attribute key="const_shortpath" value="1" />
+	  <!-- <Attribute key="copy$source$rule.matches.query_1$const" value="true" /> -->
+	  <Attribute key="keyID" value="from$grammar$_iteration" />
     </Node>
     <Node id="4" hashCode="381905152" active="False">
       <AttributeClass name="open" />
 	  <Attribute key="const_shortpath" value="1" />
-	  <Attribute key="copy$source$rule.matches.query_1$const" value="true" />
+	  <!-- <Attribute key="copy$source$rule.matches.query_1$const" value="true" /> -->
     </Node>
     <Node id="5" hashCode="1022213632" active="False">
       <AttributeClass name="key" />
-	  <Attribute key="copy$source$rule.matches.query_1$const" value="true" />
+	  <Attribute key="const_shortpath" value="1" />
+	  <Attribute key="keyID" value="from$grammar$_iteration" />
+	  <!-- <Attribute key="copy$source$rule.matches.query_1$const" value="true" /> -->
     </Node>
     <Node id="6" hashCode="-1624692992" active="False">
       <AttributeClass name="open" />
-      <Attribute key="copy$source$rule.matches.query_1$const" value="true" />
+      <!-- <Attribute key="copy$source$rule.matches.query_1$const" value="true" /> -->
     </Node>
   </Nodes>
   <Edges>
-    <Edge node1="1259273216" node2="-1755077120" directed="True" />
-    <Edge node1="1259273216" node2="381905152" directed="True" />
-    <Edge node1="-1755077120" node2="-258403328" directed="True" />
-    <Edge node1="381905152" node2="1022213632" directed="True" />
-    <Edge node1="-258403328" node2="-1624692992" directed="True" />
-    <Edge node1="-1624692992" node2="2106890496" directed="True" />
+    <Edge node1="1259273216" node2="-1755077120" directed="True" /> <!-- 0 to 1 -->
+    <Edge node1="1259273216" node2="381905152" directed="True" /> <!-- 0 to 4 -->
+    <Edge node1="-1755077120" node2="-258403328" directed="True" /> <!-- 1 to 3 -->
+    <Edge node1="381905152" node2="1022213632" directed="True" />  <!-- 4 to 5 -->
+    <Edge node1="-258403328" node2="-1624692992" directed="True" /> <!-- 3 to 6 -->
+    <Edge node1="-1624692992" node2="2106890496" directed="True" /> <!-- 6 to 2 -->
   </Edges>
 </Graph>

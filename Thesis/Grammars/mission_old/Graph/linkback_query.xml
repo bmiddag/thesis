@@ -18,7 +18,6 @@
     </Node>
     <Node id="2" hashCode="405528576" active="False" />
     <Node id="3" hashCode="-456964096" active="True">
-	  <!-- Should be reachable from visited node -->
       <AttributeClasses>
         <AttributeClass name="open" />
       </AttributeClasses>

@@ -54,7 +54,7 @@
       <Query>add_enemy_query</Query>
       <Target>add_enemy_target</Target>
     </Rule>
-    <Rule probability="0.05" name="linkback">
+    <Rule probability="0.01" name="linkback">
       <Query>linkback_query</Query>
       <Target>linkback_target</Target>
     </Rule>

@@ -7,6 +7,7 @@
       </AttributeClasses>
       <Attributes>
 	    <Attribute key="placeholder" value="_grammar_remove" />
+        <Attribute key="const_shortpath" value="1" />
       </Attributes>
     </Node>
     <Node id="0" hashCode="1556345600" active="True" />

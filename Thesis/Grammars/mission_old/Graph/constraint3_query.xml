@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Graph>
+  <Nodes>
+    <Node id="0" hashCode="-2061600768" active="True">
+      <Attributes>
+        <Attribute key="visited" value="_grammar_nomatch" />
+        <Attribute key="placeholder" value="_grammar_nomatch" />
+      </Attributes>
+    </Node>
+    <Node id="2" hashCode="-1666387200" active="True">
+      <Attributes>
+        <Attribute key="placeholder" value="_grammar_nomatch" />
+        <Attribute key="visited" value="_grammar_nomatch" />
+      </Attributes>
+    </Node>
+    <Node id="1" hashCode="-1953946112" active="True">
+      <Attributes>
+        <Attribute key="visited" value="_grammar_nomatch" />
+        <Attribute key="_edges" value="2" />
+		<Attribute key="key" value="_grammar_nomatch" />
+		<Attribute key="lock" value="_grammar_nomatch" />
+        <Attribute key="partOfGroup" value="@_PartOfGroup(grammar, constraint3_group)" />
+      </Attributes>
+    </Node>
+  </Nodes>
+  <Edges>
+    <Edge node1="-1953946112" node2="-1666387200" directed="True" />
+    <Edge node1="-2061600768" node2="-1953946112" directed="True" />
+  </Edges>
+</Graph>
