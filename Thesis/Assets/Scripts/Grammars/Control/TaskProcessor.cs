@@ -141,7 +141,8 @@ namespace Grammars {
                     }
                 }
                 currentElement = traverser.CurrentElement;
-                if (currentElement == null) {
+                if (currentElement == null || currentElement.HasAttribute("_grammar_destroyed")) {
+                    traverser.CurrentElement = null;
                     traverser.SetFirstElement();
                     currentElement = traverser.CurrentElement;
                 }
@@ -245,6 +246,38 @@ namespace Grammars {
                 } else {
                     currentElement = traverser.CurrentElement;
                 }
+                if (currentElement != null && currentElement.HasAttribute("_grammar_destroyed")) {
+                    currentElement = null;
+                    traverser.CurrentElement = null;
+                    // Take a random edge where node1 = linked and node2 isn't
+                    List<Node> possibleStarts = source.GetNodes().Where(n => n.HasLink(myName)).ToList();
+                    List<Edge> targets = new List<Edge>();
+                    foreach (Node node in possibleStarts) {
+                        IDictionary<Node, Edge> nodeEdges = node.GetEdges();
+                        foreach (KeyValuePair<Node, Edge> pair in nodeEdges) {
+                            if ((pair.Value.IsDirected() && node == pair.Value.GetNode1()) || !pair.Value.IsDirected()) {
+                                if (!pair.Value.HasLink(myName) || !pair.Key.HasLink(myName) || pair.Key.HasAttribute("placeholder")) {
+                                    targets.Add(pair.Value);
+                                }
+                            }
+                        }
+                    }
+                    if (targets.Count > 0) {
+                        Random rand = new Random();
+                        Edge currentEdge = targets[rand.Next(0, targets.Count)];
+                        currentElement = currentEdge;
+                        Node node1 = currentEdge.GetNode1();
+                        Node node2 = currentEdge.GetNode2();
+                        traverser.CurrentElement = currentElement;
+                        if (currentEdge == null || currentEdge.HasAttribute("placeholder")
+                            || node1.HasAttribute("placeholder") || node2.HasAttribute("placeholder")) {
+                            GraphTraverser_NextEdge(container, task, myName);
+                            return;
+                        }
+                        task.AddReply(currentElement);
+                        return;
+                    }
+                }
                 if (currentElement == null) {
                     traverser.SetFirstElement();
                     currentElement = traverser.CurrentElement;
@@ -255,10 +288,19 @@ namespace Grammars {
                         IDictionary<Node, Edge> currentEdges = currentNode.GetEdges();
                         foreach (KeyValuePair<Node, Edge> edge in currentEdges) {
                             if ((edge.Value.IsDirected() && currentNode == edge.Value.GetNode1()) || !edge.Value.IsDirected()) {
-                                if (!edge.Value.HasLink(myName) || edge.Value.HasAttribute("placeholder")) {
+                                if (!edge.Value.HasLink(myName) || edge.Value.HasAttribute("placeholder")
+                                    || edge.Key.HasAttribute("placeholder") || !edge.Key.HasLink(myName)) {
                                     currentElement = edge.Value;
+                                    traverser.CurrentElement = currentElement;
                                     break;
                                 }
+                            }
+                        }
+                        // No better edge found? Take a random one!
+                        if (currentElement.GetType() == typeof(Node)) {
+                            if (currentEdges.Count > 0) {
+                                currentElement = currentEdges.First().Value;
+                                traverser.CurrentElement = currentElement;
                             }
                         }
                     }
