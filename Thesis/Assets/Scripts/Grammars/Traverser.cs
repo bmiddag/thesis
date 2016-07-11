@@ -158,6 +158,9 @@ namespace Grammars {
                 case "Match":
                 case "Find":
                     if (task.HasAttribute("query") && GetQuery(task["query"]) != null) {
+                        /*if (currentElement != null && currentElement.GetType() == typeof(Graphs.Edge)) {
+                            UnityEngine.MonoBehaviour.print("CURRENT ELEMENT = " + ((Graphs.Edge)currentElement).GetNode1().GetID() + "-" + ((Graphs.Edge)currentElement).GetNode2().GetID());
+                        }*/
                         bool nextIfNull = true;
                         if (task.HasAttribute("noCurrent")) nextIfNull = false;
                         IDictionary<string, AttributedElement> matches = Find(GetQuery(task["query"]), nextIfNull: nextIfNull);

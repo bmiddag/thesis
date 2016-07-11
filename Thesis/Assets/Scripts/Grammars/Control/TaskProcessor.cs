@@ -73,7 +73,9 @@ namespace Grammars {
                 if (currentElement != null) {
                     if (currentElement.HasAttribute("placeholder")) {
                         traverser.GenerateMore(placeholderEl: currentElement);
-                        currentElement = traverser.CurrentElement;
+                        //currentElement = traverser.CurrentElement;
+                        GraphTraverser_NextEdge(container, task, myName);
+                        return;
                     }
                     if (currentElement == null || currentElement.HasAttribute("placeholder")) {
                         TileTraverser_NextElement(container, task, myName);
@@ -147,7 +149,9 @@ namespace Grammars {
                     // If current element is placeholder, ask origin to generate more
                     if (currentElement.HasAttribute("placeholder")) {
                         traverser.GenerateMore(placeholderEl: currentElement);
-                        currentElement = traverser.CurrentElement;
+                        //currentElement = traverser.CurrentElement;
+                        GraphTraverser_NextEdge(container, task, myName);
+                        return;
                     }
                     // If it is still placeholder or actually deleted this time, execute this algorithm again.
                     if (currentElement == null || currentElement.HasAttribute("placeholder")) {
@@ -277,8 +281,9 @@ namespace Grammars {
                             } else if (node2.HasAttribute("placeholder")) {
                                 traverser.GenerateMore(placeholderEl: node2);
                             }
-                            //traverser.GenerateMore();
-                            currentElement = traverser.CurrentElement;
+                            //currentElement = traverser.CurrentElement;
+                            GraphTraverser_NextEdge(container, task, myName);
+                            return;
                         }
                         // If it is still placeholder or actually deleted this time, execute this algorithm again.
                         if (currentElement == null || currentElement.GetType() != typeof(Edge) || currentElement.HasAttribute("placeholder")) {

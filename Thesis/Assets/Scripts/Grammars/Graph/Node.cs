@@ -94,6 +94,7 @@ namespace Grammars.Graphs {
 			foreach (KeyValuePair<Node, Edge> entry in edges) {
 				entry.Value.destroy();
 			}*/
+            SetAttribute("_grammar_destroyed", "true");
             ICollection<Node> adjacentNodeList = edges.Keys;
             while (adjacentNodeList.Count > 0) {
                 RemoveEdge(adjacentNodeList.First());

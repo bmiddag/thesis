@@ -57,14 +57,16 @@ namespace Grammars {
             double maxProbability = 0.0;
             foreach (Rule<T> rule in rules) {
                 double probability = rule.GetProbability();
+                int priority = rule.Priority;
+                if (rule.GetAttribute("traverserMatch") == "true") priority += 1000;
                 if (probability > 0) {
                     maxProbability += probability;
-                    if (!ruleDict.ContainsKey(rule.Priority)) {
-                        ruleDict.Add(rule.Priority, new List<Rule<T>>());
-                        probDict.Add(rule.Priority, new List<double>());
+                    if (!ruleDict.ContainsKey(priority)) {
+                        ruleDict.Add(priority, new List<Rule<T>>());
+                        probDict.Add(priority, new List<double>());
                     }
-                    probDict[rule.Priority].Add(probability);
-                    ruleDict[rule.Priority].Add(rule);
+                    probDict[priority].Add(probability);
+                    ruleDict[priority].Add(rule);
                 }
             }
             List<int> priorities = ruleDict.Keys.OrderByDescending(i => i).ToList();

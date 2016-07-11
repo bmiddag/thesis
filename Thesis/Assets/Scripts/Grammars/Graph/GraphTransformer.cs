@@ -284,6 +284,7 @@ namespace Grammars.Graphs {
             if (matches.Count > 0) {
                 int index = -1;
                 if (rule != null && rule.MatchSelector != null) {
+                    if (rule != null) rule.SetAttribute("traverserMatch", "false");
                     index = rule.MatchSelector.Select(matches);
                 }
                 if (index == -1) {
@@ -311,13 +312,16 @@ namespace Grammars.Graphs {
                             Random rnd = new Random();
                             int prioritizedIndex = rnd.Next(prioritizedMatches.Count);
                             index = matches.IndexOf(prioritizedMatches[prioritizedIndex]);
+                            if(rule != null) rule.SetAttribute("traverserMatch", "true");
                         } else {
                             Random rnd = new Random();
                             index = rnd.Next(matches.Count);
+                            if (rule != null) rule.SetAttribute("traverserMatch", "false");
                         }
                     } else {
                         Random rnd = new Random();
                         index = rnd.Next(matches.Count);
+                        if (rule != null) rule.SetAttribute("traverserMatch", "false");
                     }
                 }
                 selectedMatch = matches.ElementAt(index);
@@ -325,6 +329,7 @@ namespace Grammars.Graphs {
                 if ((query == null || query.GetNodes().Count == 0) && (source != null && source.GetNodes().Count == 0)) {
                     selectedMatch = new Dictionary<Node, Node>();
                 } else selectedMatch = null;
+                if (rule != null) rule.SetAttribute("traverserMatch", "false");
             }
         }
 

@@ -287,13 +287,16 @@ namespace Grammars {
                 // Transfer control to inter-grammar system
                 Task completedTask = taskQueue.Dequeue();
                 completedTask.SetAttribute("completed", "true");
-                Dictionary<string, object> parameters = new Dictionary<string, object>();
-                parameters.Add("specifier", completedTask);
-                SendGrammarEvent(stopString,
-                        replyExpected: false,
-                        targets: new string[] { completedTask.Source.Name },
-                        objectParameters: parameters);
-                //UnityEngine.MonoBehaviour.print("STOP!");
+                if (completedTask.Action != "GenerateNext") {
+                    Dictionary<string, object> parameters = new Dictionary<string, object>();
+                    parameters.Add("specifier", completedTask);
+                    SendGrammarEvent(stopString,
+                            replyExpected: false,
+                            targets: new string[] { completedTask.Source.Name },
+                            objectParameters: parameters);
+                } else {
+                    Monitor.PulseAll(taskQueue);
+                }
             }
             iteration++;
         }

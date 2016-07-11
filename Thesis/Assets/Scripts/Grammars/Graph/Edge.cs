@@ -48,6 +48,7 @@ namespace Grammars.Graphs {
 
 		public void Destroy() {
 			if (!destroyed) {
+                SetAttribute("_grammar_destroyed", "true");
 				destroyed = true;
 				node1.RemoveEdge(node2);
                 node2.RemoveEdge(node1);
