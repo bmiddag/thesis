@@ -63,6 +63,18 @@
       <Target>normal_target</Target>
       <RuleAction>TraverserNext("mission_traverser",mission_traverser_query_1,,)</RuleAction>
     </Rule>
+	<Rule priority="-1" probability="0.1" name="normal_connect_2">
+      <RuleCondition>TraverserMatch("mission_traverser","normal_connect")</RuleCondition>
+      <Query>normal_connect_2_query</Query>
+      <Target>normal_connect_target</Target>
+      <RuleAction>TraverserNext("mission_traverser",mission_traverser_query_1,,)</RuleAction>
+    </Rule>
+	<Rule priority="-1" probability="0.1" name="normal_connect_same">
+      <RuleCondition>TraverserMatch("mission_traverser","normal_connect")</RuleCondition>
+      <Query>normal_connect_same_query</Query>
+      <Target>normal_connect_same_target</Target>
+      <RuleAction>TraverserNext("mission_traverser",mission_traverser_query_1,,)</RuleAction>
+    </Rule>
   </Rules>
   <Listeners>
     <Listener alias="controller">controller</Listener>

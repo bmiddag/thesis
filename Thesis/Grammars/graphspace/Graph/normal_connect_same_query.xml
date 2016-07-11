@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Graph>
+  <Nodes>
+    <Node id="0" hashCode="1780930048" active="True">
+      <Attribute key="link$mission$1" value="rule.mission_traverser_query_0" />
+	  <Attribute key="link$mission$2" value="rule.mission_traverser_query_1" />
+    </Node>
+  </Nodes>
+</Graph>

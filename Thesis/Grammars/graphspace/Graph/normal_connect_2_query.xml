@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Graph>
+  <Nodes>
+    <Node id="0" hashCode="1780930048" active="True">
+      <Attributes>
+        <Attribute key="link$mission" value="rule.mission_traverser_query_0" />
+      </Attributes>
+    </Node>
+	<Node id="1" hashCode="1099395584" active="True">
+      <Attributes>
+        <Attribute key="link$mission" value="rule.mission_traverser_query_1" />
+      </Attributes>
+    </Node>
+  </Nodes>
+  <Edges>
+    <Edge node1="1780930048" node2="1099395584" directed="True" />
+  </Edges>
+</Graph>
