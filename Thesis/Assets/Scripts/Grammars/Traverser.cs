@@ -82,10 +82,13 @@ namespace Grammars {
             taskProcessors = new Dictionary<string, TaskProcessor>();
         }
 
-        public virtual void GenerateMore() {
+        public virtual void GenerateMore(AttributedElement placeholderEl = null) {
             // Send an event to generate more
             Dictionary<string, object> parameters = new Dictionary<string, object>();
-            parameters.Add("currentElement", CurrentElement);
+            //parameters.Add("currentElement", CurrentElement);
+            if (placeholderEl != null) {
+                parameters.Add("currentElement", placeholderEl);
+            }
 
             List<object> replies = SendGrammarEvent("GenerateNext",
                 replyExpected: true,

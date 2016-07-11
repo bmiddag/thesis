@@ -79,6 +79,7 @@ namespace Grammars {
         }
 
         protected List<GrammarCondition> stopConditions;
+        protected Dictionary<GrammarCondition, string> stopEvents;
         protected GrammarRuleSelector ruleSelectionController = null;
         public GrammarRuleSelector RuleSelector {
             get { return ruleSelectionController; }
@@ -116,6 +117,7 @@ namespace Grammars {
             this.ruleSelectionController = ruleSelectionController;
             this.findAllRules = findAllRules;
             stopConditions = new List<GrammarCondition>();
+            stopEvents = new Dictionary<GrammarCondition, string>();
             constraints = new Dictionary<string, Constraint<T>>();
             rules = new Dictionary<string, Rule<T>>();
             iteration = 0;
@@ -129,8 +131,8 @@ namespace Grammars {
             } else taskThread = null;
         }
 
-        protected bool CheckStopCondition() {
-            if (Source == null) return true;
+        protected string CheckStopCondition() {
+            if (Source == null) return "TaskCompleted";
             if (stopConditions != null && stopConditions.Count > 0) {
                 int stop = -1; // index of failed stop condition
                 for (int i = 0; i < stopConditions.Count; i++) {
@@ -139,12 +141,14 @@ namespace Grammars {
                         break;
                     }
                 }
-                if (stop != -1) {
-                    return true;
-                } else return false;
-            } else {
-                return noRuleFound;
-            }
+                if (stop != -1 || noRuleFound) {
+                    if (stop != -1 && stopEvents.ContainsKey(stopConditions[stop])) {
+                        return stopEvents[stopConditions[stop]];
+                    } else return "TaskCompleted";
+                } else return null;
+            } else if (noRuleFound) {
+                return "TaskCompleted";
+            } else return null;
         }
 
         protected bool SelectRule(List<Rule<T>> ruleSet, GrammarRuleSelector selectionHandler = null, bool findFirst = false) {
@@ -277,14 +281,15 @@ namespace Grammars {
                 }
             }
             noRuleFound = !foundAny;
-            bool stop = CheckStopCondition();
+            string stopString = CheckStopCondition();
+            bool stop = (stopString != null);
             if (stop) {
                 // Transfer control to inter-grammar system
                 Task completedTask = taskQueue.Dequeue();
                 completedTask.SetAttribute("completed", "true");
                 Dictionary<string, object> parameters = new Dictionary<string, object>();
                 parameters.Add("specifier", completedTask);
-                SendGrammarEvent("TaskCompleted",
+                SendGrammarEvent(stopString,
                         replyExpected: false,
                         targets: new string[] { completedTask.Source.Name },
                         objectParameters: parameters);
@@ -303,13 +308,19 @@ namespace Grammars {
             }
         }
 
-        public void AddStopCondition(GrammarCondition cond) {
+        public void AddStopCondition(GrammarCondition cond, string eventName=null) {
             stopConditions.Add(cond);
+            if (eventName != null && eventName.Trim() != "") {
+                stopEvents[cond] = eventName;
+            }
         }
 
         public void RemoveStopCondition(GrammarCondition cond) {
             if (stopConditions.Contains(cond)) {
                 stopConditions.Remove(cond);
+            }
+            if (stopEvents.ContainsKey(cond)) {
+                stopEvents.Remove(cond);
             }
         }
 

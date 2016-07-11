@@ -562,6 +562,8 @@ namespace Demo {
                                 break;
                             case "GrammarCondition":
                                 name = reader["name"];
+                                string eventStr = reader["event"];
+
                                 GrammarCondition grCond = null;
                                 if (name == null) {
                                     reader.Read();
@@ -580,7 +582,7 @@ namespace Demo {
                                     currentConstraint.Condition = grCond;
                                 } else {
                                     // STOP CONDITION
-                                    grammar.AddStopCondition(grCond);
+                                    grammar.AddStopCondition(grCond, eventStr);
                                 }
                                 if (!reader.IsEmptyElement) currentMethodCaller.Push(grCond);
                                 break;

@@ -72,7 +72,7 @@ namespace Grammars {
                 }
                 if (currentElement != null) {
                     if (currentElement.HasAttribute("placeholder")) {
-                        traverser.GenerateMore();
+                        traverser.GenerateMore(placeholderEl: currentElement);
                         currentElement = traverser.CurrentElement;
                     }
                     if (currentElement == null || currentElement.HasAttribute("placeholder")) {
@@ -146,7 +146,7 @@ namespace Grammars {
                 if (currentElement != null) {
                     // If current element is placeholder, ask origin to generate more
                     if (currentElement.HasAttribute("placeholder")) {
-                        traverser.GenerateMore();
+                        traverser.GenerateMore(placeholderEl: currentElement);
                         currentElement = traverser.CurrentElement;
                     }
                     // If it is still placeholder or actually deleted this time, execute this algorithm again.
@@ -270,7 +270,14 @@ namespace Grammars {
 
                         // If current element is placeholder, ask origin to generate more
                         if (currentElement.HasAttribute("placeholder") || node1.HasAttribute("placeholder") || node2.HasAttribute("placeholder")) {
-                            traverser.GenerateMore();
+                            if (currentElement.HasAttribute("placeholder")) {
+                                traverser.GenerateMore(placeholderEl: currentElement);
+                            } else if (node1.HasAttribute("placeholder")) {
+                                traverser.GenerateMore(placeholderEl: node1);
+                            } else if (node2.HasAttribute("placeholder")) {
+                                traverser.GenerateMore(placeholderEl: node2);
+                            }
+                            //traverser.GenerateMore();
                             currentElement = traverser.CurrentElement;
                         }
                         // If it is still placeholder or actually deleted this time, execute this algorithm again.

@@ -287,8 +287,38 @@ namespace Grammars.Graphs {
                     index = rule.MatchSelector.Select(matches);
                 }
                 if (index == -1) {
-                    Random rnd = new Random();
-                    index = rnd.Next(matches.Count);
+                    if (rule != null && rule.Grammar.CurrentTask.Action == "GenerateNext") {
+                        // Quick fix for prioritizing current traverser position in matches
+                        List<Dictionary<Node, Node>> prioritizedMatches = new List<Dictionary<Node, Node>>();
+
+                        object currEl = rule.Grammar.CurrentTask.GetObjectAttribute("currentElement");
+                        if (currEl.GetType() == typeof(Edge)) {
+                            Edge currEdge = (Edge)currEl;
+                            foreach (Dictionary<Node, Node> match in matches) {
+                                if (match.Keys.Where(n => (n == currEdge.GetNode1() || n == currEdge.GetNode2())).Count() > 0) {
+                                    prioritizedMatches.Add(match);
+                                }
+                            }
+                        } else if(currEl.GetType() == typeof(Node)) {
+                            Node currNode = (Node)currEl;
+                            foreach (Dictionary<Node, Node> match in matches) {
+                                if (match.Keys.Where(n => n == currNode).Count() > 0) {
+                                    prioritizedMatches.Add(match);
+                                }
+                            }
+                        }
+                        if (prioritizedMatches.Count > 0) {
+                            Random rnd = new Random();
+                            int prioritizedIndex = rnd.Next(prioritizedMatches.Count);
+                            index = matches.IndexOf(prioritizedMatches[prioritizedIndex]);
+                        } else {
+                            Random rnd = new Random();
+                            index = rnd.Next(matches.Count);
+                        }
+                    } else {
+                        Random rnd = new Random();
+                        index = rnd.Next(matches.Count);
+                    }
                 }
                 selectedMatch = matches.ElementAt(index);
             } else {

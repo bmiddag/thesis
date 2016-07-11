@@ -188,5 +188,36 @@ namespace Grammars {
 
             return true;
         }
+
+        public static bool CheckAttribute<T>(Grammar<T> grammar, string selector, string attName, string value) where T : StructureModel {
+            List<AttributedElement> els = grammar.GetElements(selector);
+            foreach (AttributedElement el in els) {
+                string att = el.GetAttribute(attName);
+                if (att != value) return false;
+            }
+            return true;
+        }
+
+        public static bool AttributeModulo<T>(Grammar<T> grammar, string selector, string attName, double divisor, double remainder) where T : StructureModel {
+            List<AttributedElement> els = grammar.GetElements(selector);
+            foreach (AttributedElement el in els) {
+                string att = el.GetAttribute(attName);
+                double doubleAtt = double.Parse(att);
+                if ((doubleAtt % divisor) == remainder) {
+                    return true;
+                } else return false;
+            }
+            return true;
+        }
+
+        public static bool AttributeCmp<T>(Grammar<T> grammar, string selector, string attName, string operation, double number) where T : StructureModel {
+            List<AttributedElement> els = grammar.GetElements(selector);
+            foreach (AttributedElement el in els) {
+                string att = el.GetAttribute(attName);
+                double doubleAtt = double.Parse(att);
+                return StringEvaluator.Compare(operation, doubleAtt, number);
+            }
+            return true;
+        }
     }
 }

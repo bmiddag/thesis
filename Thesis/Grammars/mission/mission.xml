@@ -85,6 +85,9 @@
       <Target>merge_open_target</Target>
     </Rule>
   </Rules>
+  <StopConditions>
+    <GrammarCondition>AttributeCmp(this,_iteration,"&gt;=",4) &amp;&amp; AttributeModulo(this,_iteration,4,0)</GrammarCondition>
+  </StopConditions>
   <Listeners>
     <Listener alias="controller">controller</Listener>
   </Listeners>
