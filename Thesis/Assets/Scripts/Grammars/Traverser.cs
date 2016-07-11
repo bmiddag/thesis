@@ -159,7 +159,11 @@ namespace Grammars {
                 case "Find":
                     if (task.HasAttribute("query") && GetQuery(task["query"]) != null) {
                         /*if (currentElement != null && currentElement.GetType() == typeof(Graphs.Edge)) {
-                            UnityEngine.MonoBehaviour.print("CURRENT ELEMENT = " + ((Graphs.Edge)currentElement).GetNode1().GetID() + "-" + ((Graphs.Edge)currentElement).GetNode2().GetID());
+                            if (currentElement.HasAttribute("_grammar_destroyed")) {
+                                UnityEngine.MonoBehaviour.print("CURRENT ELEMENT = " + ((Graphs.Edge)currentElement).GetNode1().GetID() + "-" + ((Graphs.Edge)currentElement).GetNode2().GetID() + " - DESTROYED :(");
+                            } else {
+                                UnityEngine.MonoBehaviour.print("CURRENT ELEMENT = " + ((Graphs.Edge)currentElement).GetNode1().GetID() + "-" + ((Graphs.Edge)currentElement).GetNode2().GetID());
+                            }
                         }*/
                         bool nextIfNull = true;
                         if (task.HasAttribute("noCurrent")) nextIfNull = false;

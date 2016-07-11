@@ -113,6 +113,9 @@ namespace Grammars.Graphs {
                     Edge currentEdge = currentEdges.First();
                     queryNodes.Add(currentEdge.GetNode1());
                     queryNodes.Add(currentEdge.GetNode2());
+                    if (Traverser.CurrentElement == null) {
+                        return _Find_End();
+                    }
                 } else {
                     queryNodes = query.GetNodes().OrderByDescending(n => n.GetAttributes().Count).ToList(); // start with most specific node
                 }
@@ -167,13 +170,13 @@ namespace Grammars.Graphs {
             // Determine the most specific node(s) that will be best for querying first
             List<Node> queryNodes;
             if (Traverser != null && Traverser.CurrentElement != null && selection.Count == 1) {
-                queryNodes = new HashSet<Node>(currentQueryNode.GetEdges().Keys).Except(selection.Values)
+                queryNodes = new List<Node>(currentQueryNode.GetEdges().Keys).Except(selection.Values)
                 .OrderByDescending(n => currentQueryNode.GetEdges()[n].HasAttribute("_grammar_current") ? int.MaxValue : n.GetAttributes().Count).ToList();
             } else {
-                queryNodes = new HashSet<Node>(currentQueryNode.GetEdges().Keys).Except(selection.Values)
+                queryNodes = new List<Node>(currentQueryNode.GetEdges().Keys).Except(selection.Values)
                 .OrderByDescending(n => n.GetAttributes().Count).ToList();
             }
-            List<Node> sourceNodes = new HashSet<Node>(currentSourceNode.GetEdges().Keys).Except(selection.Keys)
+            List<Node> sourceNodes = new List<Node>(currentSourceNode.GetEdges().Keys).Except(selection.Keys)
                 .OrderByDescending(n => n.GetAttributes().Count).ToList();
             if (sourceNodes.Count < queryNodes.Count) return false;
             if (queryNodes.Count == 0) return true; // Nothing else to query along this path => dead end
@@ -213,7 +216,8 @@ namespace Grammars.Graphs {
                 foreach (Node markedQueryNode in adjacentMarkedQueryNodes) {
                     // Get the query node that matches this marked source node
                     //Node markedNode = selection[markedNode];
-                    Node markedNode = selection.Keys.Where(n => n["_grammar_query_id"] == markedQueryNode.GetID().ToString()).First();
+                    Node markedNode = selection.Where(p => p.Value == markedQueryNode).First().Key;
+                    //Node markedNode = selection.Keys.Where(n => n["_grammar_query_id"] == markedQueryNode.GetID().ToString()).First();
                     Edge markedSourceEdge = node.GetEdges().ContainsKey(markedNode) ? node.GetEdges()[markedNode] : null;
                     Edge markedQueryEdge = queryNode.GetEdges()[markedQueryNode];
                     if (markedQueryEdge.HasAttribute("_grammar_noEdge") && markedSourceEdge == null) continue;

@@ -222,7 +222,7 @@ namespace Grammars.Tiles {
                         // Select random rotation
                         Random r = new Random();
                         int rotation = r.Next(0, 4);
-                        UnityEngine.MonoBehaviour.print("Rotation: " + rotation);
+                        //UnityEngine.MonoBehaviour.print("Rotation: " + rotation);
                         int middleX, middleY;
                         int sGridX, sGridY;
                         sGridX = source.GetGridSize().x;

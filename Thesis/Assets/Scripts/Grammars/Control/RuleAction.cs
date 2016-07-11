@@ -74,14 +74,14 @@ namespace Grammars {
 
             if (grammar.GetListener(traverser) != null) {
                 grammar.SendGrammarEvent("Next",
-                    replyExpected: false,
+                    replyExpected: true,
                     source: grammar,
                     targets: new string[] { traverser },
                     stringParameters: stringParams,
                     objectParameters: objectParams);
             } else {
                 grammar.SendGrammarEvent(traverser + ".Next",
-                    replyExpected: false,
+                    replyExpected: true,
                     source: grammar,
                     targets: new string[] { "controller" },
                     stringParameters: stringParams,

@@ -286,8 +286,8 @@ namespace Grammars {
             if (stop) {
                 // Transfer control to inter-grammar system
                 Task completedTask = taskQueue.Dequeue();
-                completedTask.SetAttribute("completed", "true");
                 if (completedTask.Action != "GenerateNext") {
+                    completedTask.SetAttribute("completed", "true");
                     Dictionary<string, object> parameters = new Dictionary<string, object>();
                     parameters.Add("specifier", completedTask);
                     SendGrammarEvent(stopString,
@@ -295,7 +295,10 @@ namespace Grammars {
                             targets: new string[] { completedTask.Source.Name },
                             objectParameters: parameters);
                 } else {
-                    Monitor.PulseAll(taskQueue);
+                    lock (completedTask) {
+                        completedTask.SetAttribute("completed", "true");
+                        Monitor.PulseAll(completedTask);
+                    }
                 }
             }
             iteration++;
@@ -456,10 +459,12 @@ namespace Grammars {
                             } else task.AddReply(null);
                             break;
                         case "GenerateNext":
-                            lock (taskQueue) {
-                                taskQueue.Enqueue(task);
-                                Monitor.PulseAll(taskQueue);
-                                while (!task.HasAttribute("completed")) Monitor.Wait(taskQueue);
+                            lock (task) {
+                                lock (taskQueue) {
+                                    taskQueue.Enqueue(task);
+                                    Monitor.PulseAll(taskQueue);
+                                }
+                                while (!task.HasAttribute("completed") && taskQueue.Count > 0) Monitor.Wait(task);
                             }
                             task.AddReply("completed");
                             break;
