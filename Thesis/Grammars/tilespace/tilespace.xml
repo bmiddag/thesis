@@ -110,10 +110,12 @@
       <RuleAction>ConditionedAction(CheckAttribute(,"endsFound", "true"), RuleApply("normal_connect_3"))</RuleAction>
     </Rule>
     <Rule priority="-1" probability="0.1" name="normal_connect_1" active="false">
+	  <RuleMatchSelector>MinimizeTileDistance("from [grammar.normal_connect.graphspace_traverser_query_1.links_tilespace]")</RuleMatchSelector>
       <Query>normal_connect_query_1</Query>
       <Target>normal_connect_target_1</Target>
     </Rule>
     <Rule priority="-1" probability="0.1" name="normal_connect_2" active="false">
+	  <RuleMatchSelector>MinimizeTileDistance("from [grammar.normal_connect_1.matches.0_0]")</RuleMatchSelector>
       <Query>normal_connect_query_2</Query>
       <Target>normal_connect_target_2</Target>
     </Rule>

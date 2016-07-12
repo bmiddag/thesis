@@ -34,6 +34,22 @@ namespace Grammars {
 			return attributes.ContainsKey(key);
 		}
 
+        public bool MatchLink(string linkName, string linkValue) {
+            if (linkValue == null || linkValue.Trim() == "") {
+                return HasLink(linkName);
+            } else {
+                List<AttributedElement> els = GetElements(linkValue);
+                if (els.Count > 0) {
+                    foreach (AttributedElement linkEl in els) {
+                        if (!links.ContainsKey(linkName) || !links[linkName].Contains(linkEl)) {
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
+        } 
+
         public bool MatchAttributes(AttributedElement el, Dictionary<string, IElementContainer> otherContainers=null, bool raw = false) {
             if (el == null) return true;
             ICollection<string> otherKeys = el.GetAttributes(raw: true).Keys;

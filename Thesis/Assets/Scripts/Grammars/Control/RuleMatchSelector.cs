@@ -1,4 +1,7 @@
-﻿using System.Linq;
+﻿using Grammars.Tiles;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace Grammars {
@@ -40,5 +43,48 @@ namespace Grammars {
         }
 
         // Example match selection methods are listed here
+        public static int MinimizeTileDistance<T>(Rule<T> rule, List<TilePos> matches, string tileSelector) where T : StructureModel {
+            /*UnityEngine.MonoBehaviour.print("REACHED THIS POINT");
+            UnityEngine.MonoBehaviour.print("MATCH COUNT: " + matches.Count);
+            UnityEngine.MonoBehaviour.print("SELECTOR: " + tileSelector);
+            if (tileSelector.Contains("from [grammar.source") &&
+                (tileSelector.Contains("rule") || (tileSelector.IndexOf("grammar") != tileSelector.LastIndexOf("grammar")))) {
+                foreach (AttributedElement sourceEl in rule.Grammar.GetElements()) {
+                    sourceEl.SetObjectAttribute("grammar", rule.Grammar, notify: false);
+                    sourceEl.SetObjectAttribute("rule", rule, notify: false);
+                }
+            }*/
+            List<AttributedElement> els = StringEvaluator.SelectElements(rule, tileSelector);
+            /*if (tileSelector.Contains("from [grammar.source") &&
+                (tileSelector.Contains("rule") || (tileSelector.IndexOf("grammar") != tileSelector.LastIndexOf("grammar")))) {
+                foreach (AttributedElement sourceEl in rule.Grammar.GetElements()) {
+                    sourceEl.RemoveObjectAttribute("grammar", notify: false);
+                    sourceEl.RemoveObjectAttribute("rule", notify: false);
+                }
+            }
+            UnityEngine.MonoBehaviour.print("SELECTED ELS: " + els.Count);*/
+            //List<AttributedElement> els = rule.GetElements(tileSelector);
+            List<TilePos> tilesPos = els.Where(e => e.GetType() == typeof(Tile)).Select(e => ((Tile)e).GetIndices()).ToList();
+            if (tilesPos.Count > 0) {
+                int meanX = (int)Math.Round(tilesPos.Select(t => t.x).Average());
+                int meanY = (int)Math.Round(tilesPos.Select(t => t.y).Average());
+                TilePos meanPos = new TilePos(meanX, meanY);
+                int minDist = int.MaxValue;
+                int ind = 0;
+                for (int i = 0; i < matches.Count; i++) {
+                    TilePos match = matches[i];
+                    int dist = Algorithms.Distance(match, meanPos);
+                    if (dist < minDist) {
+                        ind = i;
+                        minDist = dist;
+                    }
+                }
+                return ind;
+            } else {
+                Random rnd = new Random();
+                int ind = rnd.Next(matches.Count);
+                return ind;
+            }
+        }
     }
 }
