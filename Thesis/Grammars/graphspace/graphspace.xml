@@ -76,6 +76,10 @@
       <RuleAction>TraverserNext("mission_traverser",mission_traverser_query_1,,)</RuleAction>
     </Rule>
   </Rules>
+  <StopConditions>
+    <!-- <GrammarCondition event="RoomGenerated">AttributeCmp(this,_iteration,"&gt;=",1) &amp;&amp; !NoRuleFound()</GrammarCondition> -->
+	<GrammarCondition event="RoomGenerated">!NoRuleFound()</GrammarCondition>
+  </StopConditions>
   <Listeners>
     <Listener alias="controller">controller</Listener>
     <Listener>mission_traverser</Listener>
