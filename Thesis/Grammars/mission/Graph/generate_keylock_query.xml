@@ -2,10 +2,7 @@
 <Graph>
   <Nodes>
     <Node id="0" hashCode="1599795712" active="True">
-      <Attributes>
-        <Attribute key="_grammar_nomatch" value="true" />
-        <Attribute key="visited" value="true" />
-      </Attributes>
+      <Attribute key="_link_graphspace" value="false" />
     </Node>
     <Node id="1" hashCode="127909376" active="True">
       <AttributeClass name="open" />

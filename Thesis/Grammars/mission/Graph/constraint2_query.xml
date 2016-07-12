@@ -12,6 +12,7 @@
       <Attributes>
         <Attribute key="key" value="_grammar_nomatch" />
 		<Attribute key="lock" value="_grammar_nomatch" />
+		<Attribute key="_link_graphspace" value="false" />
         <Attribute key="partOfGroup" value="@_PartOfGroup(grammar, constraint2_group)" />
         <Attribute key="_edges" value="2" />
       </Attributes>

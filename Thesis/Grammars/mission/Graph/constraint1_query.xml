@@ -7,7 +7,7 @@
         <AttributeClass name="enemy" />
       </AttributeClasses>
       <Attributes>
-        <Attribute key="visited" value="_grammar_nomatch" />
+        <Attribute key="_link_graphspace" value="false" />
         <Attribute key="_edges" value="2" />
       </Attributes>
     </Node>
