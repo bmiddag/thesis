@@ -177,4 +177,109 @@
 	  <Attribute key="walkable" value="false" />
     </Attributes>
   </AttClass>
+  
+  <!-- DORMANS ATTRIBUTE CLASSES -->
+  <AttClass name="bl">
+    <Attribute key="type" value="bl" />
+	<Attribute key="_demo_shape" value="circle" />
+  </AttClass>
+  <AttClass name="bm">
+    <Attribute key="type" value="bm" />
+	<Attribute key="_demo_shape" value="circle" />
+  </AttClass>
+  <AttClass name="C">
+    <Attribute key="type" value="C" />
+	<Attribute key="_demo_shape" value="square" />
+  </AttClass>
+  <AttClass name="CF">
+    <Attribute key="type" value="CF" />
+	<Attribute key="_demo_shape" value="square" />
+  </AttClass>
+  <AttClass name="CL">
+    <Attribute key="type" value="CL" />
+	<Attribute key="_demo_shape" value="square" />
+  </AttClass>
+  <AttClass name="CP">
+    <Attribute key="type" value="CP" />
+	<Attribute key="_demo_shape" value="square" />
+  </AttClass>
+  <AttClass name="e">
+    <Attribute key="type" value="e" />
+	<Attribute key="_demo_shape" value="circle" />
+  </AttClass>
+  <AttClass name="F">
+    <Attribute key="type" value="F" />
+	<Attribute key="_demo_shape" value="square" />
+  </AttClass>
+  <AttClass name="G">
+    <Attribute key="type" value="G" />
+	<Attribute key="_demo_shape" value="square" />
+  </AttClass>
+  <AttClass name="g">
+    <Attribute key="type" value="g" />
+	<Attribute key="_demo_shape" value="circle" />
+  </AttClass>
+  <AttClass name="H">
+    <Attribute key="type" value="H" />
+	<Attribute key="_demo_shape" value="square" />
+  </AttClass>
+  <AttClass name="ib">
+    <Attribute key="type" value="ib" />
+	<Attribute key="_demo_shape" value="circle" />
+  </AttClass>
+  <AttClass name="iq">
+    <Attribute key="type" value="iq" />
+	<Attribute key="_demo_shape" value="circle" />
+  </AttClass>
+  <AttClass name="k">
+    <Attribute key="type" value="k" />
+	<Attribute key="_demo_shape" value="circle" />
+  </AttClass>
+  <AttClass name="kf">
+    <Attribute key="type" value="kf" />
+	<Attribute key="_demo_shape" value="circle" />
+  </AttClass>
+  <AttClass name="km">
+    <Attribute key="type" value="km" />
+	<Attribute key="_demo_shape" value="circle" />
+  </AttClass>
+  <AttClass name="l">
+    <Attribute key="type" value="l" />
+	<Attribute key="_demo_shape" value="circle" />
+  </AttClass>
+  <AttClass name="lf">
+    <Attribute key="type" value="lf" />
+	<Attribute key="_demo_shape" value="circle" />
+  </AttClass>
+  <AttClass name="lm">
+    <Attribute key="type" value="lm" />
+	<Attribute key="_demo_shape" value="circle" />
+  </AttClass>
+  <AttClass name="n">
+    <Attribute key="type" value="n" />
+	<Attribute key="_demo_shape" value="circle" />
+  </AttClass>
+  <AttClass name="S">
+    <Attribute key="type" value="S" />
+	<Attribute key="_demo_shape" value="square" />
+  </AttClass>
+  <AttClass name="t">
+    <Attribute key="type" value="t" />
+	<Attribute key="_demo_shape" value="circle" />
+  </AttClass>
+  <AttClass name="ti">
+    <Attribute key="type" value="ti" />
+	<Attribute key="_demo_shape" value="circle" />
+  </AttClass>
+  <AttClass name="ts">
+    <Attribute key="type" value="ts" />
+	<Attribute key="_demo_shape" value="circle" />
+  </AttClass>
+  <AttClass name="doubleEdge">
+    <Attribute key="edgeType" value="double" />
+    <Attribute key="_demo_color" value="red" />
+  </AttClass>
+  <AttClass name="normalEdge">
+    <Attribute key="edgeType" value="single" />
+  </AttClass>
 </AttributeClasses>

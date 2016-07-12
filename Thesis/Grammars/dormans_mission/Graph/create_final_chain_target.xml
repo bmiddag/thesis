@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Graph>
+  <Nodes>
+    <Node id="1"><AttributeClass name="CF" /></Node>
+    <Node id="2"><AttributeClass name="g" /></Node>
+    <Node id="3"><AttributeClass name="G" /></Node>
+    <Node id="4"><AttributeClass name="lf" /></Node>
+    <Node id="5"><AttributeClass name="bl" /></Node>
+    <Node id="6"><AttributeClass name="t" /></Node>
+    <Node id="7"><AttributeClass name="kf" /></Node>
+    <Node id="8"><AttributeClass name="H" /></Node>
+    <Node id="9"><AttributeClass name="H" /></Node>
+  </Nodes>
+  <Edges>
+    <Edge node1="1" node1="8" directed="True"><AttributeClass name="normalEdge" /></Edge>
+    <Edge node1="1" node1="3" directed="True"><AttributeClass name="normalEdge" /></Edge>
+    <Edge node1="1" node1="6" directed="True"><AttributeClass name="normalEdge" /></Edge>
+    <Edge node1="3" node1="4" directed="True"><AttributeClass name="doubleEdge" /></Edge>
+    <Edge node1="4" node1="5" directed="True"><AttributeClass name="doubleEdge" /></Edge>
+    <Edge node1="5" node1="2" directed="True"><AttributeClass name="doubleEdge" /></Edge>
+    <Edge node1="6" node1="7" directed="True"><AttributeClass name="doubleEdge" /></Edge>
+    <Edge node1="7" node1="4" directed="True"><AttributeClass name="normalEdge" /></Edge>
+    <Edge node1="6" node1="9" directed="True"><AttributeClass name="normalEdge" /></Edge>
+  </Edges>
+</Graph>

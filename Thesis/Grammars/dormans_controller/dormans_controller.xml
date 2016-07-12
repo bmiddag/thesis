@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<InterGrammarController name="dormans_controller" findFirst="true">
+  <Rules>
+    <Rule name="start">
+      <Query>start_query</Query>
+      <Target>start_target</Target>
+    </Rule>
+    <Rule name="taskcompleted_mission">
+      <Query>taskcompleted_mission_query</Query>
+      <Target>taskcompleted_mission_target</Target>
+    </Rule>
+  <Listeners>
+    <Listener>dormans_mission</Listener>
+    <Listener>dormans_space</Listener>
+    <Listener>dormans_mission_traverser</Listener>
+  </Listeners>
+</InterGrammarController>

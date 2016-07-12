@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Grammar name="dormans_mission" type="graph" findFirst="true">
+  <Rules>
+    <Initial probability="1" name="initial">
+      <Target>initial</Target>
+    </Initial>
+	<Rule probability="1" name="enemy_chain">
+      <Query>enemy_chain_query</Query>
+      <Target>enemy_chain_target</Target>
+    </Rule>
+  </Rules>
+  <Listeners>
+    <Listener alias="controller">dormans_controller</Listener>
+  </Listeners>
+</Grammar>

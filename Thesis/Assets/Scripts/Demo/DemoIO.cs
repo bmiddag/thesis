@@ -188,7 +188,9 @@ namespace Demo {
                                     string hash = reader["hashCode"];
                                     string id = reader["id"];
                                     string active = reader["active"];
-                                    if (hash == null || id == null || active == null) return null; // Deserialization failed
+                                    if (hash == null) hash = id;
+                                    if (active == null) active = "True";
+                                    if (id == null) return null; // Deserialization failed
                                     Node node = new Node(graph, int.Parse(id));
                                     hashDict.Add(int.Parse(hash), node);
                                     if (!reader.IsEmptyElement) currentElement = node;
