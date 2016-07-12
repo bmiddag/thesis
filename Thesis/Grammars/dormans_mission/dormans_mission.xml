@@ -1,12 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Grammar name="dormans_mission" type="graph" findFirst="true">
   <Rules>
+	<!-- Start Rule -->
     <Initial probability="1" name="initial">
       <Target>initial</Target>
     </Initial>
-	<Rule probability="1" name="enemy_chain">
-      <Query>enemy_chain_query</Query>
-      <Target>enemy_chain_target</Target>
+	<Rule probability="1" name="start_rule">
+      <Query>start_rule_query</Query>
+      <Target>start_rule_target</Target>
+    </Rule>
+	<!-- Create Final Chain -->
+	<Rule probability="1" name="create_final_chain">
+      <Query>create_final_chain_query</Query>
+      <Target>create_final_chain_target</Target>
+    </Rule>
+	<!-- Create Linear Chain -->
+	<Rule probability="1" name="create_linear_chain_1_1">
+      <Query>create_linear_chain_query_1</Query>
+      <Target>create_linear_chain_target_1_1</Target>
+    </Rule>
+	<Rule probability="1" name="create_linear_chain_1_2">
+      <Query>create_linear_chain_query_1</Query>
+      <Target>create_linear_chain_target_1_2</Target>
+    </Rule>
+	<Rule probability="1" name="create_linear_chain_1_3">
+      <Query>create_linear_chain_query_1</Query>
+      <Target>create_linear_chain_target_1_3</Target>
+    </Rule>
+	<Rule probability="1" name="create_linear_chain_2_1">
+      <Query>create_linear_chain_query_2</Query>
+      <Target>create_linear_chain_target_2_1</Target>
+    </Rule>
+	<Rule probability="1" name="create_linear_chain_2_2">
+      <Query>create_linear_chain_query_2</Query>
+      <Target>create_linear_chain_target_2_2</Target>
+    </Rule>
+	<Rule probability="1" name="create_linear_chain_2_3">
+      <Query>create_linear_chain_query_2</Query>
+      <Target>create_linear_chain_target_2_3</Target>
+    </Rule>
+	<Rule probability="1" name="create_linear_chain_3_1">
+      <Query>create_linear_chain_query_3</Query>
+      <Target>create_linear_chain_target_3_1</Target>
+    </Rule>
+	<Rule probability="1" name="create_linear_chain_3_2">
+      <Query>create_linear_chain_query_3</Query>
+      <Target>create_linear_chain_target_3_2</Target>
+    </Rule>
+	<!-- Resolve Hooks -->
+	<Rule probability="1" name="hooks_1">
+      <Query>hooks_query</Query>
+      <Target>hooks_target_1</Target>
+    </Rule>
+	<Rule probability="1" name="hooks_2">
+      <Query>hooks_query</Query>
+      <Target>hooks_target_2</Target>
+    </Rule>
+	<Rule probability="1" name="hooks_3">
+      <Query>hooks_query</Query>
+      <Target>hooks_target_3</Target>
+    </Rule>
+	<!-- Create Parallel Chain -->
+	<Rule probability="1" name="create_parallel_chain_1">
+      <Query>create_parallel_chain_query_1</Query>
+      <Target>create_parallel_chain_target_1</Target>
+    </Rule>
+	<Rule probability="1" name="create_parallel_chain_2">
+      <Query>create_parallel_chain_query_2</Query>
+      <Target>create_parallel_chain_target_2</Target>
+    </Rule>
+	<Rule probability="1" name="create_parallel_chain_3_1">
+      <Query>create_parallel_chain_query_3</Query>
+      <Target>create_parallel_chain_target_3_1</Target>
+    </Rule>
+	<Rule probability="1" name="create_parallel_chain_3_2">
+      <Query>create_parallel_chain_query_3</Query>
+      <Target>create_parallel_chain_target_3_2</Target>
+    </Rule>
+	<Rule probability="1" name="create_parallel_chain_3_3">
+      <Query>create_parallel_chain_query_3</Query>
+      <Target>create_parallel_chain_target_3_3</Target>
+    </Rule>
+	<Rule probability="1" name="create_parallel_chain_4_1">
+      <Query>create_parallel_chain_query_4</Query>
+      <Target>create_parallel_chain_target_4_1</Target>
+    </Rule>
+	<Rule probability="1" name="create_parallel_chain_4_2">
+      <Query>create_parallel_chain_query_4</Query>
+      <Target>create_parallel_chain_target_4_2</Target>
+    </Rule>
+	<Rule probability="1" name="create_parallel_chain_5">
+      <Query>create_parallel_chain_query_5</Query>
+      <Target>create_parallel_chain_target_5</Target>
     </Rule>
   </Rules>
   <Listeners>

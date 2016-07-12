@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Graph>
+  <Nodes>
+    <Node id="1"><AttributeClass name="F" /></Node>
+    <Node id="2"><AttributeClass name="km" /></Node>
+  </Nodes>
+  <Edges>
+    <Edge node1="1" node1="2" directed="True"><AttributeClass name="normalEdge" /></Edge>
+  </Edges>
+</Graph>
