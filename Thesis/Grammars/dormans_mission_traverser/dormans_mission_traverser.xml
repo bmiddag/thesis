@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Traverser name="dormans_mission_traverser" type="graph">
+  <Queries>
+    <Query name="start">start</Query>
+    <Query name="e">e</Query>
+	<Query name="n">n</Query>
+	<Query name="t">t</Query>
+	<Query name="l">l</Query>
+	<Query name="lm">lm</Query>
+	<Query name="ts">ts</Query>
+	<Query name="k">k</Query>
+	<Query name="km">km</Query>
+	<Query name="ib">ib</Query>
+    <Query name="normal">normal</Query>
+  </Queries>
+  <TaskProcessors>
+    <TaskProcessor event="Next">GraphTraverser_NextEdge("dormans_space")</TaskProcessor>
+  </TaskProcessors>
+  <Listeners>
+    <Listener alias="origin">dormans_mission</Listener>
+    <Listener alias="controller">dormans_controller</Listener>
+  </Listeners>
+</Traverser>
