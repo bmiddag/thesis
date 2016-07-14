@@ -282,4 +282,102 @@
   <AttClass name="normalEdge">
     <Attribute key="edgeType" value="single" />
   </AttClass>
+  <AttClass name="dt_floor">
+    <Attribute key="_demo_image" value="tileFloor" />
+	<Attribute key="type" value="empty" />
+	<Attribute key="_demo_object" value="none" />
+  </AttClass>
+  <AttClass name="dt_wall">
+    <Attribute key="_demo_image" value="tileWall" />
+	<Attribute key="type" value="wall" />
+	<Attribute key="_demo_object" value="none" />
+  </AttClass>
+  <AttClass name="dt_C">
+    <Attribute key="_demo_image" value="tileWall" />
+	<Attribute key="type" value="unknown" />
+	<Attribute key="_demo_object" value="unknown" />
+  </AttClass>
+  <AttClass name="dt_t">
+    <Attribute key="_demo_image" value="tileFloor" />
+	<Attribute key="type" value="t" />
+	<Attribute key="_demo_object" value="enemy" />
+  </AttClass>
+  <AttClass name="dt_ti">
+    <Attribute key="_demo_image" value="tileFloor" />
+	<Attribute key="type" value="ti" />
+	<Attribute key="_demo_object" value="enemy" />
+	<Attribute key="_demo_color" value="blue" />
+  </AttClass>
+  <AttClass name="dt_ts">
+    <Attribute key="_demo_image" value="tileFloor" />
+	<Attribute key="type" value="ts" />
+	<Attribute key="_demo_object" value="enemy" />
+	<Attribute key="_demo_color" value="green" />
+  </AttClass>
+  <AttClass name="dt_bl">
+    <Attribute key="_demo_image" value="tileFloor" />
+	<Attribute key="type" value="bl" />
+	<Attribute key="_demo_object" value="boss" />
+	<Attribute key="_demo_size" value="huge" />
+  </AttClass>
+  <AttClass name="dt_bm">
+    <Attribute key="_demo_image" value="tileFloor" />
+	<Attribute key="type" value="bm" />
+	<Attribute key="_demo_object" value="boss" />
+	<Attribute key="_demo_size" value="small" />
+  </AttClass>
+  <AttClass name="dt_l">
+    <Attribute key="_demo_image" value="tileFloor" />
+	<Attribute key="type" value="l" />
+	<Attribute key="_demo_object" value="lock" />
+	<Attribute key="_demo_size" value="small" />
+  </AttClass>
+  <AttClass name="dt_lm">
+    <Attribute key="_demo_image" value="tileFloor" />
+	<Attribute key="type" value="lm" />
+	<Attribute key="_demo_object" value="lock" />
+	<Attribute key="_demo_size" value="huge" />
+  </AttClass>
+  <AttClass name="dt_lf">
+    <Attribute key="_demo_image" value="tileLock" />
+	<Attribute key="type" value="lf" />
+  </AttClass>
+  <AttClass name="dt_k">
+    <Attribute key="_demo_image" value="tileFloor" />
+	<Attribute key="type" value="k" />
+	<Attribute key="_demo_object" value="key" />
+  </AttClass>
+  <AttClass name="dt_km">
+    <Attribute key="_demo_image" value="tileFloor" />
+	<Attribute key="type" value="km" />
+	<Attribute key="_demo_object" value="key" />
+	<Attribute key="_demo_size" value="small" />
+  </AttClass>
+  <AttClass name="dt_kf">
+    <Attribute key="_demo_image" value="tileFloor" />
+	<Attribute key="type" value="kf" />
+	<Attribute key="_demo_object" value="key" />
+	<Attribute key="_demo_size" value="huge" />
+  </AttClass>
+  <AttClass name="dt_ib">
+    <Attribute key="_demo_image" value="tileFloor" />
+	<Attribute key="type" value="ib" />
+	<Attribute key="_demo_object" value="treasure" />
+  </AttClass>
+  <AttClass name="dt_iq">
+    <Attribute key="_demo_image" value="tileFloor" />
+	<Attribute key="type" value="iq" />
+	<Attribute key="_demo_object" value="treasure" />
+	<Attribute key="_demo_size" value="huge" />
+  </AttClass>
+  <AttClass name="dt_g">
+    <Attribute key="_demo_image" value="tileEnd" />
+	<Attribute key="type" value="g" />
+	<Attribute key="_demo_object" value="none" />
+  </AttClass>
+  <AttClass name="dt_e">
+    <Attribute key="_demo_image" value="tileStart" />
+	<Attribute key="type" value="e" />
+	<Attribute key="_demo_object" value="none" />
+  </AttClass>
 </AttributeClasses>

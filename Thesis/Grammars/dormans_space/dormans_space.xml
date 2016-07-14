@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Grammar name="dormans_space" type="tilegrid" findFirst="true">
+  <Rules>
+    <Initial probability="1" name="initial">
+	  <Target>initial</Target>
+	</Initial>
+    <Rule probability="1" name="e">
+      <RuleCondition>TraverserMatch("dormans_mission_traverser","e")</RuleCondition>
+      <Query>C_unlinked</Query>
+      <Target>e</Target>
+    </Rule>
+    <Rule priority="1" probability="0.1" name="bl">
+      <RuleCondition>TraverserMatch("dormans_mission_traverser","bl")</RuleCondition>
+      <Query>C</Query>
+      <Target>bl</Target>
+      <RuleAction>TraverserNext("dormans_mission_traverser",dormans_mission_traverser_query_1,,)</RuleAction>
+    </Rule>
+    <Rule priority="1" probability="0.1" name="bm">
+      <RuleCondition>TraverserMatch("dormans_mission_traverser","bm")</RuleCondition>
+      <Query>C</Query>
+      <Target>bm</Target>
+      <RuleAction>TraverserNext("dormans_mission_traverser",dormans_mission_traverser_query_1,,)</RuleAction>
+    </Rule>
+    <Rule priority="1" probability="0.1" name="g">
+      <RuleCondition>TraverserMatch("dormans_mission_traverser","g")</RuleCondition>
+      <Query>C</Query>
+      <Target>g</Target>
+      <RuleAction>TraverserNext("dormans_mission_traverser",dormans_mission_traverser_query_1,,)</RuleAction>
+    </Rule>
+    <Rule priority="1" probability="0.1" name="k">
+      <RuleCondition>TraverserMatch("dormans_mission_traverser","k")</RuleCondition>
+      <Query>C</Query>
+      <Target>k</Target>
+      <RuleAction>TraverserNext("dormans_mission_traverser",dormans_mission_traverser_query_1,,)</RuleAction>
+    </Rule>
+    <Rule priority="1" probability="0.1" name="kf">
+      <RuleCondition>TraverserMatch("dormans_mission_traverser","kf")</RuleCondition>
+      <Query>C</Query>
+      <Target>kf</Target>
+      <RuleAction>TraverserNext("dormans_mission_traverser",dormans_mission_traverser_query_1,,)</RuleAction>
+    </Rule>
+    <Rule priority="1" probability="0.1" name="km">
+      <RuleCondition>TraverserMatch("dormans_mission_traverser","km")</RuleCondition>
+      <Query>C</Query>
+      <Target>km</Target>
+      <RuleAction>TraverserNext("dormans_mission_traverser",dormans_mission_traverser_query_1,,)</RuleAction>
+    </Rule>
+    <Rule priority="1" probability="0.1" name="l">
+      <RuleCondition>TraverserMatch("dormans_mission_traverser","l")</RuleCondition>
+      <Query>C</Query>
+      <Target>l</Target>
+      <RuleAction>TraverserNext("dormans_mission_traverser",dormans_mission_traverser_query_1,,)</RuleAction>
+    </Rule>
+    <Rule priority="1" probability="0.1" name="lf">
+      <RuleCondition>TraverserMatch("dormans_mission_traverser","lf")</RuleCondition>
+      <Query>C</Query>
+      <Target>lf</Target>
+      <RuleAction>TraverserNext("dormans_mission_traverser",dormans_mission_traverser_query_1,,)</RuleAction>
+    </Rule>
+    <Rule priority="1" probability="0.1" name="lm">
+      <RuleCondition>TraverserMatch("dormans_mission_traverser","lm")</RuleCondition>
+      <Query>C</Query>
+      <Target>lm</Target>
+      <RuleAction>TraverserNext("dormans_mission_traverser",dormans_mission_traverser_query_1,,)</RuleAction>
+    </Rule>
+    <Rule priority="1" probability="0.1" name="n">
+      <RuleCondition>TraverserMatch("dormans_mission_traverser","n")</RuleCondition>
+      <Query>C</Query>
+      <Target>n</Target>
+      <RuleAction>TraverserNext("dormans_mission_traverser",dormans_mission_traverser_query_1,,)</RuleAction>
+    </Rule>
+    <Rule priority="1" probability="0.1" name="t">
+      <RuleCondition>TraverserMatch("dormans_mission_traverser","t")</RuleCondition>
+      <Query>C</Query>
+      <Target>t</Target>
+      <RuleAction>TraverserNext("dormans_mission_traverser",dormans_mission_traverser_query_1,,)</RuleAction>
+    </Rule>
+    <Rule priority="1" probability="0.1" name="ti">
+      <RuleCondition>TraverserMatch("dormans_mission_traverser","ti")</RuleCondition>
+      <Query>C</Query>
+      <Target>ti</Target>
+      <RuleAction>TraverserNext("dormans_mission_traverser",dormans_mission_traverser_query_1,,)</RuleAction>
+    </Rule>
+    <Rule priority="1" probability="0.1" name="ts">
+      <RuleCondition>TraverserMatch("dormans_mission_traverser","ts")</RuleCondition>
+      <Query>C</Query>
+      <Target>ts</Target>
+      <RuleAction>TraverserNext("dormans_mission_traverser",dormans_mission_traverser_query_1,,)</RuleAction>
+    </Rule>
+    <Rule priority="1" probability="0.1" name="ib">
+      <RuleCondition>TraverserMatch("dormans_mission_traverser","ib")</RuleCondition>
+      <Query>C</Query>
+      <Target>ib</Target>
+      <RuleAction>TraverserNext("dormans_mission_traverser",dormans_mission_traverser_query_1,,)</RuleAction>
+    </Rule>
+    <Rule priority="1" probability="0.1" name="iq">
+      <RuleCondition>TraverserMatch("dormans_mission_traverser","iq")</RuleCondition>
+      <Query>C</Query>
+      <Target>iq</Target>
+      <RuleAction>TraverserNext("dormans_mission_traverser",dormans_mission_traverser_query_1,,)</RuleAction>
+    </Rule>
+  </Rules>
+  <Listeners>
+    <Listener alias="controller">dormans_controller</Listener>
+    <Listener>dormans_mission_traverser</Listener>
+  </Listeners>
+</Grammar>

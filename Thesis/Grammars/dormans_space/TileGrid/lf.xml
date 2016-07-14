@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TileGrid width="3" height="3">
+  <Tile x="0" y="0"><AttributeClass name="dt_wall" /></Tile>
+  <Tile x="1" y="0"><AttributeClass name="dt_floor" /></Tile>
+  <Tile x="2" y="0"><AttributeClass name="dt_wall" /></Tile>
+  <Tile x="0" y="1"><AttributeClass name="dt_wall" /></Tile>
+  <Tile x="1" y="1"><Attribute key="link$dormans_mission" value="rule.dormans_mission_traverser_query_0-1" /><AttributeClass name="dt_lf" /></Tile>
+  <Tile x="2" y="1"><AttributeClass name="dt_wall" /></Tile>
+  <Tile x="0" y="2"><AttributeClass name="dt_wall" /></Tile>
+  <Tile x="1" y="2"><Attribute key="link$dormans_mission" value="rule.dormans_mission_traverser_query_1" /><AttributeClass name="dt_C" /></Tile>
+  <Tile x="2" y="2"><AttributeClass name="dt_wall" /></Tile>
+</TileGrid>
