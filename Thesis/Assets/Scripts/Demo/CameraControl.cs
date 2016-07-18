@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 public class CameraControl : MonoBehaviour {
 
@@ -57,10 +58,39 @@ public class CameraControl : MonoBehaviour {
 
     void LateUpdate() {
         if (Input.GetKeyDown(KeyCode.F) && !cameraPanBlocked) {
-            Application.CaptureScreenshot(customPath + imageName + index + ".png", resolution);
-            index++;
-            Debug.LogWarning("Screenshot saved: " + customPath + " --- " + imageName + index);
+            StartCoroutine(CaptureScreen(true));
+        } else if (Input.GetKeyDown(KeyCode.G) && !cameraPanBlocked) {
+            StartCoroutine(CaptureScreen(false));
         }
+    }
+
+    public IEnumerator CaptureScreen(bool UIon) {
+        // Wait for screen rendering to complete
+        yield return new WaitForEndOfFrame();
+
+        // Take screenshot
+        string filename = customPath + imageName + index + ".png";
+        if (!UIon) {
+            Application.CaptureScreenshot(customPath + imageName + index + ".png", resolution);
+            Debug.Log(string.Format("Took screenshot to: {0} (UI elements off)", filename));
+        } else {
+            int resWidth = Screen.currentResolution.width * resolution;
+            int resHeight = Screen.currentResolution.height * resolution;
+
+            RenderTexture rt = new RenderTexture(resWidth, resHeight, 24);
+            cam.targetTexture = rt;
+            Texture2D screenShot = new Texture2D(resWidth, resHeight, TextureFormat.RGB24, false);
+            cam.Render();
+            RenderTexture.active = rt;
+            screenShot.ReadPixels(new Rect(0, 0, resWidth, resHeight), 0, 0);
+            cam.targetTexture = null;
+            RenderTexture.active = null; // JC: added to avoid errors
+            Destroy(rt);
+            byte[] bytes = screenShot.EncodeToPNG();
+            System.IO.File.WriteAllBytes(filename, bytes);
+            Debug.Log(string.Format("Took screenshot to: {0} (UI elements on)", filename));
+        }
+        index++;
     }
 
     void OnApplicationQuit() {

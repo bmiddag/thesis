@@ -207,7 +207,7 @@ namespace Demo {
             if (text == null) {
                 text = new GameObject("Node " + node.GetID().ToString() + ": Index").AddComponent<Text>();
                 text.transform.SetParent(transform);
-                text.transform.localPosition = new Vector3(0, 0);
+                text.transform.localPosition = new Vector3(0, 0, -1);
                 RectTransform rt = text.GetComponent<RectTransform>();
                 if (rt != null) {
                     rt.sizeDelta = new Vector2(75, 75);
