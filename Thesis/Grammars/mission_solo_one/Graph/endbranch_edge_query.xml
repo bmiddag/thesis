@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Graph>
+  <Nodes>
+    <Node id="0" hashCode="0" active="True">
+	  <Attribute key="lock" value="_grammar_nomatch" />
+	</Node>
+    <Node id="1" hashCode="1" active="True">
+      <AttributeClass name="open" />
+	  <Attribute key="_edges" value="2" />
+    </Node>
+    <Node id="2" hashCode="2" active="True">
+      <Attribute key="end" value="_grammar_nomatch" />
+    </Node>
+  </Nodes>
+  <Edges>
+    <Edge node1="0" node2="1" directed="True" /> <!-- 0 to 1 -->
+    <Edge node1="1" node2="2" directed="True" /> <!-- 1 to 2 -->
+    <Edge node1="0" node2="2" directed="True" /> <!-- 0 to 2 -->
+  </Edges>
+</Graph>

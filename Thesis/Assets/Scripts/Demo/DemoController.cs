@@ -284,7 +284,7 @@ namespace Demo {
             if (currentStructureRenderer == null) {
                 PrepareGrammar("Grammars/", "controller");
             } else if(currentStructureRenderer.GetType() == typeof(GraphRenderer)) {
-                PrepareGrammar("Grammars/", "mission_solo");
+                PrepareGrammar("Grammars/", "mission_solo_one");
             } else if (currentStructureRenderer.GetType() == typeof(TileGridRenderer)) {
                 PrepareGrammar("Grammars/", "tilespace");
             }

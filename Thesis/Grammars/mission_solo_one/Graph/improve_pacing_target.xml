@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Graph>
+  <Nodes>
+    <Node id="0" hashCode="785713920" active="True">
+      <AttributeClasses>
+        <AttributeClass name="enemy" />
+      </AttributeClasses>
+      <Attributes />
+    </Node>
+    <Node id="1" hashCode="-2023948288" active="True">
+      <AttributeClasses>
+        <AttributeClass name="enemy" />
+      </AttributeClasses>
+      <Attributes />
+    </Node>
+    <Node id="3" hashCode="2049502720" active="True" />
+    <Node id="2" hashCode="-1643816192" active="True">
+      <AttributeClasses>
+        <AttributeClass name="treasure" />
+      </AttributeClasses>
+      <Attributes />
+    </Node>
+    <Node id="4" hashCode="-52324352" active="True">
+      <AttributeClasses>
+        <AttributeClass name="open" />
+      </AttributeClasses>
+      <Attributes>
+	    <Attribute key="copy$source$rule.matches.query_2$const" value="true" />
+	  </Attributes>
+    </Node>
+  </Nodes>
+  <Edges>
+    <Edge node1="785713920" node2="-2023948288" directed="True" />
+    <Edge node1="-2023948288" node2="-1643816192" directed="True" />
+    <Edge node1="-1643816192" node2="-52324352" directed="True" />
+    <Edge node1="-52324352" node2="2049502720" directed="True" />
+  </Edges>
+</Graph>

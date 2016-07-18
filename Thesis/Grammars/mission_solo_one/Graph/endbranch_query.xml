@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Graph>
+  <Nodes>
+    <Node id="0" hashCode="679858432" active="True">
+	  <Attribute key="lock" value="_grammar_nomatch" />
+	</Node>
+    <Node id="1" hashCode="30801920" active="True">
+      <AttributeClass name="open" />
+      <Attribute key="_edges" value="2" />
+    </Node>
+    <Node id="2" hashCode="-184175360" active="True">
+      <Attribute key="end" value="_grammar_nomatch" />
+    </Node>
+  </Nodes>
+  <Edges>
+    <Edge node1="679858432" node2="30801920" directed="True" />
+    <Edge node1="30801920" node2="-184175360" directed="True" />
+  </Edges>
+</Graph>

@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Graph>
+  <Nodes>
+    <Node id="2" hashCode="-632527872" active="True" />
+    <Node id="0" hashCode="-996637184" active="True" />
+  </Nodes>
+  <Edges>
+    <Edge node1="-996637184" node2="-632527872" directed="True" />
+  </Edges>
+</Graph>

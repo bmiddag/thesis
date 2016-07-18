@@ -7,10 +7,17 @@
 	  <Attribute key="visited" value="_grammar_nomatch" />
 	  <Attribute key="_edges" value="2" />
     </Node>
-    <Node id="2" />
+    <Node id="2">
+	  <AttributeClass name="treasure" />
+	  <Attribute key="visited" value="_grammar_nomatch" />
+	  <Attribute key="special" value="_grammar_nomatch" />
+	  <Attribute key="_edges" value="2" />
+    </Node>
+    <Node id="3" />
   </Nodes>
   <Edges>
     <Edge node1="0" node2="1" directed="True" />
     <Edge node1="1" node2="2" directed="True" />
+    <Edge node1="2" node2="3" directed="True" />
   </Edges>
 </Graph>

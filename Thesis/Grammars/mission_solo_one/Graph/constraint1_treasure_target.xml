@@ -2,9 +2,9 @@
 <Graph>
   <Nodes>
     <Node id="0" />
-    <Node id="2" />
+    <Node id="3" />
   </Nodes>
   <Edges>
-    <Edge node1="0" node2="2" directed="True" />
+    <Edge node1="0" node2="3" directed="True" />
   </Edges>
 </Graph>

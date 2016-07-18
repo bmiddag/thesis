@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Graph>
+  <Nodes>
+    <Node id="0" hashCode="127909376" active="True" />
+    <Node id="1" hashCode="679858432" active="True">
+      <AttributeClasses>
+        <AttributeClass name="open" />
+      </AttributeClasses>
+      <Attributes />
+    </Node>
+    <Node id="2" hashCode="-1197326848" active="True" />
+  </Nodes>
+  <Edges>
+    <Edge node1="127909376" node2="679858432" directed="True" />
+    <Edge node1="679858432" node2="-1197326848" directed="True" />
+  </Edges>
+</Graph>

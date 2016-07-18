@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Graph>
   <Nodes>
-    <Node id="0" />
-    <Node id="2" />
+    <Node id="0" hashCode="0" active="True" />
+    <Node id="2" hashCode="2" active="True" />
   </Nodes>
   <Edges>
     <Edge node1="0" node2="2" directed="True" />

@@ -15,24 +15,6 @@
         </Rule>
       </Rules>
     </Constraint>
-    <Constraint name="constraint2_branch" active="true">
-      <GrammarCondition>CountElementsGrouped("constraint2_group","Has(#const_branch)",,"&lt;=",5) &amp;&amp; (CountElementsGrouped("constraint2_group","Has(#const_branch)",,"&lt;=",3) || CountElementsGrouped("constraint2_group","Has(#const_branch)","Has(#treasure)","&gt;=",1))</GrammarCondition>
-      <Rules>
-        <Rule probability="1" name="CONSTRAINT2-RULE">
-          <Query>constraint2_query</Query>
-          <Target>constraint2_target</Target>
-        </Rule>
-      </Rules>
-    </Constraint>
-    <Constraint name="constraint3_shortpath" active="true">
-      <GrammarCondition>CountElementsGrouped("constraint3_group","Has(#const_shortpath)",,"&lt;=",3)</GrammarCondition>
-      <Rules>
-        <Rule probability="1" name="CONSTRAINT3-RULE">
-          <Query>constraint3_query</Query>
-          <Target>constraint3_target</Target>
-        </Rule>
-      </Rules>
-    </Constraint>
   </Constraints>
   <Rules>
     <Initial probability="0.5" name="initial_1">
@@ -46,11 +28,11 @@
       <Target>enemy_chain_target</Target>
     </Rule>
 	<Rule probability="0.08" name="insert_branch">
-	  <RuleProbability>(Attribute(from [grammar.source],) - Attribute(from [grammar.source] where [Has(#const_branch)],)) / Constant(2)</RuleProbability>
+	  <RuleProbability>(Attribute(from [grammar.source],) - Attribute(from [grammar.source] where [Has(#const_branch)],)) / Constant(5)</RuleProbability>
       <Query>insert_branch_query</Query>
       <Target>insert_branch_target</Target>
     </Rule>
-	<Rule probability="0.05" name="generate_keylock">
+	<Rule probability="0.02" name="generate_keylock">
       <Query>generate_keylock_query</Query>
       <Target>generate_keylock_target</Target>
     </Rule>
