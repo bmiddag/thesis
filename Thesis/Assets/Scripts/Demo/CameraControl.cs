@@ -11,10 +11,25 @@ public class CameraControl : MonoBehaviour {
     Vector3 panCenter;
     bool panning = false;
     public bool cameraPanBlocked = false;
+    
+    public int resolution = 3; // 1= default, 2= 2x default, etc.
+    public string imageName = "Screenshot_";
+    public string customPath = "C:/BART/UNIF/Masterthesis/UnityScreenshots/"; // leave blank for project file location
+    public bool resetIndex = false;
+
+    private int index = 0;
 
     void Start() {
         if (cam == null) cam = Camera.main;
         targetOrtho = cam.orthographicSize;
+
+        if (resetIndex) PlayerPrefs.SetInt("ScreenshotIndex", 0);
+        if (customPath != "") {
+            if (!System.IO.Directory.Exists(customPath)) {
+                System.IO.Directory.CreateDirectory(customPath);
+            }
+        }
+        index = PlayerPrefs.GetInt("ScreenshotIndex") != 0 ? PlayerPrefs.GetInt("ScreenshotIndex") : 1;
     }
 
     void Update() {
@@ -38,5 +53,17 @@ public class CameraControl : MonoBehaviour {
             targetOrtho = Mathf.Clamp(targetOrtho, minOrtho, maxOrtho);
         }
         cam.orthographicSize = Mathf.MoveTowards(cam.orthographicSize, targetOrtho, Mathf.Abs((cam.orthographicSize-targetOrtho) * Time.deltaTime*7));
+    }
+
+    void LateUpdate() {
+        if (Input.GetKeyDown(KeyCode.F) && !cameraPanBlocked) {
+            Application.CaptureScreenshot(customPath + imageName + index + ".png", resolution);
+            index++;
+            Debug.LogWarning("Screenshot saved: " + customPath + " --- " + imageName + index);
+        }
+    }
+
+    void OnApplicationQuit() {
+        PlayerPrefs.SetInt("ScreenshotIndex", (index));
     }
 }
