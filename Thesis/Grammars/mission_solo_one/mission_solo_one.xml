@@ -24,6 +24,7 @@
       <Target>initial_2</Target>
     </Initial>
 	<Rule probability="0.1" name="enemy_chain">
+	  <!-- <RuleCondition>CountElements("from [grammar.source] where [Has(#enemy)]","&lt;=",8)</RuleCondition> -->
       <Query>enemy_chain_query</Query>
       <Target>enemy_chain_target</Target>
     </Rule>
@@ -37,6 +38,7 @@
       <Target>generate_keylock_target</Target>
     </Rule>
     <Rule probability="0.3" name="add_enemy">
+	  <!-- <RuleCondition>CountElements("from [grammar.source] where [Has(#enemy)]","&lt;=",9)</RuleCondition> -->
       <Query>add_enemy_query</Query>
       <Target>add_enemy_target</Target>
     </Rule>
