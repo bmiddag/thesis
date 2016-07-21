@@ -84,11 +84,14 @@ namespace Demo {
                 if (Input.GetKeyDown(KeyCode.U)) {
                     StartCoroutine("GrammarStep");
                 }
-                if (Input.GetKeyDown(KeyCode.O)) {
+                if (Input.GetKeyDown(KeyCode.I)) {
                     StartCoroutine("SaveAttributeClasses");
                 }
-                if (Input.GetKeyDown(KeyCode.P)) {
+                if (Input.GetKeyDown(KeyCode.O)) {
                     StartCoroutine("LoadAttributeClasses");
+                }
+                if (Input.GetKeyDown(KeyCode.P)) {
+                    StartCoroutine("GrammarPause");
                 }
                 if (Input.GetKeyDown(KeyCode.RightArrow)) {
                     if (structureRenderers.Contains(currentStructureRenderer)) {
@@ -280,11 +283,21 @@ namespace Demo {
             return currentStructureRenderer.LoadStructure();
         }
 
+        public IEnumerator GrammarPause() {
+            if (currentStructureRenderer != null && currentStructureRenderer.Grammar != null) {
+                Task t = new Task(action: "GrammarPause", source: this);
+                t.AddTarget(currentStructureRenderer.Grammar);
+                t.ReplyExpected = true;
+                SendGrammarEvent(t);
+            }
+            yield return null;
+        }
+
         public IEnumerator LoadGrammar() {
             if (currentStructureRenderer == null) {
                 PrepareGrammar("Grammars/", "controller");
             } else if(currentStructureRenderer.GetType() == typeof(GraphRenderer)) {
-                PrepareGrammar("Grammars/", "mission_solo_one");
+                PrepareGrammar("Grammars/", "mission_solo");
             } else if (currentStructureRenderer.GetType() == typeof(TileGridRenderer)) {
                 PrepareGrammar("Grammars/", "tilespace");
             }

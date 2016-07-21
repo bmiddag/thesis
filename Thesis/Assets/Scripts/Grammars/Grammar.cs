@@ -14,6 +14,7 @@ namespace Grammars {
             set { name = value; }
         }
 
+        protected bool paused = false;
         protected bool threadStop = false;
         protected Thread taskThread;
         public Thread TaskThread {
@@ -224,6 +225,14 @@ namespace Grammars {
                 }
             }
             if (failedConstraints.Count > 0) {
+                // Test code for evaluating constraints v
+                //while (paused) Monitor.Wait(taskQueue);
+                /*if (constraints.ContainsKey("constraint3_shortpath") && failedConstraints.Contains(constraints["constraint3_shortpath"])) {
+                    paused = true;
+                    while (paused) Monitor.Wait(taskQueue);
+                    paused = true;
+                }*/
+                // Test code for evaluating constraints ^
                 int index = random.Next(failedConstraints.Count);
                 return failedConstraints[index];
             } else {
@@ -235,7 +244,7 @@ namespace Grammars {
             try {
                 while (!threadStop) {
                     lock (taskQueue) {
-                        while (taskQueue.Count == 0) Monitor.Wait(taskQueue);
+                        while (taskQueue.Count == 0 || paused) Monitor.Wait(taskQueue);
                         if(!threadStop) Update();
                     }
                     if (wait > 0) Thread.Sleep(wait);
@@ -247,7 +256,7 @@ namespace Grammars {
 
         public virtual void Update() {
             // Update task
-            if (taskQueue.Count > 0) {
+            if (taskQueue.Count > 0 && !paused) {
                 currentTask = taskQueue.Peek();
             } else return;
 
@@ -465,6 +474,13 @@ namespace Grammars {
                                     Monitor.PulseAll(taskQueue);
                                 }
                                 while (!task.HasAttribute("completed") && taskQueue.Count > 0) Monitor.Wait(task);
+                            }
+                            task.AddReply("completed");
+                            break;
+                        case "GrammarPause":
+                            lock (taskQueue) {
+                                paused = !paused;
+                                Monitor.PulseAll(taskQueue);
                             }
                             task.AddReply("completed");
                             break;

@@ -10,23 +10,23 @@
     <Node id="3" hashCode="-258403328" active="False">
       <AttributeClass name="lock" />
 	  <Attribute key="const_shortpath" value="1" />
-	  <!-- <Attribute key="copy$source$rule.matches.query_1$const" value="true" /> -->
+	  <Attribute key="copy$source$rule.matches.query_1$const_br" value="true" />
 	  <Attribute key="keyID" value="from$grammar$_iteration" />
     </Node>
     <Node id="4" hashCode="381905152" active="False">
       <AttributeClass name="open" />
 	  <Attribute key="const_shortpath" value="1" />
-	  <!-- <Attribute key="copy$source$rule.matches.query_1$const" value="true" /> -->
+	  <Attribute key="copy$source$rule.matches.query_1$const_br" value="true" />
     </Node>
     <Node id="5" hashCode="1022213632" active="False">
       <AttributeClass name="key" />
 	  <Attribute key="const_shortpath" value="1" />
 	  <Attribute key="keyID" value="from$grammar$_iteration" />
-	  <!-- <Attribute key="copy$source$rule.matches.query_1$const" value="true" /> -->
+	  <Attribute key="copy$source$rule.matches.query_1$const_br" value="true" />
     </Node>
     <Node id="6" hashCode="-1624692992" active="False">
       <AttributeClass name="open" />
-      <!-- <Attribute key="copy$source$rule.matches.query_1$const" value="true" /> -->
+      <Attribute key="copy$source$rule.matches.query_1$const_br" value="true" />
     </Node>
   </Nodes>
   <Edges>
