@@ -19,6 +19,7 @@ namespace Grammars.Tiles {
             set { rule = value; }
         }
         List<TilePos> matches;
+        List<TilePos> prioritizedMatches = null;
 
         public TileGrid Source {
             get { return source; }
@@ -82,6 +83,7 @@ namespace Grammars.Tiles {
 		}
 
         public bool Find(TileGrid query) {
+            prioritizedMatches = null;
             bool rotate = (query != null) && (query.GetAttribute("_grammar_rotate") != "false");
             if (query == null || query.GetElements().Count == 0) {
                 if (source != null && source.GetElements().Count == 0) {
@@ -152,6 +154,7 @@ namespace Grammars.Tiles {
                 }
                 for (int sX = minSX; sX < maxSX; sX++) {
                     for (int sY = minSY; sY < maxSY; sY++) {
+                        bool prioritizeMatch = false;
                         bool matched = true;
                         bool traverserMatched = (Traverser != null && Traverser.CurrentElement != null) ? false : true;
                         foreach (TilePos queryPos in queryTiles) {
@@ -175,6 +178,7 @@ namespace Grammars.Tiles {
                                     matched = false;
                                     break;
                                 }
+                                if (sourceTile.HasAttribute("_prioritizeMatch")) prioritizeMatch = true;
                             }
                             if (!traverserMatched && queryTile.HasAttribute("_grammar_current") && sourceTile == Traverser.CurrentElement) traverserMatched = true;
                         }
@@ -182,6 +186,10 @@ namespace Grammars.Tiles {
                         if (matched) {
                             TilePos match = new TilePos(sX, sY, rotation: curRot);
                             matches.Add(match);
+                            if (prioritizeMatch) {
+                                if (prioritizedMatches == null) prioritizedMatches = new List<TilePos>();
+                                prioritizedMatches.Add(match);
+                            }
                             if (findFirst) {
                                 return true;
                             }
@@ -198,6 +206,7 @@ namespace Grammars.Tiles {
         public void Select() {
             if (matches == null) return;
             if (matches.Count > 0) {
+                if (prioritizedMatches != null && prioritizedMatches.Count > 0) matches = prioritizedMatches;
                 int index = -1;
                 if (rule != null && rule.MatchSelector != null) {
                     index = rule.MatchSelector.Select(matches);

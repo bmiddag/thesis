@@ -6,7 +6,7 @@
     <Node id="3"><AttributeClass name="t" /></Node>
   </Nodes>
   <Edges>
-    <Edge node1="1" node1="3" directed="True"><AttributeClass name="normalEdge" /></Edge>
-    <Edge node1="3" node1="2" directed="True"><AttributeClass name="doubleEdge" /></Edge>
+    <Edge node1="1" node2="3" directed="True"><AttributeClass name="normalEdge" /></Edge>
+    <Edge node1="3" node2="2" directed="True"><AttributeClass name="doubleEdge" /></Edge>
   </Edges>
 </Graph>

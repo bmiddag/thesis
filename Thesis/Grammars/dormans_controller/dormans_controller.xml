@@ -9,6 +9,7 @@
       <Query>taskcompleted_mission_query</Query>
       <Target>taskcompleted_mission_target</Target>
     </Rule>
+  </Rules>
   <Listeners>
     <Listener>dormans_mission</Listener>
     <Listener>dormans_space</Listener>

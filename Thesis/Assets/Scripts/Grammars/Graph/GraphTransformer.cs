@@ -6,6 +6,7 @@ namespace Grammars.Graphs {
 	public class GraphTransformer : IStructureTransformer<Graph> {
         Graph source = null;
         List<Dictionary<Node, Node>> matches;
+        List<Dictionary<Node, Node>> prioritizedMatches;
         Dictionary<Node, Node> selectedMatch; // Associates <node in source graph, node in query graph> with each other
         Graph query = null;
         bool findFirst = false;
@@ -27,7 +28,11 @@ namespace Grammars.Graphs {
                     if (matches != null) {
                         matches.Clear();
                     }
+                    if (prioritizedMatches != null) {
+                        prioritizedMatches.Clear();
+                    }
                     matches = null;
+                    prioritizedMatches = null;
                     selectedMatch = null;
                     query = null;
                     source = value;
@@ -95,6 +100,7 @@ namespace Grammars.Graphs {
                 if (source != null && source.GetNodes().Count == 0) {
                     this.query = query;
                     matches = new List<Dictionary<Node, Node>>();
+                    prioritizedMatches = new List<Dictionary<Node, Node>>();
                     selectedMatch = null;
                     return true;
                 }
@@ -104,6 +110,7 @@ namespace Grammars.Graphs {
 
             selectedMatch = null;
             matches = new List<Dictionary<Node, Node>>();
+            prioritizedMatches = new List<Dictionary<Node, Node>>();
             this.query = query;
             List<Node> queryNodes = null;
             if (Traverser != null) {
@@ -128,6 +135,7 @@ namespace Grammars.Graphs {
             foreach (Node node in source.GetNodes()) {
                 node.PostponeAttributeChanged(true);
             }
+            bool prioritizeMatch = false;
             foreach (Node startNode in source.GetNodes()) {
                 if (findFirst && matches.Count > 0) continue;
                 if (!MatchAttributes(startNode, queryNodes[0])) continue;
@@ -137,7 +145,7 @@ namespace Grammars.Graphs {
                 // add number attribute
                 startNode.SetAttribute("_grammar_query_id", queryNodes[0].GetID().ToString());
                 selection.Add(startNode, queryNodes[0]);
-                _Find(startNode, queryNodes[0], selection);
+                _Find(startNode, queryNodes[0], selection, prioritizeMatch || startNode.HasAttribute("_prioritizeMatch"));
                 if (selection.Count > 1) {
                     // Only partly matched - clean up selection
                     foreach (KeyValuePair<Node, Node> wrongMark in selection) {
@@ -159,11 +167,14 @@ namespace Grammars.Graphs {
         /// <param name="currentSourceNode">the node in the source graph that is currently observed</param>
         /// <param name="currentQueryNode">the node in the query graph that is currently observed</param>
         /// <param name="selection">a dictionary of nodes that have already been selected (Source node, Query node)</param>
+        /// <param name="prioritizeMatch">whether or not to prioritize this match</param>
         /// <returns>True if the path being followed in the query graph is a dead end (except for already marked nodes)</returns>
-        private bool _Find(Node currentSourceNode, Node currentQueryNode, Dictionary<Node, Node> selection) {
+        private bool _Find(Node currentSourceNode, Node currentQueryNode, Dictionary<Node, Node> selection, bool prioritizeMatch) {
             if (query.GetNodes().Count == selection.Keys.Count) {
                 // Algorithm ends here
-                matches.Add(new Dictionary<Node, Node>(selection));
+                Dictionary<Node, Node> curMatch = new Dictionary<Node, Node>(selection);
+                matches.Add(curMatch);
+                if (prioritizeMatch) prioritizedMatches.Add(curMatch);
                 return false;
             }
 
@@ -243,12 +254,17 @@ namespace Grammars.Graphs {
                 
                 // Copy selection and create remaining query/source nodes lists
                 Dictionary<Node, Node> selectionCopy = new Dictionary<Node, Node>(selection); // source, query
-                bool partlyMatched = _Find(node, queryNode, selectionCopy);
+                bool partlyMatched = _Find(node, queryNode, selectionCopy, prioritizeMatch || node.HasAttribute("_prioritizeMatch"));
                 if (partlyMatched) {
                     // Copy selection and create remaining query/source nodes lists
                     //Dictionary<Node, Node> selectionCopy = new Dictionary<Node, Node>(selection); // source, query
+                    bool tempPrioritize = prioritizeMatch || node.HasAttribute("_prioritizeMatch");
+                    IEnumerable<KeyValuePair<Node, Node>> newSelection = selectionCopy.Except(selection);
+                    foreach (KeyValuePair<Node, Node> newSelected in newSelection) {
+                        tempPrioritize = tempPrioritize || newSelected.Key.HasAttribute("_prioritizeMatch");
+                    }
 
-                    partlyMatched = _Find(currentSourceNode, currentQueryNode, selectionCopy);
+                    partlyMatched = _Find(currentSourceNode, currentQueryNode, selectionCopy, tempPrioritize);
                     if (partlyMatched) {
                         // If this node is also a dead end when the extra part of the selection is added, go back to previous node WITH current selection
                         IEnumerable<KeyValuePair<Node, Node>> newMarks = selectionCopy.Except(selection);
@@ -286,49 +302,18 @@ namespace Grammars.Graphs {
         public void Select() {
             if (matches == null) return;
             if (matches.Count > 0) {
+                if (prioritizedMatches.Count > 0) {
+                    matches = prioritizedMatches;
+                }
                 int index = -1;
                 if (rule != null && rule.MatchSelector != null) {
                     if (rule != null) rule.SetAttribute("traverserMatch", "false");
                     index = rule.MatchSelector.Select(matches);
                 }
                 if (index == -1) {
-                    if (rule != null && rule.Grammar.CurrentTask.Action == "GenerateNext") {
-                        // Quick fix for prioritizing current traverser position in matches
-                        List<Dictionary<Node, Node>> prioritizedMatches = new List<Dictionary<Node, Node>>();
-
-                        object currEl = rule.Grammar.CurrentTask.GetObjectAttribute("currentElement");
-                        if (currEl.GetType() == typeof(Edge)) {
-                            Edge currEdge = (Edge)currEl;
-                            foreach (Dictionary<Node, Node> match in matches) {
-                                if (match.Keys.Where(n => (n == currEdge.GetNode1() || n == currEdge.GetNode2())).Count() > 0) {
-                                    prioritizedMatches.Add(match);
-                                }
-                            }
-                        } else if(currEl.GetType() == typeof(Node)) {
-                            Node currNode = (Node)currEl;
-                            foreach (Dictionary<Node, Node> match in matches) {
-                                if (match.Keys.Where(n => n == currNode).Count() > 0) {
-                                    prioritizedMatches.Add(match);
-                                }
-                            }
-                        }
-                        if (prioritizedMatches.Count > 0) {
-                            Random rnd = new Random();
-                            int prioritizedIndex = rnd.Next(prioritizedMatches.Count);
-                            index = matches.IndexOf(prioritizedMatches[prioritizedIndex]);
-                            if(rule != null) rule.SetAttribute("traverserMatch", "true");
-                        } else {
-                            Random rnd = new Random();
-                            index = rnd.Next(matches.Count);
-                            if (rule != null) rule.SetAttribute("traverserMatch", "false");
-                        }
-                    } else {
-                        Random rnd = new Random();
-                        index = rnd.Next(matches.Count);
-                        if (rule != null) rule.SetAttribute("traverserMatch", "false");
-                    }
+                    index = RuleMatchSelector.PrioritizeTraverserGraphMatch(rule, matches);
+                    selectedMatch = matches.ElementAt(index);
                 }
-                selectedMatch = matches.ElementAt(index);
             } else {
                 if ((query == null || query.GetNodes().Count == 0) && (source != null && source.GetNodes().Count == 0)) {
                     selectedMatch = new Dictionary<Node, Node>();
@@ -461,8 +446,10 @@ namespace Grammars.Graphs {
             }
             selectedMatch.Clear();
             matches.Clear();
+            prioritizedMatches.Clear();
             selectedMatch = null;
             matches = null;
+            prioritizedMatches = null;
 
             // Reactivate events
             foreach (Node node in source.GetNodes()) {

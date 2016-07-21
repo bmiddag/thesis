@@ -5,6 +5,6 @@
     <Node id="2"><AttributeClass name="CL" /></Node>
   </Nodes>
   <Edges>
-    <Edge node1="1" node1="2" directed="True"><AttributeClass name="doubleEdge" /></Edge>
+    <Edge node1="1" node2="2" directed="True"><AttributeClass name="doubleEdge" /></Edge>
   </Edges>
 </Graph>

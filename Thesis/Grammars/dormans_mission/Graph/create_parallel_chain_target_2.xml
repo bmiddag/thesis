@@ -8,11 +8,11 @@
     <Node id="5"><AttributeClass name="km" /></Node>
   </Nodes>
   <Edges>
-    <Edge node1="1" node1="3" directed="True"><AttributeClass name="normalEdge" /></Edge>
-    <Edge node1="1" node1="4" directed="True"><AttributeClass name="normalEdge" /></Edge>
-    <Edge node1="1" node1="5" directed="True"><AttributeClass name="normalEdge" /></Edge>
-    <Edge node1="3" node1="2" directed="True"><AttributeClass name="normalEdge" /></Edge>
-    <Edge node1="4" node1="2" directed="True"><AttributeClass name="normalEdge" /></Edge>
-    <Edge node1="5" node1="2" directed="True"><AttributeClass name="normalEdge" /></Edge>
+    <Edge node1="1" node2="3" directed="True"><AttributeClass name="normalEdge" /></Edge>
+    <Edge node1="1" node2="4" directed="True"><AttributeClass name="normalEdge" /></Edge>
+    <Edge node1="1" node2="5" directed="True"><AttributeClass name="normalEdge" /></Edge>
+    <Edge node1="3" node2="2" directed="True"><AttributeClass name="normalEdge" /></Edge>
+    <Edge node1="4" node2="2" directed="True"><AttributeClass name="normalEdge" /></Edge>
+    <Edge node1="5" node2="2" directed="True"><AttributeClass name="normalEdge" /></Edge>
   </Edges>
 </Graph>

@@ -1,4 +1,5 @@
-﻿using Grammars.Tiles;
+﻿using Grammars.Graphs;
+using Grammars.Tiles;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,6 +43,46 @@ namespace Grammars {
             } else return null;
         }
 
+        public static int PrioritizeTraverserGraphMatch<T>(Rule<T> rule, List<Dictionary<Node, Node>> matches) where T : StructureModel {
+            int index = -1;
+            if (rule != null && rule.Grammar.CurrentTask.Action == "GenerateNext") {
+                // Quick fix for prioritizing current traverser position in matches
+                List<Dictionary<Node, Node>> prioritizedMatches = new List<Dictionary<Node, Node>>();
+
+                object currEl = rule.Grammar.CurrentTask.GetObjectAttribute("currentElement");
+                if (currEl.GetType() == typeof(Edge)) {
+                    Edge currEdge = (Edge)currEl;
+                    foreach (Dictionary<Node, Node> match in matches) {
+                        if (match.Keys.Where(n => (n == currEdge.GetNode1() || n == currEdge.GetNode2())).Count() > 0) {
+                            prioritizedMatches.Add(match);
+                        }
+                    }
+                } else if (currEl.GetType() == typeof(Node)) {
+                    Node currNode = (Node)currEl;
+                    foreach (Dictionary<Node, Node> match in matches) {
+                        if (match.Keys.Where(n => n == currNode).Count() > 0) {
+                            prioritizedMatches.Add(match);
+                        }
+                    }
+                }
+                if (prioritizedMatches.Count > 0) {
+                    Random rnd = new Random();
+                    int prioritizedIndex = rnd.Next(prioritizedMatches.Count);
+                    index = matches.IndexOf(prioritizedMatches[prioritizedIndex]);
+                    if (rule != null) rule.SetAttribute("traverserMatch", "true");
+                } else {
+                    Random rnd = new Random();
+                    index = rnd.Next(matches.Count);
+                    if (rule != null) rule.SetAttribute("traverserMatch", "false");
+                }
+            } else {
+                Random rnd = new Random();
+                index = rnd.Next(matches.Count);
+                if (rule != null) rule.SetAttribute("traverserMatch", "false");
+            }
+            return index;
+        }
+
         // Example match selection methods are listed here
         public static int MinimizeTileDistance<T>(Rule<T> rule, List<TilePos> matches, string tileSelector) where T : StructureModel {
             /*UnityEngine.MonoBehaviour.print("REACHED THIS POINT");
@@ -73,7 +114,7 @@ namespace Grammars {
                 int ind = 0;
                 for (int i = 0; i < matches.Count; i++) {
                     TilePos match = matches[i];
-                    int dist = Algorithms.Distance(match, meanPos);
+                    int dist = Tiles.Algorithms.Distance(match, meanPos);
                     if (dist < minDist) {
                         ind = i;
                         minDist = dist;

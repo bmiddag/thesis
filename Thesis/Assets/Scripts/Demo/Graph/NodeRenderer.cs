@@ -9,7 +9,8 @@ namespace Demo {
 	public class NodeRenderer : MonoBehaviour, IElementRenderer {
 		Node node;
 		SpriteRenderer spriteRender;
-        Text text;
+        Text indexText;
+        Text nodeText = null;
         public GraphRenderer graphRenderer;
 
         public Vector3 newPosition;
@@ -204,46 +205,40 @@ namespace Demo {
 
         void UpdateText() {
             // Handle gameobject changes
-            if (text == null) {
-                text = new GameObject("Node " + node.GetID().ToString() + ": Index").AddComponent<Text>();
-                text.transform.SetParent(transform);
-                text.transform.localPosition = new Vector3(0, 0, -1);
-                RectTransform rt = text.GetComponent<RectTransform>();
+            if (indexText == null) {
+                indexText = new GameObject("Node " + node.GetID().ToString() + ": Index").AddComponent<Text>();
+                indexText.transform.SetParent(transform);
+                indexText.transform.localPosition = new Vector3(0, 0, -1);
+                RectTransform rt = indexText.GetComponent<RectTransform>();
                 if (rt != null) {
                     rt.sizeDelta = new Vector2(75, 75);
                 }
-                text.color = new Color(0.2f, 0.2f, 0.2f);
-                text.font = Font.CreateDynamicFontFromOSFont("Arial", 14);
-                text.fontSize = 14;
-                text.alignment = TextAnchor.LowerRight;
+                indexText.color = new Color(0.2f, 0.2f, 0.2f);
+                indexText.font = Font.CreateDynamicFontFromOSFont("Arial", 14);
+                indexText.fontSize = 14;
+                indexText.alignment = TextAnchor.LowerRight;
             }
-            /*if (node != null && node.HasAttribute("_demo_image")) {
-                if (text == null || text.gameObject == gameObject) {
-                    if (text != null) Destroy(text);
-                    text = new GameObject("Node " + node.GetID().ToString() + ": Index").AddComponent<Text>();
-                    text.transform.SetParent(transform);
-                    text.transform.localPosition = new Vector3(0, 0);
-                    RectTransform rt = text.GetComponent<RectTransform>();
+            if (node != null && node.HasAttribute("_demo_text")) {
+                if (nodeText == null) {
+                    nodeText = new GameObject("Node " + node.GetID().ToString() + ": Text").AddComponent<Text>();
+                    nodeText.transform.SetParent(transform);
+                    nodeText.transform.localPosition = new Vector3(0, 0, -1);
+                    /*RectTransform rt = nodeText.GetComponent<RectTransform>();
                     if (rt != null) {
                         rt.sizeDelta = new Vector2(75, 75);
-                    }
-                    text.color = Color.gray;
-                    text.font = Font.CreateDynamicFontFromOSFont("Arial", 14);
-                    text.fontSize = 14;
-                    text.alignment = TextAnchor.LowerRight;
+                    }*/
+                    nodeText.color = Color.black;
+                    nodeText.font = Font.CreateDynamicFontFromOSFont("Arial", 24);
+                    nodeText.fontSize = 24;
+                    nodeText.alignment = TextAnchor.MiddleCenter;
                 }
-            } else {
-                if (text == null || text.gameObject != gameObject) {
-                    if (text != null) Destroy(text.gameObject);
-                    text = gameObject.AddComponent<Text>();
-                    text.color = Color.black;
-                    text.font = Font.CreateDynamicFontFromOSFont("Arial", 24);
-                    text.fontSize = 24;
-                    text.alignment = TextAnchor.MiddleCenter;
-                }
-            }*/
+                nodeText.text = node.GetAttribute("_demo_text");
+            } else if (nodeText != null) {
+                Destroy(nodeText.gameObject);
+                nodeText = null;
+            }
             if (node != null) {
-                text.text = node.GetID().ToString();
+                indexText.text = node.GetID().ToString();
                 gameObject.name = "Node " + node.GetID().ToString();
             }
         }

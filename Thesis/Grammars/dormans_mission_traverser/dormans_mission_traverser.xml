@@ -6,11 +6,18 @@
 	<Query name="n">n</Query>
 	<Query name="t">t</Query>
 	<Query name="l">l</Query>
+	<Query name="g">g</Query>
 	<Query name="lm">lm</Query>
+	<Query name="lf">lf</Query>
+	<Query name="ti">ti</Query>
 	<Query name="ts">ts</Query>
 	<Query name="k">k</Query>
 	<Query name="km">km</Query>
+	<Query name="kf">kf</Query>
 	<Query name="ib">ib</Query>
+	<Query name="iq">iq</Query>
+	<Query name="bm">bm</Query>
+	<Query name="bl">bl</Query>
     <Query name="normal">normal</Query>
   </Queries>
   <TaskProcessors>
@@ -18,6 +25,6 @@
   </TaskProcessors>
   <Listeners>
     <Listener alias="origin">dormans_mission</Listener>
-    <Listener alias="controller">dormans_controller</Listener>
+    <Listener>dormans_controller</Listener>
   </Listeners>
 </Traverser>

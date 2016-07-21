@@ -101,7 +101,7 @@
     </Rule>
   </Rules>
   <Listeners>
-    <Listener alias="controller">dormans_controller</Listener>
+    <Listener>dormans_controller</Listener>
     <Listener>dormans_mission_traverser</Listener>
   </Listeners>
 </Grammar>

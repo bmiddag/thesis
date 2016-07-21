@@ -295,7 +295,7 @@ namespace Demo {
 
         public IEnumerator LoadGrammar() {
             if (currentStructureRenderer == null) {
-                PrepareGrammar("Grammars/", "controller");
+                PrepareGrammar("Grammars/", "dormans_controller");
             } else if(currentStructureRenderer.GetType() == typeof(GraphRenderer)) {
                 PrepareGrammar("Grammars/", "mission_solo");
             } else if (currentStructureRenderer.GetType() == typeof(TileGridRenderer)) {

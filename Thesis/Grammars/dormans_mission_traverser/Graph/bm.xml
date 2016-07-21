@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Graph>
+  <Nodes>
+    <Node id="0"><Attribute key="_link_dormans_space" value="true" /></Node>
+    <Node id="1">
+	  <AttributeClass name="bm" />
+	  <Attribute key="_link_dormans_space" value="false" />
+    </Node>
+  </Nodes>
+  <Edges>
+    <Edge node1="0" node2="1" directed="True"><Attribute key="_grammar_current" value="true" /></Edge>
+  </Edges>
+</Graph>
