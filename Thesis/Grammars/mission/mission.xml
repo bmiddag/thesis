@@ -5,9 +5,13 @@
     <Constraint name="constraint1_10enemies" active="true">
       <GrammarCondition>CountElements("Has(#enemy)","&lt;=",10)</GrammarCondition>
       <Rules>
-        <Rule probability="1" name="CONSTRAINT1-RULE">
+        <Rule probability="0.5" name="CONSTRAINT1-RULE">
           <Query>constraint1_query</Query>
           <Target>constraint1_target</Target>
+        </Rule>
+        <Rule probability="1" name="CONSTRAINT1-RULE2">
+          <Query>constraint1_treasure_query</Query>
+          <Target>constraint1_treasure_target</Target>
         </Rule>
       </Rules>
     </Constraint>
@@ -86,7 +90,7 @@
     </Rule>
   </Rules>
   <StopConditions>
-    <GrammarCondition>AttributeCmp(this,_iteration,"&gt;=",4) &amp;&amp; AttributeModulo(this,_iteration,4,0)</GrammarCondition>
+    <!-- <GrammarCondition>AttributeCmp(this,_iteration,"&gt;=",4) &amp;&amp; AttributeModulo(this,_iteration,4,0)</GrammarCondition> -->
   </StopConditions>
   <Listeners>
     <Listener alias="controller">controller</Listener>

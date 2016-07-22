@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Graph>
+  <Nodes>
+    <Node id="0" />
+    <Node id="3" />
+  </Nodes>
+  <Edges>
+    <Edge node1="0" node2="3" directed="True" />
+  </Edges>
+</Graph>

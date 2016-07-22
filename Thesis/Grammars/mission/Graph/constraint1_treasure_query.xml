@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Graph>
+  <Nodes>
+    <Node id="0" />
+    <Node id="1">
+	  <AttributeClass name="enemy" />
+      <Attribute key="_link_graphspace" value="false" />
+	  <Attribute key="_edges" value="2" />
+    </Node>
+    <Node id="2">
+	  <AttributeClass name="treasure" />
+      <Attribute key="_link_graphspace" value="false" />
+	  <Attribute key="special" value="_grammar_nomatch" />
+	  <Attribute key="_edges" value="2" />
+    </Node>
+    <Node id="3" />
+  </Nodes>
+  <Edges>
+    <Edge node1="0" node2="1" directed="True" />
+    <Edge node1="1" node2="2" directed="True" />
+    <Edge node1="2" node2="3" directed="True" />
+  </Edges>
+</Graph>
