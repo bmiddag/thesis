@@ -9,6 +9,17 @@
       <Query>C_unlinked</Query>
       <Target>e</Target>
     </Rule>
+	<Rule priority="2" probability="0.1" name="multi_edges">
+      <RuleCondition>TraverserMatch("dormans_mission_traverser","multi_edges")</RuleCondition>
+      <Query>C_big</Query>
+      <Target>n_multi_edges</Target>
+    </Rule>
+	<Rule priority="2" probability="0.1" name="normal_connect">
+      <RuleCondition>TraverserMatch("dormans_mission_traverser","normal_connect")</RuleCondition>
+      <Query>C</Query>
+      <Target>dead_end_link</Target>
+      <RuleAction>TraverserNext("dormans_mission_traverser",dormans_mission_traverser_query_1,,)</RuleAction>
+    </Rule>
     <Rule priority="1" probability="0.1" name="bl">
       <RuleCondition>TraverserMatch("dormans_mission_traverser","bl")</RuleCondition>
       <Query>C</Query>
@@ -65,7 +76,7 @@
     </Rule>
     <Rule priority="1" probability="0.1" name="n">
       <RuleCondition>TraverserMatch("dormans_mission_traverser","n")</RuleCondition>
-      <Query>C</Query>
+      <Query>C_big</Query>
       <Target>n</Target>
       <RuleAction>TraverserNext("dormans_mission_traverser",dormans_mission_traverser_query_1,,)</RuleAction>
     </Rule>

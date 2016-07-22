@@ -119,6 +119,14 @@ namespace Grammars {
             return "";
         }
 
+        public static string SourceAttribute(AttributedElement element, string attName, string att) {
+            object sourceObj = element.GetObjectAttribute("_grammar_matching");
+            if (sourceObj == null || !typeof(AttributedElement).IsAssignableFrom(sourceObj.GetType())) return "";
+            AttributedElement sourceEl = (AttributedElement)sourceObj;
+            string satt = sourceEl.GetAttribute(att);
+            return satt;
+        }
+
         public static string NumberOfAttributes(AttributedElement element, string attName) {
             return (element.GetAttributes(raw: true).Count).ToString();
         }
@@ -139,6 +147,23 @@ namespace Grammars {
                 if (grouplist.Contains(sourceEl)) return "_grammar_automatch";
             }
             return "false";
+        }
+
+        public static string Compare(AttributedElement element, string attName, string operation, DynamicAttribute otherAttName) {
+            object sourceObj = element.GetObjectAttribute("_grammar_matching");
+            if (sourceObj == null || !typeof(AttributedElement).IsAssignableFrom(sourceObj.GetType())) return "false";
+            AttributedElement sourceEl = (AttributedElement)sourceObj;
+            string att = sourceEl.GetAttribute(attName);
+            string att2 = otherAttName.GetAttributeValue();
+
+            double datt = double.Parse(att);
+            double datt2 = double.Parse(att2);
+
+            //UnityEngine.Debug.LogWarning("COMPARING: " + att + " - " + att2);
+
+            if (StringEvaluator.Compare(operation,datt, datt2)) {
+                return "_grammar_automatch";
+            } else return "false";
         }
 
     }

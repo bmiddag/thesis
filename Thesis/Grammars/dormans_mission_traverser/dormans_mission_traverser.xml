@@ -19,6 +19,8 @@
 	<Query name="bm">bm</Query>
 	<Query name="bl">bl</Query>
     <Query name="normal">normal</Query>
+    <Query name="normal_connect">normal_connect</Query>
+    <Query name="multi_edges">multi_edges</Query>
   </Queries>
   <TaskProcessors>
     <TaskProcessor event="Next">GraphTraverser_NextEdge("dormans_space")</TaskProcessor>

@@ -492,7 +492,12 @@ namespace Grammars.Graphs {
                 sourceEl.RemoveObjectAttribute("grammar", notify: false);
                 sourceEl.RemoveObjectAttribute("rule", notify: false);
                 return match;
-            } else return sourceEl.MatchAttributes(queryEl);
+            } else {
+                queryEl.SetObjectAttribute("_grammar_matching", sourceEl, notify: false);
+                bool match = sourceEl.MatchAttributes(queryEl);
+                queryEl.RemoveObjectAttribute("_grammar_matching", notify: false);
+                return match;
+            }
         }
 
         protected void SetAttributesUsingDifference(AttributedElement sourceEl, AttributedElement queryEl, AttributedElement targetEl) {
