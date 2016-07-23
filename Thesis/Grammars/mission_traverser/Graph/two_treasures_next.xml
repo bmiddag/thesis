@@ -1,31 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Graph>
   <Nodes>
-    <Node id="0" hashCode="-1906939648" active="True">
-      <Attributes>
-        <Attribute key="_link_graphspace" value="true" />
-      </Attributes>
+    <Node id="0"><Attribute key="_link_graphspace" value="true" /></Node>
+    <Node id="1">
+      <AttributeClass name="treasure" />
+      <Attribute key="_link_graphspace" value="false" />
+      <!-- <Attribute key="_edges" value="2" /> -->
     </Node>
-    <Node id="1" hashCode="1738971136" active="True">
-      <AttributeClasses>
-        <AttributeClass name="treasure" />
-      </AttributeClasses>
-      <Attributes>
-        <Attribute key="_grammar_current" value="true" />
-        <Attribute key="_link_graphspace" value="false" />
-      </Attributes>
-    </Node>
-    <Node id="2" hashCode="-1635023360" active="True">
-      <AttributeClasses>
-        <AttributeClass name="treasure" />
-      </AttributeClasses>
-      <Attributes>
-        <Attribute key="_link_graphspace" value="false" />
-      </Attributes>
+    <Node id="2">
+      <AttributeClass name="treasure" />
+      <Attribute key="_link_graphspace" value="false" />
     </Node>
   </Nodes>
   <Edges>
-    <Edge node1="-1906939648" node2="1738971136" directed="True" />
-    <Edge node1="1738971136" node2="-1635023360" directed="True" />
+    <Edge node1="0" node2="1" directed="True"><Attribute key="_grammar_current" value="true" /></Edge>
+    <Edge node1="1" node2="2" directed="True" />
   </Edges>
 </Graph>
