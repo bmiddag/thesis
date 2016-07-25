@@ -77,7 +77,7 @@
     </Rule>
   </Rules>
   <StopConditions>
-	<!-- <GrammarCondition event="RoomGenerated">!NoRuleFound()</GrammarCondition> -->
+	<GrammarCondition event="RoomGenerated">!NoRuleFound()</GrammarCondition>
   </StopConditions>
   <Listeners>
     <Listener alias="controller">controller</Listener>

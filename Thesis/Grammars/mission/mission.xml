@@ -90,7 +90,7 @@
     </Rule>
   </Rules>
   <StopConditions>
-    <!-- <GrammarCondition>AttributeCmp(this,_iteration,"&gt;=",4) &amp;&amp; AttributeModulo(this,_iteration,4,0)</GrammarCondition> -->
+    <GrammarCondition>AttributeCmp(this,_iteration,"&gt;=",4) &amp;&amp; AttributeModulo(this,_iteration,4,0)</GrammarCondition>
   </StopConditions>
   <Listeners>
     <Listener alias="controller">controller</Listener>
