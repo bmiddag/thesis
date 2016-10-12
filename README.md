@@ -1,2 +1,2 @@
-# bmiddag/thesis
-This is the repository for my thesis project.
+# Master's thesis (Unity 3D, 2016)
+My thesis about procedural generation of video game levels, titled "Controllable generative grammars for multifaceted generation of game levels". The thesis can be found under `thesis_bmiddag.pdf` and the presentation under `final_presentation.pptx`. The Unity 3D project is stored under `Thesis`.
